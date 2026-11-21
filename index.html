@@ -6,145 +6,142 @@
 <title>Вечер угадываний</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* TV layout is drawn like a slide: 1rem = 1/54 of the screen height (10px on a 960×540 Fire TV, 20px at 1080p),
+   so every screen keeps the same proportions on any TV. The phone remote and the prep page use plain px. */
 :root{
-  --bg:#09080a; --ink:#f3ead7; --muted:#a3967c; --dim:#6f6552;
-  --g1:#fbefc4; --g2:#d9b46a; --g3:#9a7031; --line:rgba(217,180,106,.32); --line2:rgba(217,180,106,.14);
-  --wine:#7a1a2a; --glass:rgba(255,244,220,.035);
+  --bg:#09080a; --ink:#f3ead7; --muted:#a99c82; --dim:#6f6552;
+  --g1:#fbefc4; --g2:#d9b46a; --g3:#9a7031; --line:rgba(217,180,106,.34); --line2:rgba(217,180,106,.15);
+  --glass:rgba(255,244,220,.035);
   --serif:'Playfair Display',Georgia,'Times New Roman',serif; --sans:Montserrat,system-ui,-apple-system,sans-serif;
+  font-size:min(calc(100vh / 54), calc(100vw / 96));
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
+:root.remote{font-size:16px}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;color:var(--ink);font-family:var(--sans);font-weight:400;
   background:
-    radial-gradient(1100px 520px at 50% -12%,rgba(217,180,106,.16),transparent 65%),
-    radial-gradient(900px 600px at 50% 115%,rgba(122,26,42,.28),transparent 60%),
+    radial-gradient(60rem 28rem at 50% -12%,rgba(217,180,106,.16),transparent 65%),
+    radial-gradient(50rem 32rem at 50% 115%,rgba(122,26,42,.28),transparent 60%),
     radial-gradient(circle at 50% 50%,#121014 0%,#09080a 70%);}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;
-  background-image:repeating-linear-gradient(45deg,#d9b46a 0 1px,transparent 1px 22px),repeating-linear-gradient(-45deg,#d9b46a 0 1px,transparent 1px 22px)}
-.frame{position:fixed;inset:12px;border:1px solid var(--line);pointer-events:none;z-index:30}
-.frame::before{content:"";position:absolute;inset:6px;border:1px solid var(--line2)}
-.frame i{position:absolute;width:12px;height:12px;background:var(--g2);transform:rotate(45deg)}
-.frame i:nth-child(1){top:-6px;left:-6px}.frame i:nth-child(2){top:-6px;right:-6px}
-.frame i:nth-child(3){bottom:-6px;left:-6px}.frame i:nth-child(4){bottom:-6px;right:-6px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.045;
+  background-image:repeating-linear-gradient(45deg,#d9b46a 0 1px,transparent 1px 2.2rem),repeating-linear-gradient(-45deg,#d9b46a 0 1px,transparent 1px 2.2rem)}
+.frame{position:fixed;inset:1.2rem;border:1px solid var(--line);pointer-events:none;z-index:30}
+.frame::before{content:"";position:absolute;inset:.6rem;border:1px solid var(--line2)}
+.frame i{position:absolute;width:1.1rem;height:1.1rem;background:var(--g2);transform:rotate(45deg)}
+.frame i:nth-child(1){top:-.55rem;left:-.55rem}.frame i:nth-child(2){top:-.55rem;right:-.55rem}
+.frame i:nth-child(3){bottom:-.55rem;left:-.55rem}.frame i:nth-child(4){bottom:-.55rem;right:-.55rem}
 
 .gold{background:linear-gradient(180deg,var(--g1) 0%,var(--g2) 48%,var(--g3) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.caps{text-transform:uppercase;letter-spacing:.32em;font-weight:500;font-size:clamp(11px,.9vw,15px);color:var(--muted)}
-.orn{display:flex;align-items:center;gap:14px;color:var(--g2);justify-content:center}
-.orn::before,.orn::after{content:"";height:1px;width:min(160px,14vw);background:linear-gradient(90deg,transparent,var(--g2))}
+.caps{text-transform:uppercase;letter-spacing:.3em;font-weight:500;font-size:1.2rem;color:var(--muted);line-height:1.5}
+.orn{display:flex;align-items:center;gap:1.4rem;color:var(--g2);justify-content:center;font-size:1.3rem}
+.orn::before,.orn::after{content:"";height:1px;width:14rem;background:linear-gradient(90deg,transparent,var(--g2))}
 .orn::after{transform:scaleX(-1)}
+.one{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.screen{position:fixed;inset:0;display:none;padding:28px}
+.screen{position:fixed;inset:0;display:none;padding:3rem 3.6rem}
 .screen.active{display:flex;flex-direction:column}
 
-button{font-family:var(--sans);font-size:clamp(11px,.85vw,14px);letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+button{font-family:var(--sans);font-size:1.15rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500;line-height:1.2;
   color:var(--ink);background:transparent;border:1px solid var(--line);padding:.85em 1.4em;cursor:pointer;transition:.25s;border-radius:2px}
 button:hover{border-color:var(--g2);color:var(--g1);background:rgba(217,180,106,.07)}
 button.main{background:linear-gradient(180deg,#e9cd8a,#b88a43);color:#1a1206;border-color:transparent;font-weight:600}
 button.main:hover{filter:brightness(1.08);color:#1a1206}
 button.ghost{border-color:transparent;color:var(--muted)}
 button.ghost:hover{color:var(--g1)}
-button.rec{border-color:#c43b4f;color:#ff8e9e}
-button.rec.on{background:#c43b4f;color:#fff;animation:recp 1s infinite}
-@keyframes recp{50%{opacity:.6}}
 kbd{font-family:var(--sans);font-size:.85em;opacity:.5;margin-left:.6em;letter-spacing:0}
 input,textarea{font:inherit;font-size:15px;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid var(--line2);border-radius:2px;padding:.55em .8em}
 input:focus,textarea:focus{outline:none;border-color:var(--g2)}
 textarea{width:100%;line-height:1.55;font-size:14px}
 
 /* ---------- HOME ---------- */
-#home{align-items:center;justify-content:center;gap:3.2vh;text-align:center}
+#home{align-items:center;justify-content:center;gap:1.4rem;text-align:center}
+#home>*,#finale>*,.st-left>*{flex-shrink:0}
 .h-pre{margin:0}
-.h-title{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,64px);margin:0;color:var(--ink);line-height:1}
-.h-name{font-family:var(--serif);font-weight:800;font-size:clamp(46px,7.4vw,140px);margin:-.1em 0 0;line-height:1.05;filter:drop-shadow(0 6px 30px rgba(217,180,106,.25))}
-.rounds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(1500px,92vw);margin-top:1vh}
-.rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:2.1vh 1.6vw 2vh;cursor:pointer;transition:.3s;text-align:left;display:flex;align-items:center;gap:1.4vw}
-.rcard::after{content:"";position:absolute;inset:4px;border:1px solid transparent;transition:.3s;pointer-events:none}
-.rcard:hover{border-color:var(--line);background:rgba(217,180,106,.06);transform:translateY(-2px)}
+.h-title{font-family:var(--serif);font-style:italic;font-weight:400;font-size:4rem;margin:0;color:var(--ink);line-height:1.1}
+.h-name{font-family:var(--serif);font-weight:800;font-size:7.2rem;margin:-.1em 0 0;line-height:1.2;padding:0 .1em .05em;max-width:88rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;filter:drop-shadow(0 .6rem 3rem rgba(217,180,106,.25))}
+.rounds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.3rem;width:84rem;margin-top:.6rem}
+.rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:1.6rem 1.6rem 1.5rem;cursor:pointer;transition:.3s;text-align:left;
+  display:grid;grid-template-columns:5rem minmax(0,1fr);align-items:center;column-gap:.9rem;min-height:8.4rem}
+.rcard::after{content:"";position:absolute;inset:.4rem;border:1px solid transparent;transition:.3s;pointer-events:none}
+.rcard:hover{border-color:var(--line);background:rgba(217,180,106,.06)}
 .rcard:hover::after{border-color:var(--line2)}
-.rnum{font-family:var(--serif);font-size:clamp(26px,2.6vw,48px);min-width:1.9em;text-align:center;line-height:1}
+.rnum{font-family:var(--serif);font-size:2.7rem;text-align:center;line-height:1;white-space:nowrap}
 .rtxt{min-width:0}
-.rtt{font-family:var(--serif);font-size:clamp(17px,1.55vw,28px);line-height:1.15}
-.rsub{margin-top:.45em;font-size:clamp(10px,.75vw,13px);letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.rtt{font-family:var(--serif);font-size:1.9rem;line-height:1.14}
+.rsub{margin-top:.55rem;font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);line-height:1.3}
 .rcard.empty{opacity:.45}
-.h-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.warn-box{border:1px solid #c43b4f;color:#ffb3bf;padding:.7em 1.2em;font-size:14px;max-width:90vw}
+.h-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center}
+.warn-box{border:1px solid #c43b4f;color:#ffb3bf;padding:.7em 1.2em;font-size:1.3rem;max-width:80rem}
 
 /* ---------- GAME ---------- */
-#game.active{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:1.2vh}
-.g-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:4px 10px 0}
+#game.active{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;row-gap:.8rem;padding:2.6rem 3.6rem 2.4rem}
+#game.imgmode .answer{height:8.4rem}
+#game.vidmode .answer{height:4rem}
+.g-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 .6rem}
 .g-title{text-align:center}
-.g-title .n{font-family:var(--serif);font-size:clamp(14px,1.1vw,20px);color:var(--g2);letter-spacing:.2em}
-.g-title .t{font-family:var(--serif);font-size:clamp(22px,2.2vw,40px);line-height:1.1}
-.g-right{display:flex;justify-content:flex-end;align-items:center;gap:2vw}
-.counter{font-family:var(--serif);font-size:clamp(16px,1.4vw,26px);color:var(--muted)}
+.g-title .n{font-family:var(--serif);font-size:1.4rem;color:var(--g2);letter-spacing:.2em;line-height:1.3}
+.g-title .t{font-family:var(--serif);font-size:2.6rem;line-height:1.15}
+.g-right{display:flex;justify-content:flex-end;align-items:center;gap:2rem}
+.counter{font-family:var(--serif);font-size:2.1rem;color:var(--muted)}
 .counter b{color:var(--ink);font-weight:400}
-.timer{font-family:var(--serif);font-size:clamp(26px,2.6vw,48px);min-width:2.2em;text-align:center;visibility:hidden}
+.timer{font-family:var(--serif);font-size:3.4rem;min-width:2.2em;text-align:center;visibility:hidden}
 .timer.on{visibility:visible}
 .timer.warn{color:#ff6b81;animation:pulse 1s infinite}
 @keyframes pulse{50%{transform:scale(1.12)}}
 .stage{position:relative;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.answer{min-height:15vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 4vw}
-.answer .a{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,64px);line-height:1.15;animation:rise .7s cubic-bezier(.2,.9,.3,1.2) both}
-.answer .nt{margin-top:.6em;animation:rise .7s .15s both}
-.answer .mask{font-family:var(--serif);font-size:clamp(24px,2.8vw,52px);letter-spacing:.14em;color:var(--ink)}
+.answer{height:12rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 4rem;overflow:hidden}
+.answer .a{text-wrap:balance;font-family:var(--serif);font-weight:600;font-size:4.4rem;line-height:1.15;padding-bottom:.08em;animation:rise .7s cubic-bezier(.2,.9,.3,1.2) both;max-width:84rem}
+.answer .a.s{font-size:3.5rem}.answer .a.xs{font-size:2.8rem}
+.answer .nt{margin-top:.6rem;animation:rise .7s .15s both}
+.answer .mask{font-family:var(--serif);font-size:3.6rem;letter-spacing:.12em;color:var(--ink);line-height:1.2}
+.answer .mask.s{font-size:2.8rem}
 .answer .ph{color:var(--dim)}
-@keyframes rise{from{opacity:0;transform:translateY(18px);filter:blur(6px)}}
-.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding-bottom:6px}
+@keyframes rise{from{opacity:0;transform:translateY(1.8rem);filter:blur(6px)}}
+.controls{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;padding-bottom:.4rem}
 
-.q{font-family:var(--serif);text-align:center;line-height:1.25;max-width:84vw;font-size:clamp(30px,4vw,76px)}
-.q.l{font-size:clamp(26px,3.2vw,60px)}
-.q.m{font-size:clamp(22px,2.6vw,48px)}
-.q.emoji{font-family:var(--sans);font-size:min(13vw,26vh);letter-spacing:.06em;line-height:1.2}
+.q{font-family:var(--serif);text-align:center;line-height:1.25;text-wrap:balance;max-width:84rem;font-size:5.6rem;padding:0 2rem}
+.q.l{font-size:4.4rem}
+.q.m{font-size:3.5rem}
+.q.emoji{font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',var(--sans);font-size:11rem;letter-spacing:.06em;line-height:1.2}
 .q-quote::before{content:"«";color:var(--g2)}.q-quote::after{content:"»";color:var(--g2)}
 
-.imgwrap{position:relative;overflow:hidden;line-height:0;outline:1px solid var(--line);outline-offset:8px}
-.imgwrap img{display:block;transition:filter .9s,transform .9s}
+.imgwrap{position:relative;overflow:hidden;line-height:0;outline:1px solid var(--line);outline-offset:.8rem}
+.imgwrap img{display:block;transition:filter .9s,transform .9s;image-rendering:auto}
 .tgrid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr)}
 .tcell{background:linear-gradient(135deg,#1c1712,#0e0c0a);border:1px solid rgba(217,180,106,.22);display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-size:clamp(14px,1.6vw,28px);color:rgba(217,180,106,.45);cursor:pointer;transition:opacity .6s,transform .6s;line-height:1}
+  font-family:var(--serif);font-size:2.2rem;color:rgba(217,180,106,.5);cursor:pointer;transition:opacity .6s,transform .6s;line-height:1}
 .tcell.off{opacity:0;transform:scale(.7);pointer-events:none}
 
-.audiobox{display:flex;flex-direction:column;align-items:center;gap:3vh;width:100%}
-.vinyl{width:min(34vh,30vw);aspect-ratio:1;border-radius:50%;position:relative;
+.audiobox{display:flex;flex-direction:column;align-items:center;gap:2.4rem;width:100%}
+.vinyl{width:21rem;aspect-ratio:1;border-radius:50%;position:relative;
   background:radial-gradient(circle,#d9b46a 0 17%,#1a1408 17.5% 19%,transparent 19.5%),
-    repeating-radial-gradient(circle,#0b0b0b 0 2px,#161616 2px 4px);
-  box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.7),inset 0 0 60px rgba(255,255,255,.04)}
+    repeating-radial-gradient(circle,#0b0b0b 0 .2rem,#161616 .2rem .4rem);
+  box-shadow:0 0 0 1px var(--line),0 3rem 8rem rgba(0,0,0,.7),inset 0 0 6rem rgba(255,255,255,.04)}
 .vinyl::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,transparent 0 20%,rgba(255,255,255,.08) 25%,transparent 30% 70%,rgba(255,255,255,.06) 75%,transparent 80%)}
 .vinyl::before{content:"";position:absolute;left:50%;top:50%;width:3%;height:3%;border-radius:50%;background:#09080a;transform:translate(-50%,-50%);z-index:1}
 .playing .vinyl{animation:spin 1.8s linear infinite}
-.playing.backwards .vinyl{animation-direction:reverse}
 @keyframes spin{to{transform:rotate(360deg)}}
-#viz{width:min(1000px,80vw);height:9vh}
-.astatus{min-height:1.4em}
+#viz{width:66rem;height:5.5rem}
+.astatus{min-height:1.5em}
 .vidon .audiobox{visibility:hidden}
 
-.meter{width:min(1100px,86vw);text-align:center;display:flex;flex-direction:column;gap:2.2vh;align-items:center}
-.mnum{font-family:var(--serif);font-size:min(22vh,12vw);line-height:1}
-.mbar{position:relative;width:100%;height:14px;background:rgba(255,255,255,.05);border:1px solid var(--line2)}
-.mfill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--g3),var(--g1))}
-.mpeak{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink);left:0;display:none}
-.mres{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.mres span{border:1px solid var(--line2);padding:.4em .9em;font-family:var(--serif);font-size:clamp(15px,1.3vw,24px)}
-.mres span.best{border-color:var(--g2);color:var(--g1)}
+.endcard{text-align:center;display:flex;flex-direction:column;gap:1.6rem;align-items:center}
+.endcard .big{font-family:var(--serif);font-size:6.4rem;font-style:italic;line-height:1.15;padding-bottom:.1em}
 
-.endcard{text-align:center;display:flex;flex-direction:column;gap:2vh;align-items:center}
-.endcard .big{font-family:var(--serif);font-size:clamp(40px,5vw,96px);font-style:italic}
-
-#ytwrap{position:fixed;left:0;top:0;width:320px;height:180px;opacity:0;pointer-events:none;z-index:-1;transition:opacity .8s;outline:1px solid var(--line);outline-offset:8px}
+#ytwrap{position:fixed;left:0;top:0;width:320px;height:180px;opacity:0;pointer-events:none;z-index:-1;transition:opacity .8s;outline:1px solid var(--line);outline-offset:.8rem;background:#000}
 #ytwrap.show{opacity:1;z-index:5}
 #ytwrap iframe{width:100%;height:100%;border:0;display:block}
 
-/* secret card */
-#secret{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;flex-direction:column;gap:3vh;text-align:center;
-  background:radial-gradient(circle,#1a1410,#060506 75%);cursor:pointer;padding:5vw}
-#secret.on{display:flex}
-#secret .big{font-family:var(--serif);font-size:clamp(40px,6vw,110px);line-height:1.1}
-#secret .cd{font-family:var(--serif);font-size:min(30vh,18vw);line-height:1}
+#secret{display:none!important}
 
-/* ---------- PREP ---------- */
+/* ---------- PREP (laptop only) ---------- */
 #prep.active{display:block;overflow:auto;padding:0}
 .prep-wrap{max-width:1040px;margin:0 auto;padding:36px 24px 100px}
 .prep-head{display:flex;align-items:center;gap:14px;position:sticky;top:0;background:linear-gradient(#0b0a0c 80%,transparent);padding:18px 0 22px;z-index:3}
 .prep-head h2{flex:1;margin:0;font-family:var(--serif);font-weight:400;font-size:34px}
+#prep button{font-size:13px}
+#prep .caps{font-size:12px}
 .card{border:1px solid var(--line2);background:var(--glass);padding:20px 24px;margin:18px 0}
 .card h3{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:24px}
 .card h3 small,.card h4 small{font-family:var(--sans);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-left:10px}
@@ -163,59 +160,64 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 .tips b{color:var(--g1);font-weight:500}
 
 /* ---------- FINALE ---------- */
-#finale{align-items:center;justify-content:center;text-align:center;gap:3vh}
-#finale .h-name{font-size:clamp(56px,9vw,170px)}
-.toast{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2vw,36px);color:var(--ink);max-width:70vw;line-height:1.4}
+#finale{align-items:center;justify-content:center;text-align:center;gap:2rem}
+#finale .h-name{font-size:10.5rem}
+.toast{font-family:var(--serif);font-style:italic;font-size:2.5rem;color:var(--ink);max-width:70rem;line-height:1.45}
 
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
 body.linked #controls{display:none}
-body.linked .h-actions{opacity:.35}
+body.linked .h-actions button{opacity:.35}
 
 /* ---------- START OVERLAY + QR ---------- */
-#start{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;gap:6vw;padding:6vw;cursor:pointer;
-  background:radial-gradient(1100px 520px at 50% -12%,rgba(217,180,106,.16),transparent 65%),#09080a}
+#start{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;gap:6rem;padding:4rem 6rem;cursor:pointer;
+  background:radial-gradient(60rem 28rem at 50% -12%,rgba(217,180,106,.16),transparent 65%),#09080a}
 #start.off{display:none}
-.st-left{display:flex;flex-direction:column;gap:2.4vh;max-width:46vw}
+.st-left{display:flex;flex-direction:column;gap:1.8rem;width:46rem}
 .st-left .h-title{text-align:left}
-.st-go{font-family:var(--serif);font-size:clamp(20px,2vw,36px);color:var(--ink)}
+.st-left .h-name{font-size:6.8rem;text-align:left;margin:0;max-width:46rem}
+.st-go{font-family:var(--serif);font-size:2.1rem;line-height:1.45;color:var(--ink)}
 .st-go b{color:var(--g1);font-weight:400}
-.qrbox{display:inline-block;background:#f3ead7;padding:18px;line-height:0;outline:1px solid var(--line);outline-offset:10px}
-.qrbox img,.qrbox canvas{width:min(30vh,26vw)!important;height:auto!important}
-.qrcap{margin-top:22px;text-align:center}
+.st-right{display:flex;flex-direction:column;align-items:center;width:30rem}
+.qrbox{display:inline-block;background:#f3ead7;padding:1.6rem;line-height:0;outline:1px solid var(--line);outline-offset:1rem}
+.qrbox img,.qrbox canvas{width:24rem!important;height:24rem!important;image-rendering:pixelated}
+.qrcap{margin-top:2.4rem;text-align:center;font-size:1.15rem;letter-spacing:.18em;line-height:1.8}
+.qrcap b{color:var(--g1);font-weight:600;letter-spacing:.12em}
 #qrmini[hidden]{display:none!important}
-#qrmini{position:fixed;right:44px;bottom:40px;display:flex;align-items:center;gap:14px;z-index:4}
-#qrmini .qrbox{padding:8px}
-#qrmini .qrbox img,#qrmini .qrbox canvas{width:92px!important}
-#qrmini .caps{text-align:right;line-height:1.7}
+#qrmini{display:flex;align-items:center;gap:1.2rem;margin-left:2rem}
+#qrmini .qrbox{padding:.6rem;outline-offset:.5rem}
+#qrmini .qrbox img,#qrmini .qrbox canvas{width:6.4rem!important;height:6.4rem!important}
+#qrmini .caps{text-align:right;font-size:1rem}
+#qrmini .caps b{color:var(--g1);font-size:1.6rem;letter-spacing:.15em}
+body.linked #qrmini{display:none!important}
 .linked{color:var(--g1)!important}
 
 /* ---------- PHONE REMOTE ---------- */
 body.remote{overflow:auto;height:auto;min-height:100%}
 body.remote .frame{position:fixed;inset:8px}
+body.remote .caps{font-size:11px}
 #remote{display:none;padding:26px 20px 60px;max-width:560px;margin:0 auto}
 body.remote #remote{display:block}
-body.remote .screen,body.remote #start,body.remote #qrmini,body.remote #ytwrap{display:none!important}
-.rm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!important}
+.rm-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;white-space:nowrap}
 .rm-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c43b4f;margin-right:8px;vertical-align:middle}
 .rm-dot.ok{background:#5fd38d}
-.rm-h{font-family:var(--serif);font-size:30px;line-height:1.15;margin:4px 0 2px}
+.rm-h{font-family:var(--serif);font-size:30px;line-height:1.15;margin:4px 0 4px}
 .rm-sub{color:var(--muted);font-size:14px;margin-bottom:16px}
 .rm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .rm-grid .wide{grid-column:1/-1}
-#remote button{padding:1.15em .6em;font-size:13px;width:100%}
-#remote button.big{font-size:16px;padding:1.4em .6em}
+#remote button{padding:1.15em .6em;font-size:13px;width:100%;letter-spacing:.12em}
+#remote button.big{font-size:16px;padding:1.3em .6em}
 .rm-list{display:flex;flex-direction:column;gap:8px}
-.rm-list button{text-align:left;display:flex;align-items:center;gap:14px;text-transform:none;letter-spacing:.02em;font-size:16px!important}
-.rm-list .rn{font-family:var(--serif);color:var(--g2);min-width:2.2em;text-align:center;font-size:18px}
-.rm-ans{border:1px solid var(--line);padding:14px 16px;margin:14px 0;background:var(--glass)}
-.rm-ans .v{font-family:var(--serif);font-size:22px;color:var(--g1);margin-top:6px;line-height:1.25}
+#remote .rm-list button{text-align:left;display:flex;align-items:center;gap:14px;text-transform:none;letter-spacing:.02em;font-size:17px;padding:1em .8em}
+.rm-list .rn{font-family:var(--serif);color:var(--g2);min-width:2.4em;text-align:center;font-size:18px}
+.rm-ans{border:1px solid var(--line);padding:14px 16px;margin:14px 0;background:var(--glass);cursor:pointer}
+.rm-ans .v{font-family:var(--serif);font-size:22px;color:var(--g1);margin-top:6px;line-height:1.3}
 .rm-ans .v.hid{filter:blur(9px);user-select:none}
-.rm-status{min-height:1.4em;margin:6px 0 14px;text-align:center}
-.rm-level{height:10px;border:1px solid var(--line2);margin:10px 0;position:relative}
-.rm-level i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--g3),var(--g1));width:0}
-#remote input{width:100%;margin:6px 0 14px}
+.rm-status{min-height:1.4em;margin:14px 0;text-align:center}
+#remote input{width:100%;margin:6px 0 14px;font-size:17px}
+#remote .help{font-size:15px}
 </style>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
@@ -233,6 +235,7 @@ body.remote .screen,body.remote #start,body.remote #qrmini,body.remote #ytwrap{d
     <button class="ghost" data-go="prep">Подготовка</button>
     <button class="ghost" data-act="fs">Во весь экран <kbd>F</kbd></button>
     <button class="ghost" data-go="finale">Финал ✦</button>
+    <div id="qrmini" hidden><div class="caps" id="qrminiCap">пульт</div><div class="qrbox" id="qrSmall"></div></div>
   </div>
 </section>
 
@@ -274,16 +277,16 @@ body.remote .screen,body.remote #start,body.remote #qrmini,body.remote #ytwrap{d
   <div class="h-actions"><button class="ghost" data-act="party">Ещё салют</button><button class="ghost" data-go="home">Меню</button></div>
 </section>
 
-<div id="qrmini" hidden><div class="caps" id="qrminiCap">пульт —<br>сканируйте</div><div class="qrbox" id="qrSmall"></div></div>
 
 <div id="start">
   <div class="st-left">
     <div class="caps">Вечер в честь именинника</div>
     <h1 class="h-title">С днём рождения</h1>
     <div class="h-name gold" id="sName" style="text-align:left">дорогой друг</div>
-    <div class="st-go">1. Отсканируйте QR телефоном — это пульт<br>2. Нажмите <b>OK</b> на пульте телевизора, чтобы начать</div>
+    <div class="st-go">1. Отсканируйте QR камерой телефона — телефон станет пультом<br>2. Нажмите <b>OK</b> на пульте телевизора, чтобы включить звук</div>
+    <div class="caps" id="stHint"></div>
   </div>
-  <div><div class="qrbox" id="qrBig"></div><div class="caps qrcap" id="qrCap">подключение…</div></div>
+  <div class="st-right"><div class="qrbox" id="qrBig"></div><div class="caps qrcap" id="qrCap">подключение…</div></div>
 </div>
 
 <div id="remote"></div>
@@ -435,7 +438,7 @@ ost:`# ответ | ссылка или ID YouTube | с какой секунд�
 Бумер («Мобильник») | CjFQrN7gCxE
 Кавказская пленница («Песенка о медведях») | dExwT_pEr9w
 Программа «Время» | ZWHgeMX4RcA
-Д'Артаньян и три мушкетёра | BCi6h34adNo
+Д'Артаньян и три мушкетёра | https://i.ytimg.com/vi/ZkB5lxBUgDk/maxres2.jpg | 0.118,0,0.118,0
 Бандитский Петербург («Город, которого нет») | HR9D5tk4VtI
 Иван Васильевич меняет профессию («Звенит январская вьюга») | zacy2GOu3TI
 Ну, погоди! | 3Jxh1IRc-AU
@@ -461,13 +464,12 @@ ost:`# ответ | ссылка или ID YouTube | с какой секунд�
 Охотники за привидениями | Fe93CLbHjxQ
 Твин Пикс | 18ApLy2M838`,
 who:`# ответ | ссылка на картинку
-Виктор Цой | https://upload.wikimedia.org/wikipedia/commons/4/4e/Victor_Tsoi_1986_cropped.jpg
+Виктор Цой | https://upload.wikimedia.org/wikipedia/commons/8/89/Viktortsoioutsidedomknigi.jpg
 Арнольд Шварценеггер | https://upload.wikimedia.org/wikipedia/commons/e/e3/Arnold_Schwarzenegger_-_Austrian_World_Summit_2026_BHO-2906.jpg
 Юра Шатунов | https://upload.wikimedia.org/wikipedia/commons/4/40/Shatunov_%28Laskoviy_May%29.jpg
 Джим Керри | https://upload.wikimedia.org/wikipedia/commons/e/ed/Jim_Carrey_2020_cropped.jpg
 Леонид Якубович | https://upload.wikimedia.org/wikipedia/commons/e/e0/Channel_One_Russia_in_Navy_%2827-06-2013%29_08_%28cropped%29.jpg
 Майкл Джексон | https://upload.wikimedia.org/wikipedia/commons/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg
-Сергей Бодров-младший | https://upload.wikimedia.org/wikipedia/ru/a/aa/%D0%A4%D0%BE%D1%82%D0%BE_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D1%8F_%D0%91%D0%BE%D0%B4%D1%80%D0%BE%D0%B2%D0%B0_%28%D0%BC%D0%BB%D0%B0%D0%B4%D1%88%D0%B5%D0%B3%D0%BE%29.jpg
 Жан-Клод Ван Дамм | https://upload.wikimedia.org/wikipedia/commons/c/c6/Jean-Claude_Van_Damme_at_Brussels_Comic_Con_2023_DSC19480_Kiri_DxO.jpg
 Алла Пугачёва | https://upload.wikimedia.org/wikipedia/commons/6/66/%D0%90%D0%BB%D0%BB%D0%B0_%D0%9F%D1%83%D0%B3%D0%B0%D1%87%D0%B5%D0%B2%D0%B0_%D0%BD%D0%B0_%D1%84%D0%B5%D1%81%D1%82%D0%B8%D0%B2%D0%B0%D0%BB%D0%B5_%D0%A1%D0%BB%D0%BE%D0%B2%D0%BE_%D0%9D%D0%BE%D0%B2%D0%BE_%28cropped%29.jpg
 Киану Ривз | https://upload.wikimedia.org/wikipedia/commons/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg
@@ -476,16 +478,22 @@ who:`# ответ | ссылка на картинку
 Илья Лагутенко | https://upload.wikimedia.org/wikipedia/commons/2/23/Ilya_Lagutenko_%40_Park_Live_%28cropped%29.JPG
 Мадонна | https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg
 Валдис Пельш | https://upload.wikimedia.org/wikipedia/commons/a/a3/%D0%92%D0%B0%D0%BB%D0%B4%D0%B8%D1%81_%D0%9F%D0%B5%D0%BB%D1%8C%D1%88_%D0%B2_%D0%A6%D0%94%D0%9C_%D0%BD%D0%B0_%D0%9B%D1%83%D0%B1%D1%8F%D0%BD%D0%BA%D0%B5.jpg
-Сильвестр Сталлоне | https://upload.wikimedia.org/wikipedia/commons/1/19/P20251206DT-0472_%28cropped%3B_Sylvester_Stallone%29.jpg
+Сильвестр Сталлоне | https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg/1920px-%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg
 Юрий Шевчук | https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/%D0%AE%D1%80%D0%B8%D0%B9%D0%A8%D0%B5%D0%B2%D1%87%D1%83%D0%BA.jpg/1280px-%D0%AE%D1%80%D0%B8%D0%B9%D0%A8%D0%B5%D0%B2%D1%87%D1%83%D0%BA.jpg
 Леонардо Ди Каприо | https://upload.wikimedia.org/wikipedia/commons/2/2d/LeoPTABFI191125-28_%28cropped%29.jpg
 Земфира | https://upload.wikimedia.org/wikipedia/commons/a/ac/%D0%97%D0%B5%D0%BC%D1%84%D0%B8%D1%80%D0%B0_%D0%BD%D0%B0_%D0%B2%D1%8B%D1%81%D1%82%D1%83%D0%BF%D0%BB%D0%B5%D0%BD%D0%B8%D0%B8_1_%D0%B0%D0%BF%D1%80%D0%B5%D0%BB%D1%8F_2016_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%9E%D0%BB%D0%B8%D0%BC%D0%BF%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%BC.jpg
-Чак Норрис | https://upload.wikimedia.org/wikipedia/commons/3/30/Chuck_Norris_May_2015.jpg
+Чак Норрис | https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg/1920px-Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg
 Валерий Меладзе | https://upload.wikimedia.org/wikipedia/commons/e/e1/Valeriy_Meladze_photoshooting_at_Laima_Rendez_Vous_Jurmala_2017.jpg
 Брэд Питт | https://upload.wikimedia.org/wikipedia/commons/9/90/Brad_Pitt-69858.jpg
-Вячеслав Бутусов | https://upload.wikimedia.org/wikipedia/commons/d/d9/Viacheslav_Butusov_Nautilius_Pompilius_butusov-15-50_by_Alexey_Nikishin.jpg
-Курт Кобейн | https://upload.wikimedia.org/wikipedia/commons/3/37/Nirvana_around_1992_%28cropped%29.jpg
+Вячеслав Бутусов | https://upload.wikimedia.org/wikipedia/commons/5/5e/Vyacheslav_Butusov_2011-5.jpg
 Леонид Агутин | https://upload.wikimedia.org/wikipedia/commons/3/3e/Leonid_Agutin%27s_rehearsal_at_Laima_Rendez_Vous_Jurmala_2017_.jpg`,
+reverse:`# название | ссылка или ID YouTube | с какой секунды (необязательно)
+Русские хиты 90-х наоборот (Руки Вверх, Губин, Иванушки…) | ST0lT5ePTmE
+Хиты 90-х наоборот (Королёва, Мираж, Сладкий сон…) | 4zNEfc9FFPo
+Песни 90-х наоборот (Розовые розы, Седая ночь, Крошка моя…) | 8_YCcmkMVzM
+Хиты 80-х наоборот (Весёлые ребята, Ротару…) | WwqqMbgd78M
+Советский фильм по перевёрнутой песне | Jvx3ViOCVcA
+Хиты 90-х наоборот, выпуск 5 | jpWXnH9NuiM`,
 frame:`# ответ | ссылка на картинку
 Ирония судьбы, или С лёгким паром! | https://i.ytimg.com/vi/L5GnqepBJkE/maxres3.jpg | 0.118,0,0.118,0
 Кавказская пленница | https://i.ytimg.com/vi/0f1LxDfNpv0/maxres3.jpg | 0.118,0,0.118,0
@@ -537,24 +545,25 @@ const DEFAULT_REVERSE = `# песня | подсказка (видит толь�
 Happy Birthday to You | для именинника!`;
 
 const ROUNDS = [
-  {id:'music',   num:'I',    title:'Угадай мелодию',   sub:'хиты 90-х и нулевых', type:'audio',
+  {id:'music',   num:'I',    title:'Угадай мелодию',   sub:'хиты 90-х и нулевых', unit:['песня','песни','песен'], type:'audio',
    help:'Свои песни (mp3, m4a, wav…) — играют первыми. Ниже готовый список с YouTube.'},
-  {id:'ost',     num:'II',   title:'Фильм по музыке',  sub:'саундтреки и заставки', type:'audio',
+  {id:'ost',     num:'II',   title:'Фильм по музыке',  sub:'саундтреки и заставки', unit:['мелодия','мелодии','мелодий'], type:'audio',
    help:'Свои саундтреки — играют первыми. Ниже готовый список с YouTube.'},
-  {id:'reverse', num:'III',  title:'Задом наперёд',    sub:'песня наоборот', type:'reverse',
+  {id:'reverse', num:'III',  title:'Задом наперёд',    sub:'хиты наоборот', unit:['викторина','викторины','викторин'], type:'video',
    help:'Свои mp3: игра вырежет фрагмент (с секунды «Начинать с», длиной «Фрагмент задом») и сыграет его задом наперёд. На ответе — как в оригинале.'},
-  {id:'who',     num:'IV',   title:'Угадай кто',       sub:'лица эпохи', type:'image', mode:'blur',
+  {id:'who',     num:'IV',   title:'Угадай кто',       sub:'лица эпохи', unit:['лицо','лица','лиц'], type:'image', mode:'blur',
    help:'Свои фото — особенно детские фото гостей и именинника. Открываются постепенно.'},
-  {id:'frame',   num:'V',    title:'Фильм по кадру',   sub:'один кадр — один фильм', type:'image', mode:'tiles',
+  {id:'frame',   num:'V',    title:'Фильм по кадру',   sub:'один кадр — один фильм', unit:['фильм','фильма','фильмов'], type:'image', mode:'tiles',
    help:'Скриншоты из фильмов (без названия на картинке). Кадр закрыт плитками.'},
-  {id:'emoji',   num:'VI',   title:'Фильм по эмодзи',  sub:'ребус из смайликов', type:'text', big:true,
+  {id:'emoji',   num:'VI',   title:'Фильм по эмодзи',  sub:'ребус из смайликов', unit:['ребус','ребуса','ребусов'], type:'text', big:true,
    help:'Строка: эмодзи | ответ | примечание.'},
-  {id:'quote',   num:'VII',  title:'Продолжи цитату',  sub:'классика кино', type:'text', quote:true,
+  {id:'quote',   num:'VII',  title:'Продолжи цитату',  sub:'классика кино', unit:['цитата','цитаты','цитат'], type:'text', quote:true,
    help:'Строка: начало | продолжение | фильм.'},
-  {id:'retro',   num:'VIII', title:'Ностальгия',       sub:'80-е и 90-е', type:'text',
+  {id:'retro',   num:'VIII', title:'Ностальгия',       sub:'80-е и 90-е', unit:['вопрос','вопроса','вопросов'], type:'text',
    help:'Строка: вопрос | ответ | комментарий. Добавьте пару вопросов про самого именинника.'},
 ];
 const R = id => ROUNDS.find(r => r.id === id);
+const plural = (n, f) => { const a = n % 100, b = n % 10; return f[a > 10 && a < 20 ? 2 : b === 1 ? 0 : b >= 2 && b <= 4 ? 1 : 2]; };
 const MODES = ['blur', 'zoom', 'tiles'];
 const MODE_NAMES = {blur:'размытие', zoom:'приближение', tiles:'плитки'};
 
@@ -582,14 +591,14 @@ function parseOnline(rid) {
   const r = R(rid);
   return lines(S.online[rid]).map((l, i) => {
     const [a, src = '', st = ''] = l.split('|').map(x => x.trim());
-    if (r.type === 'audio') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st} : null; }
+    if (r.type === 'audio' || r.type === 'video') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st} : null; }
     const crop = st ? st.split(',').map(Number).filter(n => !isNaN(n)) : null;
     return /^https?:\/\//.test(src) ? {id:`web${i}`, url:src, answer:a, crop:crop && crop.length === 4 ? crop : null} : null;
   }).filter(Boolean);
 }
 
 /* ======================= MEDIA STORAGE (IndexedDB) ======================= */
-const media = {music:[], ost:[], reverse:[], who:[], frame:[]};
+const media = {music:[], ost:[], who:[], frame:[]};
 let DB = null, fakeId = 1e9;
 function idbOpen() {
   return new Promise(res => {
@@ -630,8 +639,7 @@ function itemsOf(rid) {
   const r = R(rid);
   if (r.type === 'text') return parseText(S.texts[rid]);
   if (r.type === 'meter') return [{id:'meter'}];
-  if (r.type === 'reverse') return media.reverse.map(m => Object.assign(m, {kind:'file'}))
-    .concat(parseText(S.texts.reverse).map((x, i) => ({id:`mic${i}`, kind:'mic', answer:x.q, hint:x.a})));
+  if (r.type === 'video') return parseOnline(rid);
   return media[rid].concat(parseOnline(rid));
 }
 
@@ -680,8 +688,8 @@ function renderHome() {
   $('#hName').textContent = S.name || 'дорогой друг';
   $('#fileWarn').hidden = location.protocol !== 'file:';
   $('#rounds').innerHTML = ROUNDS.map(r => {
-    const n = r.type === 'meter' ? 1 : itemsOf(r.id).length;
-    const sub = r.type === 'meter' ? r.sub : n ? `${r.sub} · ${n}` : 'добавьте в подготовке';
+    const n = itemsOf(r.id).length;
+    const sub = n ? `${n} ${plural(n, r.unit)}` : 'добавьте в подготовке';
     return `<div class="rcard ${n ? '' : 'empty'}" data-round="${r.id}"><div class="rnum gold">${r.num}</div>
       <div class="rtxt"><div class="rtt">${esc(r.title)}</div><div class="rsub">${esc(sub)}</div></div></div>`;
   }).join('');
@@ -730,6 +738,7 @@ function renderGame() {
   $('#gCounter').innerHTML = r.type === 'meter' || G.idx >= n ? '' : `<b>${G.idx + 1}</b> / ${n}`;
   const stage = $('#stage'), ctr = $('#controls');
   stage.className = 'stage'; $('#answer').innerHTML = '';
+  $('#game').classList.toggle('imgmode', r.type === 'image'); $('#game').classList.toggle('vidmode', r.type === 'video');
   if (r.type === 'meter') return renderMeter();
   if (G.idx >= n) {
     stage.innerHTML = `<div class="endcard"><div class="caps">раунд ${r.num}</div><div class="big gold">Раунд сыгран</div><div class="orn">✦</div></div>`;
@@ -754,15 +763,13 @@ function renderGame() {
   } else if (r.type === 'audio') {
     stage.innerHTML = audioBox('Слушаем и угадываем');
     ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 5 сек<kbd>A</kbd></button><button data-act="restart">С начала</button>`);
-  } else if (r.type === 'reverse') {
-    stage.classList.add('backwards');
-    if (it.kind === 'mic') {
-      stage.innerHTML = audioBox('Исполнитель поёт в микрофон — остальные угадывают');
-      ctr.innerHTML = nav(`<button data-act="secret">Песня исполнителю<kbd>S</kbd></button><button class="rec" data-act="record" id="recBtn">● Запись<kbd>R</kbd></button><button data-act="play">Задом наперёд<kbd>␣</kbd></button><button data-act="orig">Как спели<kbd>O</kbd></button>`);
-    } else {
-      stage.innerHTML = audioBox('Песня задом наперёд');
-      ctr.innerHTML = nav(`<button data-act="play">Задом наперёд<kbd>␣</kbd></button><button data-act="orig">Оригинал<kbd>O</kbd></button>`);
-    }
+  } else if (r.type === 'video') {
+    stage.innerHTML = '';
+    ctr.innerHTML = `<button data-act="prev">‹<kbd>←</kbd></button><button class="main" data-act="play">Играть / пауза<kbd>␣</kbd></button><button data-act="back10">« 10 сек</button><button data-act="fwd10">10 сек »</button><button data-act="next">›<kbd>→</kbd></button>`;
+    $('#answer').innerHTML = `<div class="caps astatus" id="astatus">${NET.unlocked ? 'песни звучат задом наперёд — угадывайте!' : 'нажмите OK на пульте ТВ, затем «Играть»'}</div>`;
+    ytLoad().then(p => { if (p && cur()?.id === it.id && ytCur !== it.yt) { ytCur = it.yt; p.cueVideoById({videoId:it.yt, startSeconds:it.start || 0}); } });
+    requestAnimationFrame(() => ytShow(true));
+    return;
   }
   renderAnswer();
 }
@@ -774,8 +781,9 @@ function renderAnswer() {
   const r = R(G.rid);
   const a = it.answer ?? it.a ?? '';
   const note = it.n || '';
-  if (G.revealed) el.innerHTML = `<div class="a gold">${esc(a)}</div>${note ? `<div class="nt caps">${esc(note)}</div>` : ''}`;
-  else if (G.hint > 0 && r.type === 'text') el.innerHTML = `<div class="mask">${esc(mask(a, G.hint))}</div>`;
+  const sz = a.length > 44 ? ' xs' : a.length > 24 ? ' s' : '';
+  if (G.revealed) el.innerHTML = `<div class="a gold${sz}">${esc(a)}</div>${note ? `<div class="nt caps">${esc(note)}</div>` : ''}`;
+  else if (G.hint > 0 && r.type === 'text') el.innerHTML = `<div class="mask${sz ? ' s' : ''}">${esc(mask(a, G.hint))}</div>`;
   else el.innerHTML = `<div class="ph caps">✦</div>`;
 }
 function mask(a, k) {
@@ -789,7 +797,7 @@ function fitImg() {
   const img = $('#gimg'), st = $('#stage'), wrap = $('#imgwrap'); if (!img || !img.naturalWidth || !G) return;
   const [l, t, r, b] = cur()?.crop || [0, 0, 0, 0];           // black letterbox bars to hide
   const nw = img.naturalWidth, nh = img.naturalHeight, cw = nw * (1 - l - r), ch = nh * (1 - t - b);
-  const k = Math.min((st.clientWidth - 40) / cw, (st.clientHeight - 24) / ch);
+  const k = Math.min((st.clientWidth - 40) / cw, (st.clientHeight - 20) / ch);
   Object.assign(img.style, {width:nw * k + 'px', height:nh * k + 'px', marginLeft:-nw * l * k + 'px', marginTop:-nh * t * k + 'px', marginBottom:-nh * b * k + 'px', marginRight:-nw * r * k + 'px'});
   Object.assign(wrap.style, {width:cw * k + 'px', height:ch * k + 'px'});
 }
@@ -816,7 +824,7 @@ function hint() {
   sfx.chime(); renderAnswer();
 }
 function reveal() {
-  if (!G || rtype() === 'meter' || !cur() || G.revealed) return;
+  if (!G || rtype() === 'meter' || rtype() === 'video' || !cur() || G.revealed) return;
   G.revealed = true; stopTimer();
   applyReveal(); renderAnswer(); sfx.reveal(); confetti(90);
   const t = rtype(), it = cur();
@@ -837,11 +845,13 @@ let YTP = null, ytReady = null, ytCur = null, ytPendingFrag = null, ytPlaying = 
 function ytLoad() {
   if (ytReady) return ytReady;
   ytReady = new Promise(res => {
-    window.onYouTubeIframeAPIReady = () => {
+    const make = () => {
       YTP = new YT.Player('ytplayer', {width:'100%', height:'100%',
-        playerVars:{controls:0, disablekb:1, rel:0, playsinline:1, iv_load_policy:3, fs:0, modestbranding:1, origin:location.origin},
-        events:{onReady:() => { try { const f = parseOnline('music')[0] || parseOnline('ost')[0]; if (f) YTP.cueVideoById(f.yt); } catch (e) {} res(YTP); }, onStateChange:ytState, onError:ytErr}});
+        playerVars:{controls:0, disablekb:1, rel:0, playsinline:1, iv_load_policy:3, fs:0, modestbranding:1, cc_load_policy:0, hl:'ru', origin:location.origin},
+        events:{onReady:() => { try { const f = parseOnline('music')[0] || parseOnline('ost')[0]; if (f && !NET.unlocked) YTP.cueVideoById(f.yt); } catch (e) {} res(YTP); }, onStateChange:ytState, onError:ytErr}});
     };
+    if (window.YT && YT.Player) return make();     // API already loaded (player rebuild)
+    window.onYouTubeIframeAPIReady = make;
     const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api';
     s.onerror = () => { ytReady = null; setStatus('YouTube не загрузился — проверьте интернет'); res(null); };
     document.head.appendChild(s);
@@ -850,11 +860,25 @@ function ytLoad() {
 }
 function ytState(e) {
   ytPlaying = e.data === 1;
+  if (e.data === 1 || e.data === 3) noCaptions();
   if (NET.unlocking) return;
   if (ytPlaying && ytPendingFrag != null) { clearTimeout(stopT); const s = ytPendingFrag; ytPendingFrag = null; if (s) stopT = setTimeout(mPause, s * 1000); }
   updAudioStatus();
 }
+// A YouTube player that got into a bad state errors on every video: rebuild it once and retry.
+function ytRebuild() {
+  try { YTP && YTP.destroy(); } catch (e) {}
+  YTP = null; ytReady = null; ytCur = null; ytPlaying = false;
+  $('#ytwrap').innerHTML = '<div id="ytplayer"></div>';
+  return ytLoad();
+}
 function ytErr(e) {
+  const it = cur();
+  if (it && it.yt && [5, 152, 153].includes(e.data) && G && G.ytRetried !== it.id) {
+    G.ytRetried = it.id; setStatus('перезапускаю плеер…');
+    ytRebuild().then(() => { if (cur()?.id === it.id && G.started) { G.started = false; playFrom(startOf(), rtype() === 'video' ? 0 : (+S.frag || 7)); } });
+    return;
+  }
   const codes = {2:'неверная ссылка', 5:'ошибка плеера', 100:'видео удалено', 101:'встраивание запрещено', 150:'встраивание запрещено', 153:'запустите через start.command'};
   G && (G.ytError = true);
   setStatus(`Это видео не играет (${codes[e.data] || e.data}) — листайте дальше ›`);
@@ -869,7 +893,10 @@ function placeYt() {
   if (h > r.height - pad * 2) { h = r.height - pad * 2; w = h * 16 / 9; }
   Object.assign($('#ytwrap').style, {width:w + 'px', height:h + 'px', left:(r.left + (r.width - w) / 2) + 'px', top:(r.top + (r.height - h) / 2) + 'px'});
 }
-const isYt = () => !!(G && rtype() === 'audio' && cur() && cur().yt);
+const isMedia = t => t === 'audio' || t === 'video';
+const isYt = () => !!(G && isMedia(rtype()) && cur() && cur().yt);
+function noCaptions() { try { YTP.unloadModule('captions'); YTP.unloadModule('cc'); YTP.setOption('captions', 'track', {}); } catch (e) {} }
+function seekBy(d) { if (!isYt() || !YTP) return; try { YTP.seekTo(Math.max(0, YTP.getCurrentTime() + d), true); } catch (e) {} }
 function mPause() { clearTimeout(stopT); player.pause(); ytPendingFrag = null; try { YTP && YTP.pauseVideo(); } catch (e) {} }
 function mPaused() { return isYt() ? !ytPlaying : player.paused; }
 function mPlay(sec) {
@@ -880,7 +907,7 @@ function mPlay(sec) {
 function mTime() { try { return isYt() ? (YTP && YTP.getCurrentTime ? YTP.getCurrentTime() : 0) : player.currentTime; } catch (e) { return 0; } }
 const startOf = () => cur().start ?? (+S.offset || 0);
 async function playFrom(start, sec) {
-  const it = cur(); if (!it || rtype() !== 'audio') return;
+  const it = cur(); if (!it || !isMedia(rtype())) return;
   ac(); G.started = true; G.ytError = false;
   if (it.yt) {
     if (location.protocol === 'file:') return setStatus('YouTube не играет из файла — запустите start.command');
@@ -903,19 +930,19 @@ async function playFrom(start, sec) {
 }
 function space() {
   if (!G || !cur()) return;
-  if (rtype() === 'reverse') return rvToggle('rev');
-  if (rtype() !== 'audio') return;
-  if (!G.started) return playFrom(startOf(), +S.frag || 7);
+  if (!isMedia(rtype())) return;
+  if (!G.started) return playFrom(startOf(), rtype() === 'video' ? 0 : (+S.frag || 7));
   if (mPaused()) mPlay(0); else mPause();
 }
 function more() {
+  if (rtype() === 'video') return seekBy(10);
   if (rtype() !== 'audio' || !cur()) return;
   if (!G.started) return playFrom(startOf(), 5);
   mPlay(5);
 }
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function updAudioStatus() {
-  if (!G || rtype() !== 'audio' || !$('#astatus')) return;
+  if (!G || !isMedia(rtype()) || !$('#astatus')) return;
   const paused = mPaused();
   $('#stage').classList.toggle('playing', !paused);
   if (isYt() && G.started && !G.ytError && paused && ytPendingFrag != null && G.ytLoadAt && performance.now() - G.ytLoadAt > 2500) {
@@ -1111,6 +1138,7 @@ function renderPrep() {
       <div class="row">Начинать песню с: <input type="number" min="0" max="600" data-set="offset" value="${S.offset}" style="width:90px"> сек <span class="help" style="margin:0">(если у песни в списке своя секунда — берётся она)</span></div>
       <div class="row">Фрагмент задом наперёд: <input type="number" min="3" max="60" data-set="revLen" value="${S.revLen}" style="width:90px"> сек</div></div>
     ${ROUNDS.filter(r => media[r.id]).map(mediaCard).join('')}
+    ${ROUNDS.filter(r => r.type === 'video').map(r => `<div class="card"><h3>${r.num}. ${esc(r.title)}</h3><p class="help">${esc(r.help)}</p>${textBlock(r.id, 'Видео (YouTube)', 'Строка: название | ссылка или ID YouTube | с какой секунды начать.', 'online')}</div>`).join('')}
     ${ROUNDS.filter(r => r.type === 'text').map(textCard).join('')}`;
 }
 const DEFAULTS = {texts:{...DEFAULT_TEXT, reverse:DEFAULT_REVERSE}, online:DEFAULT_ONLINE};
@@ -1215,6 +1243,8 @@ document.addEventListener('click', e => {
     case 'timer': return toggleTimer();
     case 'mode': return cycleMode();
     case 'play': return space();
+    case 'back10': return seekBy(-10);
+    case 'fwd10': return seekBy(10);
     case 'more': return more();
     case 'restart': G.started = false; return playFrom(0, 0);
     case 'record': return rvRecord();
@@ -1251,13 +1281,29 @@ document.addEventListener('keydown', e => {
   if (!G) return;
   if (rtype() === 'meter') { if (c === 'Space') { e.preventDefault(); measure(); } return; }
   const map = {ArrowRight:() => go(1), ArrowLeft:() => go(-1), Enter:reveal, NumpadEnter:reveal, KeyH:hint, KeyT:toggleTimer, KeyM:cycleMode,
-    Space:space, KeyA:more, KeyR:rvRecord, KeyO:() => rtype() === 'reverse' && rvToggle('orig'), KeyS:secretCard};
+    Space:space, KeyA:more};
   if (map[c]) { e.preventDefault(); map[c](); }
 });
 addEventListener('resize', () => { if ($('#ytwrap').classList.contains('show')) placeYt(); fitImg(); });
 
-/* ======================= TV ⇄ PHONE LINK (PeerJS) ======================= */
-const NET = {peer:null, conns:new Set(), last:'', url:'', tries:0};
+/* ======================= TV ⇄ PHONE LINK (MQTT over WebSocket) =======================
+   Both the TV and the phone talk through a public MQTT broker: this works in any browser
+   and through any router (no direct device-to-device connection needed). */
+const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081'];
+const NS = 'bdparty-mcaf91';
+const NET = {client:null, room:null, broker:0, url:'', last:'', lastSeen:-1e9, unlocked:false, unlocking:false, ok:false};
+const isPhoneUA = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && !/AFT|Silk|KFT|Fire ?TV|SmartTV|SMART-TV|BRAVIA|Tizen|Web0S|webOS|CrKey|GoogleTV/i.test(navigator.userAgent);
+const topic = (room, kind) => `${NS}/${room}/${kind}`;
+
+function mqttConnect(idx, onOk, onFail) {
+  if (!window.mqtt) { onFail && onFail(); return null; }
+  let done = false;
+  const c = mqtt.connect(BROKERS[idx], {clientId:'bd_' + Math.random().toString(16).slice(2, 10), clean:true, connectTimeout:6000, reconnectPeriod:2000, keepalive:20});
+  const t = setTimeout(() => { if (!done) { done = true; try { c.end(true); } catch (e) {} onFail && onFail(); } }, 7000);
+  c.on('connect', () => { if (!done) { done = true; clearTimeout(t); onOk(c); } });
+  return c;
+}
+
 // Browsers allow YouTube sound only after a real press on the TV: start the (cued) player silently inside that press.
 function unlockSound() {
   ac();
@@ -1269,232 +1315,174 @@ function unlockSound() {
 }
 function startGame(fromRemote) {
   ac(); ytLoad();
-  if (!fromRemote && !unlockSound() && !NET.unlocked) {
-    $('#qrCap').textContent = 'секунду, загружаю… нажмите OK ещё раз'; return;
-  }
+  if (!fromRemote && !unlockSound() && !NET.unlocked) { $('#stHint').textContent = 'секунду, загружаю… нажмите OK ещё раз'; return; }
   $('#start').classList.add('off');
   document.documentElement.requestFullscreen?.().catch(() => {});
   show('home');
 }
 function drawQR(url) {
-  for (const [sel, size] of [['#qrBig', 320], ['#qrSmall', 160]]) {
+  for (const sel of ['#qrBig', '#qrSmall']) {
     const el = $(sel); el.innerHTML = '';
-    try { new QRCode(el, {text:url, width:size, height:size, colorDark:'#09080a', colorLight:'#f3ead7', correctLevel:QRCode.CorrectLevel.M}); }
+    try { new QRCode(el, {text:url, width:600, height:600, colorDark:'#09080a', colorLight:'#f3ead7', correctLevel:QRCode.CorrectLevel.M}); }
     catch (e) { el.textContent = url; }
   }
 }
 function updLinked() {
-  const n = [...NET.conns].filter(c => c.open).length;
-  $('#qrCap').textContent = n ? 'пульт подключён ✓' : 'сканируйте камерой телефона';
-  $('#qrCap').classList.toggle('linked', !!n);
-  $('#qrminiCap').innerHTML = n ? 'пульт<br>подключён ✓' : 'пульт —<br>сканируйте';
-  document.body.classList.toggle('linked', !!n);
+  const linked = performance.now() - NET.lastSeen < 15000;
+  $('#qrCap').innerHTML = linked ? '<span class="linked">пульт подключён ✓</span>' : NET.ok ? `или на телефоне: <b>${location.host}${location.pathname}</b> → код <b>${NET.room}</b>` : 'подключаюсь к серверу пульта…';
+  $('#qrminiCap').innerHTML = `пульт · код<br><b>${NET.room || '…'}</b>`;
+  document.body.classList.toggle('linked', linked);
 }
+setInterval(() => { if (!REMOTE_MODE) updLinked(); }, 2000);
+
 function snapshot() {
   const scr = ['home', 'game', 'prep', 'finale'].find(id => $('#' + id).classList.contains('active'));
   const st = {screen:scr, started:$('#start').classList.contains('off'), name:S.name,
-    rounds:ROUNDS.map(r => ({id:r.id, num:r.num, title:r.title, n:r.type === 'meter' ? 1 : itemsOf(r.id).length}))};
+    rounds:ROUNDS.map(r => ({id:r.id, num:r.num, title:r.title, n:itemsOf(r.id).length}))};
   if (G) {
     const r = R(G.rid), list = itemsOf(G.rid), it = list[G.idx];
     Object.assign(st, {rid:G.rid, num:r.num, title:r.title, type:r.type, idx:G.idx, n:list.length, end:G.idx >= list.length,
-      kind:it && it.kind, answer:it ? (it.answer ?? it.a ?? '') : '', note:it ? (it.n || it.hint || '') : '',
+      answer:it ? (it.answer ?? it.a ?? '') : '', note:it ? (it.n || '') : '',
       revealed:G.revealed, mode:MODE_NAMES[S.modes[G.rid] || r.mode] || '',
-      status:($('#astatus') || $('#mstatus') || {}).textContent || '',
-      playing:r.type === 'audio' ? !mPaused() : !!RV.playing, recorded:!!(it && RV.fwd && RV.itemId === it.id),
-      best:mic.results.length ? Math.max(...mic.results) : null, timer:T.iv ? T.left : null});
+      status:($('#astatus') || {}).textContent || '',
+      playing:isMedia(r.type) ? !mPaused() : false, timer:T.iv ? T.left : null});
   }
   return st;
 }
 function netTV() {
-  if (!window.Peer) { $('#qrCap').textContent = 'пульт недоступен — нет интернета?'; return; }
-  let id = null; try { id = localStorage.getItem('bd-peer'); } catch (e) {}
-  if (!id) { id = 'bdp-' + Math.random().toString(36).slice(2, 10); try { localStorage.setItem('bd-peer', id); } catch (e) {} }
-  const peer = new Peer(id); NET.peer = peer;
-  peer.on('open', pid => {
-    NET.tries = 0; NET.url = location.origin + location.pathname + '?r=' + pid;
-    drawQR(NET.url); updLinked(); if ($('#home').classList.contains('active')) $('#qrmini').hidden = false;
-  });
-  peer.on('connection', c => {
-    c.on('open', () => { NET.conns.add(c); NET.last = ''; sfx.chime(); updLinked(); });
-    c.on('data', handleCmd);
-    const drop = () => { NET.conns.delete(c); updLinked(); };
-    c.on('close', drop); c.on('error', drop);
-  });
-  peer.on('disconnected', () => setTimeout(() => { try { if (!peer.destroyed) peer.reconnect(); } catch (e) {} }, 2000));
-  peer.on('error', e => {
-    if (e.type === 'unavailable-id') {   // the same TV reloaded: the server still holds the old session — retry, then give up the id
-      peer.destroy();
-      if (++NET.tries > 6) { try { localStorage.removeItem('bd-peer'); } catch (_) {} }
-      setTimeout(netTV, 3000);
-    } else if (['network', 'server-error', 'socket-error', 'socket-closed'].includes(e.type)) {
-      $('#qrCap').textContent = 'нет связи с сервером пульта, пробую снова…';
-    }
-  });
+  let room = null; try { room = localStorage.getItem('bd-room'); } catch (e) {}
+  if (!/^\d{4}$/.test(room || '')) { room = String(1000 + Math.floor(Math.random() * 9000)); try { localStorage.setItem('bd-room', room); } catch (e) {} }
+  NET.room = room; updLinked();
+  if (!window.mqtt) { $('#qrCap').textContent = 'пульт недоступен — нет интернета?'; return; }
+  const tryBroker = i => {
+    if (i >= BROKERS.length) { $('#qrCap').textContent = 'сервер пульта недоступен, пробую снова…'; return setTimeout(() => tryBroker(0), 5000); }
+    mqttConnect(i, c => {
+      NET.client = c; NET.broker = i; NET.ok = true; NET.last = '';
+      c.subscribe(topic(room, 'cmd'));
+      c.on('message', (tp, buf) => { let d; try { d = JSON.parse(buf.toString()); } catch (e) { return; } NET.lastSeen = performance.now(); handleCmd(d); });
+      c.on('connect', () => { NET.last = ''; c.subscribe(topic(room, 'cmd')); });
+      NET.url = `${location.origin}${location.pathname}?r=${room}&b=${i}`;
+      drawQR(NET.url); updLinked();
+      if ($('#home').classList.contains('active')) $('#qrmini').hidden = false;
+    }, () => tryBroker(i + 1));
+  };
+  tryBroker(0);
 }
-setInterval(() => {
-  if (!NET.conns.size) return;
-  const s = JSON.stringify(snapshot()); if (s === NET.last) return; NET.last = s;
-  const msg = {type:'state', state:JSON.parse(s)};
-  for (const c of NET.conns) if (c.open) try { c.send(msg); } catch (e) {}
+setInterval(() => {   // publish the TV state (retained, so a phone that joins later gets it at once)
+  if (REMOTE_MODE || !NET.client || !NET.client.connected) return;
+  const s = JSON.stringify(snapshot());
+  if (s === NET.last && performance.now() - (NET.pubAt || 0) < 5000) return;
+  NET.last = s; NET.pubAt = performance.now();
+  NET.client.publish(topic(NET.room, 'state'), s, {retain:true, qos:0});
 }, 300);
 function handleCmd(d) {
   if (!d || typeof d !== 'object') return;
   const c = d.cmd;
-  if (c === 'level') { mic.remote = {v:+d.v || 0, t:performance.now()}; return; }
-  if (c === 'audio') return rvFromRemote(d);
+  if (c === 'hello' || c === 'ping') { NET.last = ''; updLinked(); return; }
   if (c === 'open') return openRound(d.rid);
   if (c === 'go') return show(d.to);
   if (c === 'start') return startGame(true);
   if (c === 'name') { S.name = String(d.v || '').slice(0, 40); save(); $('#sName').textContent = S.name || 'дорогой друг'; if ($('#home').classList.contains('active')) renderHome(); return; }
   const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, reveal, timer:toggleTimer, mode:cycleMode,
-    restart:() => { if (rtype() === 'audio') { G.started = false; playFrom(0, 0); } },
-    rev:() => rvToggle('rev'), orig:() => rvToggle('orig'), measure,
-    mreset:() => { mic.results = []; mic.measuring = null; renderMeter(); }, party:() => { sfx.fanfare(); confetti(320); }};
+    restart:() => { if (isMedia(rtype())) { G.started = false; playFrom(0, 0); } },
+    back10:() => seekBy(-10), fwd10:() => seekBy(10), party:() => { sfx.fanfare(); confetti(320); }};
   map[c] && map[c]();
-}
-function rvFromRemote(d) {
-  if (rtype() !== 'reverse' || cur()?.kind !== 'mic' || !d.pcm) return;
-  ac();
-  const pcm = new Int16Array(d.pcm instanceof ArrayBuffer ? d.pcm : d.pcm.buffer);
-  if (pcm.length < 2000) return setStatus('запись слишком короткая — попробуйте ещё');
-  const b = AC.createBuffer(1, pcm.length, d.sr || 22050), ch = b.getChannelData(0);
-  for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
-  rvStop(); RV.fwd = fadeEdges(b); RV.rev = reverseBuf(RV.fwd); RV.itemId = cur().id;
-  sfx.chime(); rvUi();
 }
 
 /* ======================= PHONE REMOTE APP ======================= */
-const RM = {peer:null, conn:null, state:null, showAns:false, key:'', stream:null, ac:null, an:null, buf:null, rec:null, recording:false, sending:false, lvl:null, connecting:false};
-function remoteApp(tvId) {
-  document.body.classList.add('remote');
+const RM = {client:null, room:null, state:null, showAns:false, key:'', itemKey:'', gotState:0, broker:0};
+function remoteApp(room, broker) {
+  document.body.classList.add('remote'); document.documentElement.classList.add('remote');
   document.title = 'Пульт · Вечер угадываний';
-  const conn = () => {
-    if (RM.connecting) return; RM.connecting = true;
-    try { RM.peer && RM.peer.destroy(); } catch (e) {}
-    if (!window.Peer) { RM.connecting = false; rmMsg('Нет интернета — пульт не подключается'); return; }
-    const p = new Peer(); RM.peer = p;
-    p.on('open', () => {
-      const c = p.connect(tvId, {reliable:true});
-      c.on('open', () => { RM.conn = c; RM.connecting = false; RM.key = ''; rmRender(); });
-      c.on('data', d => { if (d && d.type === 'state') { RM.state = d.state; rmRender(); } });
-      c.on('close', () => { RM.conn = null; RM.connecting = false; RM.key = ''; rmRender(); setTimeout(conn, 1500); });
-    });
-    p.on('error', () => { RM.connecting = false; RM.key = ''; rmRender(); setTimeout(conn, 2500); });
+  if (!/^\d{4}$/.test(room || '')) return rmCodeScreen();
+  RM.room = room;
+  try { localStorage.setItem('bd-last-room', room); } catch (e) {}
+  const tryBroker = (i, tried) => {
+    if (tried >= BROKERS.length) { rmRender(); return setTimeout(() => tryBroker(i, 0), 4000); }
+    mqttConnect(i, c => {
+      RM.client = c; RM.broker = i;
+      c.subscribe(topic(room, 'state'));
+      c.on('message', (tp, buf) => { try { RM.state = JSON.parse(buf.toString()); RM.gotState = performance.now(); rmRender(); } catch (e) {} });
+      c.on('connect', () => { c.subscribe(topic(room, 'state')); rmSend({cmd:'hello'}); });
+      c.on('close', () => rmRender());
+      rmSend({cmd:'hello'}); rmRender();
+    }, () => tryBroker((i + 1) % BROKERS.length, tried + 1));
   };
-  conn();
-  setInterval(() => { if (!RM.conn || !RM.conn.open) { RM.connecting = false; conn(); } }, 8000);
-  try { navigator.wakeLock?.request('screen').catch(() => {}); } catch (e) {}
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) { try { navigator.wakeLock?.request('screen').catch(() => {}); } catch (e) {} if (!RM.conn || !RM.conn.open) { RM.connecting = false; conn(); } } });
+  tryBroker(Number.isInteger(broker) && broker >= 0 && broker < BROKERS.length ? broker : 0, 0);
+  setInterval(() => { rmSend({cmd:'ping'}); rmRender(); }, 5000);
+  const wake = () => { try { navigator.wakeLock?.request('screen').catch(() => {}); } catch (e) {} };
+  wake(); document.addEventListener('visibilitychange', () => { if (!document.hidden) { wake(); rmSend({cmd:'hello'}); } });
   rmRender();
 }
-const rmSend = o => { if (RM.conn && RM.conn.open) try { RM.conn.send(o); } catch (e) {} };
+function rmCodeScreen() {
+  let last = ''; try { last = localStorage.getItem('bd-last-room') || ''; } catch (e) {}
+  $('#remote').innerHTML = `<div class="rm-top"><div class="caps">пульт</div></div>
+    <div class="rm-h">Код с экрана телевизора</div>
+    <p class="help">Он написан под QR-кодом на телевизоре — четыре цифры.</p>
+    <input id="rmCode" inputmode="numeric" maxlength="4" placeholder="• • • •" value="${esc(last)}" style="font-size:28px;text-align:center;letter-spacing:.3em">
+    <button class="main big" id="rmGo" style="width:100%">Подключиться</button>
+    <p class="help" style="margin-top:28px">Это телевизор? <a href="?tv" style="color:var(--g1)">Открыть игру</a></p>`;
+  $('#rmGo').onclick = () => { const v = $('#rmCode').value.replace(/\D/g, ''); if (v.length === 4) location.search = '?r=' + v; };
+}
+const rmSend = o => { if (RM.client && RM.client.connected) try { RM.client.publish(topic(RM.room, 'cmd'), JSON.stringify(o)); } catch (e) {} };
 function rmMsg(t) { const el = $('#rmStatus'); if (el) el.textContent = t; }
 function rmRender() {
-  const st = RM.state, ok = !!(RM.conn && RM.conn.open);
-  const key = JSON.stringify([ok, st && [st.screen, st.started, st.rid, st.idx, st.end, st.revealed, st.type, st.kind, st.recorded, st.playing, st.mode, st.best, st.timer, st.rounds.map(r => r.n).join()], RM.showAns, RM.recording, RM.sending, !!RM.an]);
+  if (!RM.room) return;
+  const st = RM.state, net = !!(RM.client && RM.client.connected);
+  const fresh = st && performance.now() - RM.gotState < 12000;     // TV publishes at least every 5 s
+  const ok = net && fresh;
+  const key = JSON.stringify([ok, net, st && [st.screen, st.started, st.rid, st.idx, st.end, st.revealed, st.type, st.playing, st.mode, st.timer, st.rounds.map(r => r.n).join()], RM.showAns]);
   if (key === RM.key) { rmMsg(st?.status || ''); return; }
-  const prevItem = RM.itemKey; RM.itemKey = st ? st.rid + ':' + st.idx : '';
-  if (prevItem !== RM.itemKey) RM.showAns = false;
+  const item = st ? st.rid + ':' + st.idx : '';
+  if (item !== RM.itemKey) { RM.itemKey = item; RM.showAns = false; }
   RM.key = key;
-  const top = `<div class="rm-top"><div class="caps"><span class="rm-dot ${ok ? 'ok' : ''}"></span>${ok ? 'пульт подключён' : 'подключение к ТВ…'}</div>
-    ${st && st.screen !== 'home' ? '<button class="ghost" data-c="go" data-to="home" style="width:auto">Меню</button>' : ''}</div>`;
+  const top = `<div class="rm-top"><div class="caps"><span class="rm-dot ${ok ? 'ok' : ''}"></span>${ok ? 'подключён' : net ? 'жду телевизор' : 'подключение…'} · ${RM.room}</div>
+    ${ok && st.screen !== 'home' ? '<button class="ghost" data-c="go" data-to="home" style="width:auto">Меню</button>' : ''}</div>`;
   let body = '';
-  if (!ok || !st) body = `<div class="rm-h">Пульт</div><p class="help">Ждём телевизор. Страница игры должна быть открыта на ТВ, а телефон — в интернете.</p>`;
-  else if (!st.started) body = `<div class="rm-h">Почти готово</div><p class="help">Нажмите <b>OK</b> на пульте телевизора — это включит звук. Если нажать «Начать» здесь, звук включится после первого нажатия OK на ТВ.</p><button class="main big" data-c="start">Начать</button>`;
+  if (!ok) body = `<div class="rm-h">Пульт</div><p class="help">${net ? `Связь есть, жду телевизор с кодом <b>${RM.room}</b>. Проверьте, что игра открыта на ТВ и код совпадает.` : 'Подключаюсь к серверу… Проверьте интернет на телефоне.'}</p>
+    <button data-c="code" style="width:100%">Ввести другой код</button>`;
+  else if (!st.started) body = `<div class="rm-h">Почти готово</div><p class="help">Нажмите <b>OK</b> на пульте телевизора — это включит звук. Можно начать и отсюда, но звук YouTube включится только после первого нажатия OK на ТВ.</p><button class="main big" data-c="start" style="width:100%">Начать</button>`;
   else if (st.screen === 'game') body = rmGame(st);
   else if (st.screen === 'finale') body = `<div class="caps">финал</div><div class="rm-h">С днём рождения!</div><div class="rm-grid" style="margin-top:16px"><button class="main big wide" data-c="party">Ещё салют</button><button class="wide" data-c="go" data-to="home">Меню</button></div>`;
   else body = `<div class="caps">вечер угадываний</div><div class="rm-h">Выберите раунд</div>
-    <div class="rm-list" style="margin-top:14px">${st.rounds.map(r => `<button data-c="open" data-rid="${r.id}" ${r.n ? '' : 'disabled style="opacity:.4"'}><span class="rn">${r.num}</span>${esc(r.title)}</button>`).join('')}
-    <button data-c="go" data-to="finale"><span class="rn">✦</span>Финал — поздравление</button></div>
+    <div class="rm-list" style="margin-top:14px">${st.rounds.map(r => `<button data-c="open" data-rid="${r.id}" ${r.n ? '' : 'disabled style="opacity:.4"'}><span class="rn">${r.num}</span><span>${esc(r.title)}</span></button>`).join('')}
+    <button data-c="go" data-to="finale"><span class="rn">✦</span><span>Финал — поздравление</span></button></div>
     <p class="caps" style="margin-top:22px">имя именинника на экране</p><input id="rmName" value="${esc(st.name)}" placeholder="например, Серёга">`;
   $('#remote').innerHTML = top + body + `<div class="caps rm-status" id="rmStatus">${esc(st?.status || '')}</div>`;
 }
 function rmGame(st) {
-  const head = `<div class="caps">— ${st.num} —</div><div class="rm-h">${esc(st.title)}</div><div class="rm-sub">${st.end ? 'раунд сыгран' : st.type === 'meter' ? '' : `${st.idx + 1} из ${st.n}`}</div>`;
+  const head = `<div class="caps">— ${st.num} —</div><div class="rm-h">${esc(st.title)}</div><div class="rm-sub">${st.end ? 'раунд сыгран' : `${st.idx + 1} из ${st.n}`}</div>`;
   if (st.end) return head + `<div class="rm-grid"><button data-c="prev">‹ Назад</button><button class="main" data-c="go" data-to="home">К раундам</button></div>`;
   const nav = `<button data-c="prev">‹ Назад</button><button data-c="next">Дальше ›</button>`;
+  const timer = `<button class="wide" data-c="timer">${st.timer != null ? `Таймер: ${st.timer}` : 'Таймер'}</button>`;
+  if (st.type === 'video') return head + `<p class="help">Песни звучат задом наперёд, ответ видео покажет само. Ставьте на паузу, чтобы гости подумали.</p>
+    <div class="rm-grid"><button class="main big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button>
+    <button data-c="back10">« 10 сек</button><button data-c="fwd10">10 сек »</button>${nav}</div>`;
   const ansBtn = `<button class="main big wide" data-c="reveal" ${st.revealed ? 'disabled style="opacity:.5"' : ''}>${st.revealed ? 'Ответ на экране' : 'Показать ответ на ТВ'}</button>`;
-  const ans = (label, v) => `<div class="rm-ans" data-c="ans"><div class="caps">${label} · ${RM.showAns ? 'нажмите, чтобы скрыть' : 'нажмите, чтобы подсмотреть'}</div><div class="v ${RM.showAns ? '' : 'hid'}">${esc(v)}</div></div>`;
-  if (st.type === 'meter') return head + `<div class="rm-level"><i id="rmLvl"></i></div>
-    <div class="rm-grid">${RM.an ? '' : '<button class="wide" data-c="mic">Включить микрофон телефона</button>'}
-    <button class="main big wide" data-c="measure">Замер 5 секунд</button><button class="wide" data-c="mreset">Сбросить</button></div>
-    ${st.best != null ? `<div class="rm-ans"><div class="caps">рекорд вечера</div><div class="v">${st.best}</div></div>` : ''}`;
+  const ans = `<div class="rm-ans" data-c="ans"><div class="caps">ответ (видите только вы) · ${RM.showAns ? 'нажмите, чтобы скрыть' : 'нажмите, чтобы подсмотреть'}</div><div class="v ${RM.showAns ? '' : 'hid'}">${esc(st.answer)}</div></div>`;
   let g = '';
   if (st.type === 'text') g = `<button class="big wide" data-c="hint">Подсказка (буквы)</button>`;
-  if (st.type === 'image') g = `<button class="big" data-c="hint">Открыть ещё</button><button class="big" data-c="mode">${esc(st.mode)}</button>`;
+  if (st.type === 'image') g = `<button class="big" data-c="hint">Открыть ещё</button><button class="big" data-c="mode">Режим: ${esc(st.mode)}</button>`;
   if (st.type === 'audio') g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+5 секунд</button><button data-c="restart">С начала</button>`;
-  if (st.type === 'reverse' && st.kind === 'mic') g = `
-    <button class="rec big wide ${RM.recording ? 'on' : ''}" data-c="rec">${RM.recording ? '■ Стоп — отправить на ТВ' : RM.sending ? 'Отправляю…' : '● Записать исполнителя'}</button>
-    <button class="big" data-c="rev" ${st.recorded ? '' : 'disabled style="opacity:.4"'}>Задом наперёд</button><button class="big" data-c="orig" ${st.recorded ? '' : 'disabled style="opacity:.4"'}>Как спели</button>`;
-  if (st.type === 'reverse' && st.kind === 'file') g = `<button class="big" data-c="rev">Задом наперёд</button><button class="big" data-c="orig">Оригинал</button>`;
-  const label = st.type === 'reverse' && st.kind === 'mic' ? 'песня для исполнителя — дайте ему телефон' : 'ответ (видите только вы)';
-  return head + ans(label, st.answer + (st.note && st.type === 'reverse' ? ` (${st.note})` : '')) +
-    `<div class="rm-grid">${g}${ansBtn}${nav}<button class="wide" data-c="timer">${st.timer != null ? `Таймер: ${st.timer}` : 'Таймер'}</button></div>`;
-}
-async function rmMic() {
-  if (RM.an) return true;
-  try {
-    RM.stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
-    RM.ac = RM.ac || new (window.AudioContext || window.webkitAudioContext)();
-    if (RM.ac.state === 'suspended') await RM.ac.resume();
-    const s = RM.ac.createMediaStreamSource(RM.stream);
-    RM.an = RM.ac.createAnalyser(); RM.an.fftSize = 2048; RM.buf = new Float32Array(2048); s.connect(RM.an);
-    RM.lvl = setInterval(() => {
-      RM.an.getFloatTimeDomainData(RM.buf);
-      let q = 0; for (let i = 0; i < RM.buf.length; i++) q += RM.buf[i] * RM.buf[i];
-      const v = Math.max(0, Math.min(100, (20 * Math.log10(Math.sqrt(q / RM.buf.length) + 1e-8) + 60) / 60 * 100));
-      const el = $('#rmLvl'); if (el) el.style.width = v + '%';
-      if (RM.state?.type === 'meter') rmSend({cmd:'level', v});
-    }, 80);
-    RM.key = ''; rmRender();
-    return true;
-  } catch (e) { rmMsg('Нет доступа к микрофону — разрешите его в настройках браузера'); return false; }
-}
-async function rmRecord() {
-  if (RM.recording) { try { RM.rec.stop(); } catch (e) {} return; }
-  if (!(await rmMic())) return;
-  let rec; try { rec = new MediaRecorder(RM.stream); } catch (e) { return rmMsg('Этот телефон не умеет записывать звук в браузере'); }
-  const chunks = [];
-  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
-  rec.onstop = async () => {
-    RM.recording = false; RM.sending = true; clearTimeout(RM.recT); rmRender();
-    try {
-      const ab = await new Blob(chunks, {type:rec.mimeType}).arrayBuffer();
-      const dec = await new Promise((res, rej) => { const p = RM.ac.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
-      const sr = 22050, len = Math.max(1, Math.ceil(dec.duration * sr));
-      const off = new OfflineAudioContext(1, len, sr), src = off.createBufferSource();
-      src.buffer = dec; src.connect(off.destination); src.start();
-      const out = (await off.startRendering()).getChannelData(0);
-      let peak = 0; for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
-      const gain = peak > 0.01 ? Math.min(4, 0.9 / peak) : 1;   // normalise quiet phone recordings
-      const pcm = new Int16Array(out.length);
-      for (let i = 0; i < out.length; i++) pcm[i] = Math.max(-32767, Math.min(32767, out[i] * gain * 32767));
-      rmSend({cmd:'audio', sr, pcm:pcm.buffer});
-      rmMsg('Отправлено на ТВ — жмите «Задом наперёд»');
-    } catch (e) { rmMsg('Не получилось обработать запись, попробуйте ещё раз'); }
-    RM.sending = false; RM.key = ''; rmRender();
-  };
-  rec.start(); RM.rec = rec; RM.recording = true; rmRender();
-  RM.recT = setTimeout(() => rec.state === 'recording' && rec.stop(), 20000);
+  return head + ans + `<div class="rm-grid">${g}${ansBtn}${nav}${timer}</div>`;
 }
 document.addEventListener('click', e => {
   if (!document.body.classList.contains('remote')) return;
   const b = e.target.closest('[data-c]'); if (!b || b.disabled) return;
   const c = b.dataset.c;
-  if (RM.ac && RM.ac.state === 'suspended') RM.ac.resume();
-  if (c === 'ans') { RM.showAns = !RM.showAns; return rmRender(); }
-  if (c === 'rec') return rmRecord();
-  if (c === 'mic') return rmMic();
-  if (c === 'open') return rmSend({cmd:'open', rid:b.dataset.rid});
-  if (c === 'go') return rmSend({cmd:'go', to:b.dataset.to});
-  rmSend({cmd:c});
+  if (c === 'ans') { RM.showAns = !RM.showAns; RM.key = ''; return rmRender(); }
+  if (c === 'code') { location.search = '?pult'; return; }
+  if (c === 'open') rmSend({cmd:'open', rid:b.dataset.rid});
+  else if (c === 'go') rmSend({cmd:'go', to:b.dataset.to});
+  else rmSend({cmd:c});
   if (navigator.vibrate) navigator.vibrate(15);
 }, true);
 document.addEventListener('input', e => { if (e.target.id === 'rmName') rmSend({cmd:'name', v:e.target.value}); });
 
 /* ======================= INIT ======================= */
-const REMOTE_ID = new URLSearchParams(location.search).get('r');
-if (REMOTE_ID) remoteApp(REMOTE_ID);
+const QS = new URLSearchParams(location.search);
+const REMOTE_MODE = QS.has('r') || QS.has('pult') || (!QS.has('tv') && isPhoneUA());
+if (REMOTE_MODE) remoteApp(QS.get('r'), QS.has('b') ? +QS.get('b') : null);
 else (async () => {
   $('#sName').textContent = S.name || 'дорогой друг';
   await idbOpen();
