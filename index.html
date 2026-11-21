@@ -48,7 +48,7 @@ button.main{background:linear-gradient(180deg,#e9cd8a,#b88a43);color:#1a1206;bor
 button.main:hover{filter:brightness(1.08);color:#1a1206}
 button.ghost{border-color:transparent;color:var(--muted)}
 button.ghost:hover{color:var(--g1)}
-kbd{font-family:var(--sans);font-size:.85em;opacity:.5;margin-left:.6em;letter-spacing:0}
+kbd{display:none}
 input,textarea{font:inherit;font-size:15px;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid var(--line2);border-radius:2px;padding:.55em .8em}
 input:focus,textarea:focus{outline:none;border-color:var(--g2)}
 textarea{width:100%;line-height:1.55;font-size:14px}
@@ -64,6 +64,10 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 .rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:1.6rem 1.6rem 1.5rem;cursor:pointer;transition:.3s;text-align:left;
   display:grid;grid-template-columns:5rem minmax(0,1fr);align-items:center;column-gap:.9rem;min-height:8.4rem}
 .rcard::after{content:"";position:absolute;inset:.4rem;border:1px solid transparent;transition:.3s;pointer-events:none}
+.rcard{overflow:hidden}
+.rcard::before{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(105deg,transparent,rgba(251,239,196,.09),transparent);animation:cardsweep 9s ease-in-out infinite;pointer-events:none}
+.rcard:nth-child(2)::before{animation-delay:.25s}.rcard:nth-child(3)::before{animation-delay:.5s}.rcard:nth-child(4)::before{animation-delay:.75s}.rcard:nth-child(5)::before{animation-delay:1s}.rcard:nth-child(6)::before{animation-delay:1.25s}.rcard:nth-child(7)::before{animation-delay:1.5s}.rcard:nth-child(8)::before{animation-delay:1.75s}
+@keyframes cardsweep{0%,70%{left:-60%}100%{left:130%}}
 .rcard:hover{border-color:var(--line);background:rgba(217,180,106,.06)}
 .rcard:hover::after{border-color:var(--line2)}
 .rnum{font-family:var(--serif);font-size:2.7rem;text-align:center;line-height:1;white-space:nowrap}
@@ -76,9 +80,11 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 
 /* ---------- GAME ---------- */
 #game.active{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;row-gap:.8rem;padding:2.6rem 3.6rem 2.4rem}
-#game.imgmode .answer{height:8.4rem}
+#game.imgmode .answer{min-height:7.6rem}
 #game.vidmode .answer{height:4rem}
-.g-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 .6rem}
+.g-head{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 .6rem .8rem}
+.g-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line2)}
+.g-prog{position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,var(--g3),var(--g1));box-shadow:0 0 .8rem rgba(251,239,196,.6);transition:width .8s cubic-bezier(.2,.8,.2,1);z-index:1}
 .g-title{text-align:center}
 .g-title .n{font-family:var(--serif);font-size:1.4rem;color:var(--g2);letter-spacing:.2em;line-height:1.3}
 .g-title .t{font-family:var(--serif);font-size:2.6rem;line-height:1.15}
@@ -90,20 +96,44 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 .timer.warn{color:#ff6b81;animation:pulse 1s infinite}
 @keyframes pulse{50%{transform:scale(1.12)}}
 .stage{position:relative;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.answer{height:12rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 4rem;overflow:hidden}
-.answer .a{text-wrap:balance;font-family:var(--serif);font-weight:600;font-size:4.4rem;line-height:1.15;padding-bottom:.08em;animation:rise .7s cubic-bezier(.2,.9,.3,1.2) both;max-width:84rem}
+.answer{min-height:11rem;padding-top:.4rem;padding-bottom:.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 4rem;overflow:visible}
+.answer{position:relative}
+.answer .a{position:relative;text-wrap:balance;font-family:var(--serif);font-weight:600;font-size:4.4rem;line-height:1.15;padding-bottom:.08em;animation:rise .7s cubic-bezier(.2,.9,.3,1.2) both;max-width:84rem}
 .answer .a.s{font-size:3.5rem}.answer .a.xs{font-size:2.8rem}
 .answer .nt{margin-top:.6rem;animation:rise .7s .15s both}
+.answer .a::before{content:"";position:absolute;left:50%;top:50%;width:140%;height:260%;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(217,180,106,.28),transparent);animation:glow 2.4s ease-out both}
+@keyframes glow{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}25%{opacity:1}100%{opacity:.55;transform:translate(-50%,-50%) scale(1)}}
 .answer .mask{font-family:var(--serif);font-size:3.6rem;letter-spacing:.12em;color:var(--ink);line-height:1.2}
 .answer .mask.s{font-size:2.8rem}
 .answer .ph{color:var(--dim)}
+.hintbox{display:flex;flex-direction:column;align-items:center;gap:.3rem;animation:rise .6s both;max-width:86rem}
+.hintbox .caps{font-size:1rem}
+.hintbox .ht{font-family:var(--serif);font-style:italic;font-size:2.3rem;color:var(--ink);line-height:1.2;text-wrap:balance}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem 1.2rem;width:80rem;margin-top:.8rem;animation:rise .6s both}
+.ch{display:flex;align-items:center;gap:1rem;border:1px solid var(--line);background:rgba(217,180,106,.05);padding:.45rem 1.2rem;text-align:left;min-width:0}
+.choices.long .ch span{font-size:1.45rem;-webkit-line-clamp:3}
+.ch b{font-family:var(--serif);color:var(--g2);font-size:1.9rem;font-weight:400}
+.ch span{font-family:var(--serif);font-size:1.8rem;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#game.imgmode .choices{width:84rem;margin-top:.5rem}
+#game.imgmode .ch span{font-size:1.55rem}
+#game.imgmode .ch{padding:.35rem 1.1rem}
+#game.imgmode .hintbox .ht{font-size:2.1rem}
+.stage.vidon>*{visibility:hidden}
 @keyframes rise{from{opacity:0;transform:translateY(1.8rem);filter:blur(6px)}}
 .controls{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;padding-bottom:.4rem}
 
 .q{font-family:var(--serif);text-align:center;line-height:1.25;text-wrap:balance;max-width:84rem;font-size:5.6rem;padding:0 2rem}
 .q.l{font-size:4.4rem}
 .q.m{font-size:3.5rem}
-.q.emoji{font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',var(--sans);font-size:11rem;letter-spacing:.06em;line-height:1.2}
+.q.emoji{font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',var(--sans);font-size:9.5rem;line-height:1.2}
+.q.emoji{display:flex;gap:2.4rem;justify-content:center;align-items:center;flex-wrap:wrap}
+.q.emoji .em{position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.4em;height:1.25em;overflow:visible}
+.q.emoji .em i{font-style:normal;opacity:0;transform:scale(.2) rotate(-25deg);transition:opacity .5s,transform .6s cubic-bezier(.2,1.8,.4,1)}
+.q.emoji .em.on i{opacity:1;transform:none}
+.q.emoji .em::after{content:'?';position:absolute;inset:12%;border:1px dashed var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:.42em;color:var(--g2);transition:opacity .3s}
+.q.emoji .em.on::after{opacity:0}
 .q-quote::before{content:"«";color:var(--g2)}.q-quote::after{content:"»";color:var(--g2)}
 
 .imgwrap{position:relative;overflow:hidden;line-height:0;outline:1px solid var(--line);outline-offset:.8rem}
@@ -165,6 +195,25 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 .toast{font-family:var(--serif);font-style:italic;font-size:2.5rem;color:var(--ink);max-width:70rem;line-height:1.45}
 
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+#intro{position:fixed;inset:0;z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 50%,rgba(40,30,14,.97),rgba(8,7,9,.99) 70%);transition:opacity .5s}
+#intro.on{opacity:1;animation:introOut 2.6s forwards}
+@keyframes introOut{0%,80%{opacity:1}100%{opacity:0}}
+#intro .in-num{font-family:var(--serif);font-size:16rem;line-height:1;padding:0 .1em}
+#intro.on .in-num{animation:numIn 1.1s cubic-bezier(.2,.9,.2,1) both}
+@keyframes numIn{from{transform:scale(2.6);opacity:0;filter:blur(1.2rem)}}
+#intro .in-title{font-family:var(--serif);font-style:italic;font-size:5.4rem;line-height:1.1}
+#intro.on .in-title{animation:rise .8s .45s both}
+#intro::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(251,239,196,.22) 50%,transparent 65%);transform:translateX(-100%)}
+#intro.on::after{animation:sweep 1.4s .3s ease-in-out}
+@keyframes sweep{to{transform:translateX(100%)}}
+.drum{font-size:1.6rem;color:var(--g1);animation:pulse .25s infinite}
+.finvid{display:none}
+#finale.withvid{display:grid;grid-template-columns:minmax(0,1fr) 46rem;grid-template-rows:auto;column-gap:3rem;align-content:center;justify-items:center;text-align:center}
+#finale.withvid>*{grid-column:1}
+#finale.withvid .h-name{font-size:7.6rem;max-width:44rem}
+#finale.withvid .toast{font-size:2.1rem;max-width:44rem}
+#finale.withvid .finvid{display:block;grid-column:2;grid-row:1/span 6;align-self:center;width:46rem;height:25.9rem}
 body.linked #controls{display:none}
 body.linked .h-actions button{opacity:.35}
 
@@ -245,6 +294,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
     <div><button class="ghost" data-go="home">‹ Меню</button></div>
     <div class="g-title"><div class="n" id="gNum"></div><div class="t" id="gTitle"></div></div>
     <div class="g-right"><div class="timer" id="timer"></div><div class="counter" id="gCounter"></div></div>
+    <div class="g-prog" id="gProg"></div>
   </header>
   <main class="stage" id="stage"></main>
   <div class="answer" id="answer"></div>
@@ -274,6 +324,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
   <div class="h-name gold" id="fName"></div>
   <div class="orn">✦</div>
   <div class="toast">Пусть следующие сорок будут ещё громче, ярче и вкуснее.<br>За именинника!</div>
+  <div class="finvid" id="finVid"></div>
   <div class="h-actions"><button class="ghost" data-act="party">Ещё салют</button><button class="ghost" data-go="home">Меню</button></div>
 </section>
 
@@ -290,6 +341,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 </div>
 
 <div id="remote"></div>
+<div id="intro"><div class="caps">раунд</div><div class="in-num gold" id="inNum"></div><div class="in-title" id="inTitle"></div><div class="orn">✦</div><div class="caps" id="inSub"></div></div>
 <div id="secret"></div>
 <div id="ytwrap"><div id="ytplayer"></div></div>
 <canvas id="confetti"></canvas>
@@ -297,234 +349,226 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 <script>
 /* ======================= DATA ======================= */
 const DEFAULT_TEXT = {
-emoji:`# эмодзи | ответ | примечание
-🛁🍾✈️❄️ | Ирония судьбы, или С лёгким паром! | 1975
-💎🦾🎣 | Бриллиантовая рука | 1968
-👑⏳🔧📞 | Иван Васильевич меняет профессию | 1973
-🏔️👰🚗🐑 | Кавказская пленница | 1967
-🏜️⛵🎖️ | Белое солнце пустыни | 1970
-👩‍💼🏢❤️ | Служебный роман | 1977
-🏙️😭🙅‍♀️ | Москва слезам не верит | 1979
-🧑‍🏫🔒🐫 | Джентльмены удачи | 1971
-🔔🪐🏜️ | Кин-дза-дза! | 1986
-🐕🧑‍⚕️🏛️ | Собачье сердце | 1988
-👧⏳🚀 | Гостья из будущего | 1985
-🔫🎸🧥 | Брат | 1997
-🦌🔫🥃 | Особенности национальной охоты | 1995
-👊👊👊👊🏙️ | Бригада | 2002
-🚢🧊💔 | Титаник | 1997
-🤖🏍️🔫 | Терминатор 2 | 1991
-🚗⚡⏰ | Назад в будущее | 1985
-🦖🧬🏝️ | Парк Юрского периода | 1993
-👦🏠🎄🪤 | Один дома | 1990
-🕶️💊🐇 | Матрица | 1999
-🏃🍫🪶 | Форрест Гамп | 1994
-👻🚫📞 | Охотники за привидениями | 1984
-🦁👑🌅 | Король Лев | 1994
-🎭💚💰 | Маска | 1994
-👽📞🏠🚲 | Инопланетянин | 1982`,
-quote:`# начало | продолжение | фильм
-Икра красная, икра чёрная, икра заморская… | …баклажанная! | Иван Васильевич меняет профессию
-Ты чьих… | …будешь? | Иван Васильевич меняет профессию
-Какая гадость… | …эта ваша заливная рыба! | Ирония судьбы, или С лёгким паром!
-Студентка, комсомолка, спортсменка… | …и, наконец, просто красавица! | Кавказская пленница
-Бамбарбия! | Кергуду! | Кавказская пленница
-Тебя посодют… | …а ты не воруй! | Берегись автомобиля
-Огласите весь список… | …пожалуйста! | Операция «Ы» и другие приключения Шурика
-Надо, Федя… | …надо! | Операция «Ы» и другие приключения Шурика
-Восток — … | …дело тонкое, Петруха! | Белое солнце пустыни
-Цигель, цигель… | …ай-лю-лю! | Бриллиантовая рука
-Шампанское по утрам пьют… | …или аристократы, или дегенераты! | Бриллиантовая рука
-Граждане, храните деньги… | …в сберегательной кассе! | Бриллиантовая рука
-Вор должен… | …сидеть в тюрьме! | Место встречи изменить нельзя
-Пасть порву… | …моргалы выколю! | Джентльмены удачи
-Скрипач… | …не нужен! | Кин-дза-дза!
-Вот скажи мне, американец, в чём сила? | …Я вот думаю, что сила в правде! | Брат 2
-Hasta la vista… | …baby! | Терминатор 2
-Жизнь как коробка шоколадных конфет… | …никогда не знаешь, какая начинка тебе попадётся | Форрест Гамп
-Хьюстон… | …у нас проблема | Аполлон-13
-Улыбаемся и… | …машем! | Мадагаскар`,
-retro:`# вопрос | ответ | комментарий
-Зачем к аудиокассете нужен был карандаш? | Перематывать плёнку | экономили батарейки в плеере
-Сколько стоил проезд в метро в СССР? | 5 копеек | пятак в турникет
-Газировка из автомата: сколько стоила с сиропом? | 3 копейки | без сиропа — 1 копейка
-Как называлась «наша» восьмибитная приставка? | Dendy | «Денди — играют все!»
-Что ловил волк в электронной игре «Ну, погоди!»? | Яйца | «Электроника ИМ-02»
-Как звали синего ёжика с приставки Sega? | Соник | Sonic the Hedgehog
-Какую фразу кричали в Mortal Kombat перед добиванием? | Finish him! |
-В какой стране придумали «Тетрис»? | В СССР | Алексей Пажитнов, 1984
-Кто вёл «Угадай мелодию»? | Валдис Пельш | с 1995 года
-Кто был ПЕРВЫМ ведущим «Поля чудес»? | Владислав Листьев | Якубович — с 1991
-Кто такой Лёня Голубков? | Герой рекламы МММ | «Я не халявщик, я партнёр!»
-Продолжи рекламу: «Invite — …» | «…просто добавь воды!» |
-Вкладыши какой жвачки были про любовь? | Love is… |
-Из какой страны была жвачка «Turbo» с машинками? | Турция |
-Как звали изобретательницу-мышку в «Чип и Дейл»? | Гаечка |
-Как назывался мультсериал про Скруджа Макдака? | Утиные истории | «Ву-у-у!»
-Кто вёл «Сам себе режиссёр»? | Алексей Лысенков |
-Номер телефона «скорой» в СССР? | 03 |
-Кто пел «Белые розы»? | Ласковый май | Юра Шатунов`
+emoji:`# эмодзи | ответ | год | подсказка | трейлер
+🚢🧊💔🎻 | Титаник | 1997 | драма-катастрофа, Леонардо Ди Каприо и Кейт Уинслет | WHtZ4NmIN1k
+👨‍👦🔫🎸🚋 | Брат | 1997 | криминальная драма Балабанова, Сергей Бодров | FZFvFZOCnk0
+💊🕶️🐇💻 | Матрица | 1999 | киберфантастика, Киану Ривз | YihPA42fdQ8
+🚘⚫📱🛣️ | Бумер | 2003 | криминальное роуд-муви, Владимир Вдовиченков | mOs3NGtQmy4
+🟢🧅🫏👸 | Шрек | 2001 | анимационная сказка-пародия DreamWorks | w6Vr7Fk9eZs
+🌙👀⚔️🧛 | Ночной дозор | 2004 | городское фэнтези Бекмамбетова, Константин Хабенский | cgQMmn-zK54
+⚡👓🦉🧹 | Гарри Поттер и философский камень | 2001 | фэнтези про школу волшебства, Дэниел Рэдклифф | AFwrmkAHEk4
+👬🇺🇸🏒💪 | Брат 2 | 2000 | боевик Балабанова, Бодров и Сухоруков | HBAADCHpS5s
+💍🌋🧙‍♂️👣 | Властелин колец | 2001 | эпическое фэнтези, Элайджа Вуд | RNksw9VU2BQ
+🪖📆🧠💊 | ДМБ | 2000 | армейская абсурдная комедия Романа Качанова | 6owl7PsMN4g
+🏴‍☠️🌊⚫🦪 | Пираты Карибского моря | 2003 | приключения, Джонни Депп | i_JvLLSwWPg
+🙈🔫💰🍔 | Жмурки | 2005 | чёрная комедия Балабанова, Никита Михалков | JROndKTL5Y8
+🔵🌳🦽🐉 | Аватар | 2009 | 3D-фантастика Джеймса Кэмерона | uXC_0wE6k7k
+🔟➖1️⃣🪖🏔️ | 9 рота | 2005 | военная драма Фёдора Бондарчука | iswMrgd2Iv0
+🗽➡️🏝️🦁🐧 | Мадагаскар | 2005 | мультфильм о беглецах из нью-йоркского зоопарка | qbWE7fOa0KM
+🛁🎄✈️2️⃣ | Ирония судьбы. Продолжение | 2007 | новогодняя комедия, Хабенский и Безруков | wIpQt7WcTvE
+🥶🐿️🌰🦣 | Ледниковый период | 2002 | мультфильм о мамонте, ленивце и тигре | wJMl2Hw_LPI
+🦌🔫🥃🐻 | Особенности национальной охоты | 1995 | комедия Рогожкина, Алексей Булдаков | yIZmWbqqEc0
+🧛‍♂️✨🍎🐺 | Сумерки | 2008 | вампирская мелодрама, Кристен Стюарт | uqZu5ELCklM
+4️⃣👊🏙️💵 | Бригада | 2002 | криминальный сериал о 90-х, Сергей Безруков | Jv98XZIBJAI
+🐕🚉⏳❤️ | Хатико | 2009 | драма о верности, Ричард Гир | veRyWok4bO8
+❤️🥕🔄👫 | Любовь-морковь | 2007 | комедия про обмен телами, Гоша Куценко | d-GQV6PzC_A
+👦🏠🎄🦹‍♂️🦹‍♂️ | Один дома | 1990 | рождественская комедия, Маколей Калкин | zOkjOIjlNzM
+⛏️💀⏳🪖 | Мы из будущего | 2008 | военная фантастика про «чёрных копателей» | uTfXAGDs2Es
+🦁👑🌅🐗 | Король Лев | 1994 | мультфильм Disney о наследнике саванны | w5xsFvmAxrs`,
+quote:`# начало | продолжение | фильм | подсказка | видео сцены (ID@секунда)
+Вот скажи мне, американец, в чём сила? Разве в деньгах? | …Я вот думаю, что сила в правде! | Брат 2 (2000) | персонаж Сергея Бодрова говорит с американцем | 9oHynCkVFX8@0
+Не мы такие — … | …жизнь такая | Бумер (2003) | четверо друзей на чёрной «бэхе» | ytTeBPO0U_A@0
+Аста ла виста… | …бэйби! | Терминатор 2: Судный день (1991) | Арнольд Шварценеггер | NIAiAk61dOQ@0
+Армия — не просто доброе слово… | …а очень быстрое дело | ДМБ (2000) | армейская комедия Романа Качанова | KL7VIwyXNWM@0
+Мама всегда говорила: жизнь как коробка шоколадных конфет… | …никогда не знаешь, какая попадётся | Форрест Гамп (1994) | Том Хэнкс на скамейке | RoFognD_xR8@0
+Такая только у меня… | …и у Майкла Джексона! | Бригада (2002) | Космос хвастается, Дмитрий Дюжев | bjcFKLgoESE@0
+Улыбаемся и машем… | …парни, улыбаемся и машем! | Мадагаскар (2005) | пингвины-спецназовцы | YxdWeu4Lerk@0
+Ну вы, блин… | …даёте! | Особенности национальной охоты (1995) | генерал Михалыч, Алексей Булдаков | nEmNHNwsjj8@0
+Я сделаю ему предложение… | …от которого он не сможет отказаться | Крёстный отец (1972) | Марлон Брандо, мафия | EdQu8vAABFM@0
+Русские на войне… | …своих не бросают | Брат 2 (2000) | персонаж Сергея Бодрова | m6KCypydHuQ@0
+— Вы самый жалкий пират, о котором я слышал. — … | …Но вы обо мне слышали! | Пираты Карибского моря (2003) | Джонни Депп, «капитан, смекаешь?» | trlZj0FYfZE@0
+Гренка не может стоить восемь долларов… | …а крутон может! | О чём говорят мужчины (2010) | «Квартет И» в ресторане | VjN-AsNaLtc@0
+Примешь синюю таблетку — и сказке конец… | …примешь красную — войдёшь в Страну чудес | Матрица (1999) | Морфеус, Лоренс Фишбёрн | BpwimtOwNh4@0
+Вы ещё подеритесь… | …горячие финские парни! | Особенности национальной охоты (1995) | финн Райво и генерал | dubhP18V6yI@0
+Я… | …король мира! | Титаник (1997) | Леонардо Ди Каприо на носу корабля | nk7eReDe16Y@0
+Вы мне, гады, ещё… | …за Севастополь ответите! | Брат 2 (2000) | Виктор Сухоруков в Чикаго | apZi55-1Dfc@0
+Первое правило Бойцовского клуба… | …никому не рассказывать о Бойцовском клубе | Бойцовский клуб (1999) | Брэд Питт и Эдвард Нортон | P56QZsy_jGs@0
+Огры — они как лук… | …у лука есть слои, и у огров есть слои! | Шрек (2001) | зелёный герой объясняет ослу | ZA9iYijd2sQ@0
+— Он сказал, что ты убил его! — Нет… | …Я — твой отец! | Звёздные войны (1980) | чёрный шлем, тяжёлое дыхание | yVuCyI6FcMs@0
+Сдачу оставь себе… | …грязное животное! | Один дома (1990) | Маколей Калкин и доставка пиццы | vYTW4VyTx8k@0
+Хьюстон… | …у нас проблема | Аполлон-13 (1995) | Том Хэнкс в космосе | tLBw95yAYio@0
+Дороги? Там, куда мы направляемся… | …дороги не нужны! | Назад в будущее (1985) | Док Браун и DeLorean | 7et-vNnZKvM@0`,
+retro:`# вопрос | ответ | примечание | подсказка | видео
+Какой «неубиваемый» телефон Nokia 2000 года был у всех? | Nokia 3310 | и игра «Змейка» | в нём была «Змейка» | NdvB2jRhz6U
+Как назывался мессенджер с цветочком и звуком «о-оу!»? | ICQ («аська») | номер из цифр вместо имени | его звали ласково, по-русски | xRlN_rmWHaw
+Кто выиграл Евровидение-2008 для России? | Дима Билан | песня «Believe» | на сцене катался Евгений Плющенко | uE9oiDOsEmU
+Какое реалити-шоу ТНТ с 2004 года «строит любовь» до сих пор? | Дом-2 | ведущая — Ксения Собчак | ведущая — Ксения Собчак | PPzFdUXjGak
+Как назывался проект ТНТ 2005 года с Харламовым, Волей и Галустяном? | Comedy Club |  | у артистов были «резиденты» | b9G969_T4GY
+Какое шоу на Первом делало звёзд из обычных ребят в общежитии? | Фабрика звёзд | 2002–2012 | продюсеры Фадеев, Пугачёва, Матвиенко | 8UDee5CCHLk
+До какой стадии дошла сборная России на Евро-2008? | Полуфинал | бронза турнира | тренер Гус Хиддинк, звезда — Аршавин | 7SJ_anoXPUI
+Как назывался первый русский блокбастер 2004 года про Светлых и Тёмных? | Ночной дозор | режиссёр Тимур Бекмамбетов | Константин Хабенский | cgQMmn-zK54
+Какая соцсеть Павла Дурова появилась в 2006 году? | ВКонтакте | сначала — для студентов | сначала только для студентов
+Как называлась соцсеть, где искали бывших одноклассников? | Одноклассники | 2006 год | название подсказывает само | QTmDRJpOPb4
+Кто вёл «Кто хочет стать миллионером?» на Первом в 2001–2008? | Максим Галкин | потом — Дмитрий Дибров | известный пародист | xXfupT6fwzg
+Какой интернет-мем 2006 года: медведь пугает влюблённых? | «Превед, медвед!» | картина Джона Ширли | «падонкаффский» язык
+Какой сериал ТНТ 2006 года про семью Букиных? | Счастливы вместе | адаптация «Женаты и с детьми» | Гена Букин — продавец обуви | JwJlYZRaEzo
+Какой сериал ТНТ про жизнь в студенческой общаге вышел в 2008 году? | Универ | Кузя, Майкл, Гена | Кузя из Сибири | _WHZbCKiRXA
+Какую валюту начали носить в кошельках в Европе в 2002 году? | Евро | наличные с 1 января 2002 | заменила марки, франки и лиры
+Чего боялись все компьютеры в ночь на 1 января 2000 года? | Ошибки 2000 года (Y2K) | проблема двух цифр в дате | две цифры года | zKFQPGLg2Dw
+С какой песней Верка Сердючка взяла серебро Евровидения-2007? | Dancing Lasha Tumbai | 2 место | «Лаша тумбай» | ELVD_2_eCWE
+Какой плеер Apple 2001 года вмещал «1000 песен в кармане»? | iPod | колёсико для прокрутки | белые наушники | rSpJor4h4FY
+Какой фильм Джеймса Кэмерона 2009 года с синими людьми стал самым кассовым? | Аватар | планета Пандора | планета Пандора | uXC_0wE6k7k
+О какой «раскладушке» Motorola мечтали все в 2005 году? | Motorola RAZR V3 | тонкая и металлическая | очень тонкая, металлическая | N4ezpMXjUjo`
 };
 
 /* Онлайн-материал: музыка — официальные клипы на YouTube (проверены, встраивание разрешено),
    фото — Википедия/Wikimedia Commons. Нужен интернет и запуск через start.command. */
 const DEFAULT_ONLINE = {
-music:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно)
-Руки Вверх! — Крошка моя | tO91c8vbT7A
-Любэ — Комбат | d1pABMCtf3M
-Мумий Тролль — Утекай | Ok1-XYV3k60
-Кар-Мэн — Лондон, гуд бай! | ylpNEb31k4U
-Nirvana — Smells Like Teen Spirit | hTWKbfoikeg
-Звери — Районы-кварталы | 2C-XqZL63_w
-Мурат Насыров — Мальчик хочет в Тамбов | AA7LF2GjHMo
-Агата Кристи — Как на войне | W-YSYFkRNvg
-Земфира — Искала | Jn1kng-nFuY
-Haddaway — What Is Love | HEXWRTEbj1I
-Михаил Шуфутинский — Третье сентября | Kv-tbdVOuOA
-Король и Шут — Лесник | jT-OnptvBI0
-t.A.T.u. — Нас не догонят | zOhH8cp93lE
-ВИА Гра — Попытка №5 | 4HvFuzOP8ys
-Scooter — How Much Is the Fish? | cbB3iGRHtqA
-Серёга — Чёрный бумер | jjWbL5nFMWc
-Кино — Группа крови | _3DT_05ZJiE
-Леонид Агутин — Хоп хей лала лей | mlhfnvTmaek
-Блестящие — А я всё летала | GUSFaLuS81k
-Aqua — Barbie Girl | ZyhrYis509A
-Машина времени — Поворот | 6cw-vz7vS-8
-Верка Сердючка — Всё будет хорошо | KRVhWPignvU
-Би-2 — Полковнику никто не пишет | 1u7WN2zBEDc
-Чиж & Co — Фантом | OaagAmLYSlU
-Coolio — Gangsta's Paradise | fPO76Jlnz6c
-Руки Вверх! — 18 мне уже | Hxab_Sr132o
-Валерий Меладзе — Самба белого мотылька | 09Oek7bYVqg
-Глюк'oZa — Невеста | 9P_wHDW2VJY
-Сектор Газа — Лирика | 14w176fRVaQ
-Ария — Беспечный ангел | qXBORMBTfDs
-Backstreet Boys — Everybody | 6M6samPEMpM
-Филипп Киркоров — Зайка моя | dGPRnzQY11U
-Иванушки International — Тучи | tHsjdESaLd8
-Дискотека Авария — Если хочешь остаться | AsMTTh5Z1j8
-Сплин — Выхода нет | cI-flbjLC6M
-The Prodigy — Firestarter | wmin5WkOuPw
-Наташа Королёва — Жёлтые тюльпаны | h9nhOEdXRfI
-ДДТ — Что такое осень | LvaYk-phy14
-Hi-Fi — Седьмой лепесток | ikWEytTXiY4
-Ленинград — WWW | XveGQdHa18I
-Rammstein — Du Hast | W3q8Od5qJio
-Дюна — Привет с большого бодуна | FKYgIoxMGF0
-Владимир Пресняков — Стюардесса по имени Жанна | kpn-GcGrYQs
-Ногу свело! — Хару Мамбуру | xutpxia3Qkc
-Кристина Орбакайте — Перелётная птица | PirSkTcW_84
-Eiffel 65 — Blue (Da Ba Dee) | 68ugkg9RePc
-Мираж — Музыка нас связала | YSRFE3NGKqM
-Земфира — Хочешь? | xpJ_fYyAeYk
-Чайф — Не спеши | 9Uiom8VfslI
-Ласковый май — Белые розы | BPsRX7m6CX4
-Linkin Park — In the End | eVTXPUF4Oz4
-Мумий Тролль — Владивосток 2000 | nj5nuYYrZvg
-Валерия — Часики | 3rAQLk8zDmY
-Андрей Губин — Мальчик-бродяга | aatSpPbHInw
-Наутилус Помпилиус — Прогулки по воде | O1sowtGA67w
-Би-2 — Варвара | T18deTeV0RI
-Иванушки International — Тополиный пух | UUryvYF8tUs
-Сплин — Романс | 29lSd5ucOOI
-Алла Пугачёва — Миллион алых роз | BQV0TrlB0gA`,
-ost:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно)
-Бригада | mv533P_VCzU
-Ирония судьбы, или С лёгким паром! («Если у вас нету тёти») | 7lR9nDzLKXE
-Улицы разбитых фонарей | F4r0Ac1pIaE
-Бриллиантовая рука («Остров невезения») | goFIxxWru78
-Терминатор 2 | CnQm2_cAZvo
-Бумер («Мобильник») | CjFQrN7gCxE
-Кавказская пленница («Песенка о медведях») | dExwT_pEr9w
-Программа «Время» | ZWHgeMX4RcA
-Д'Артаньян и три мушкетёра | BCi6h34adNo
-Бандитский Петербург («Город, которого нет») | HR9D5tk4VtI
-Иван Васильевич меняет профессию («Звенит январская вьюга») | zacy2GOu3TI
-Ну, погоди! | 3Jxh1IRc-AU
-Семнадцать мгновений весны («Мгновения») | Sh8V9uX_sRc
-Брат («Крылья», Наутилус Помпилиус) | 4owHHfZBsyI
-Титаник | 9bFHsd3o1w0
-Гардемарины, вперёд! | ca4xGimYX9E
-В мире животных | RTDq7NLn4vI
-Москва слезам не верит («Александра») | 0lXVVAqpsIk
-Служебный роман («У природы нет плохой погоды») | W_0J4oclPTs
-Поле чудес | U251PjyCMHM
-Чародеи («Три белых коня») | eRB45a3gCb4
-Секретные материалы | Qz2wnSVeITg
-Белое солнце пустыни («Ваше благородие, госпожа Удача») | Id9iif6PK0w
-Спокойной ночи, малыши! | -97vgdIk6-g
-Джентльмены удачи | 13U9UCW_mMw
-Кто хочет стать миллионером? | HuviezuvYUI
-Карнавальная ночь («Пять минут») | 5viIzp4rxC0
-Гостья из будущего («Прекрасное далёко») | -oTSm9xd04k
-Утиные истории | _wVbicbJNAw
-Чип и Дейл спешат на помощь | s6OsG9vZcHM
-Миссия невыполнима | cSpGbYTZbpk
-Охотники за привидениями | Fe93CLbHjxQ
-Твин Пикс | 18ApLy2M838`,
-who:`# ответ | ссылка на картинку
-Виктор Цой | https://upload.wikimedia.org/wikipedia/commons/8/89/Viktortsoioutsidedomknigi.jpg
-Арнольд Шварценеггер | https://upload.wikimedia.org/wikipedia/commons/e/e3/Arnold_Schwarzenegger_-_Austrian_World_Summit_2026_BHO-2906.jpg
-Юра Шатунов | https://upload.wikimedia.org/wikipedia/commons/4/40/Shatunov_%28Laskoviy_May%29.jpg
-Джим Керри | https://upload.wikimedia.org/wikipedia/commons/e/ed/Jim_Carrey_2020_cropped.jpg
-Леонид Якубович | https://upload.wikimedia.org/wikipedia/commons/e/e0/Channel_One_Russia_in_Navy_%2827-06-2013%29_08_%28cropped%29.jpg
-Майкл Джексон | https://upload.wikimedia.org/wikipedia/commons/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg
-Жан-Клод Ван Дамм | https://upload.wikimedia.org/wikipedia/commons/c/c6/Jean-Claude_Van_Damme_at_Brussels_Comic_Con_2023_DSC19480_Kiri_DxO.jpg
-Алла Пугачёва | https://upload.wikimedia.org/wikipedia/commons/6/66/%D0%90%D0%BB%D0%BB%D0%B0_%D0%9F%D1%83%D0%B3%D0%B0%D1%87%D0%B5%D0%B2%D0%B0_%D0%BD%D0%B0_%D1%84%D0%B5%D1%81%D1%82%D0%B8%D0%B2%D0%B0%D0%BB%D0%B5_%D0%A1%D0%BB%D0%BE%D0%B2%D0%BE_%D0%9D%D0%BE%D0%B2%D0%BE_%28cropped%29.jpg
-Киану Ривз | https://upload.wikimedia.org/wikipedia/commons/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg
-Владислав Листьев | https://upload.wikimedia.org/wikipedia/commons/8/8f/Listiev_%28cropped%29.jpeg
-Брюс Уиллис | https://upload.wikimedia.org/wikipedia/commons/c/c4/Bruce_Willis_by_Gage_Skidmore_3.jpg
-Илья Лагутенко | https://upload.wikimedia.org/wikipedia/commons/2/23/Ilya_Lagutenko_%40_Park_Live_%28cropped%29.JPG
-Мадонна | https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg
-Валдис Пельш | https://upload.wikimedia.org/wikipedia/commons/a/a3/%D0%92%D0%B0%D0%BB%D0%B4%D0%B8%D1%81_%D0%9F%D0%B5%D0%BB%D1%8C%D1%88_%D0%B2_%D0%A6%D0%94%D0%9C_%D0%BD%D0%B0_%D0%9B%D1%83%D0%B1%D1%8F%D0%BD%D0%BA%D0%B5.jpg
-Сильвестр Сталлоне | https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg/1920px-%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg
-Юрий Шевчук | https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/%D0%AE%D1%80%D0%B8%D0%B9%D0%A8%D0%B5%D0%B2%D1%87%D1%83%D0%BA.jpg/1280px-%D0%AE%D1%80%D0%B8%D0%B9%D0%A8%D0%B5%D0%B2%D1%87%D1%83%D0%BA.jpg
-Леонардо Ди Каприо | https://upload.wikimedia.org/wikipedia/commons/2/2d/LeoPTABFI191125-28_%28cropped%29.jpg
-Земфира | https://upload.wikimedia.org/wikipedia/commons/a/ac/%D0%97%D0%B5%D0%BC%D1%84%D0%B8%D1%80%D0%B0_%D0%BD%D0%B0_%D0%B2%D1%8B%D1%81%D1%82%D1%83%D0%BF%D0%BB%D0%B5%D0%BD%D0%B8%D0%B8_1_%D0%B0%D0%BF%D1%80%D0%B5%D0%BB%D1%8F_2016_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%9E%D0%BB%D0%B8%D0%BC%D0%BF%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%BC.jpg
-Чак Норрис | https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg/1920px-Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg
-Валерий Меладзе | https://upload.wikimedia.org/wikipedia/commons/e/e1/Valeriy_Meladze_photoshooting_at_Laima_Rendez_Vous_Jurmala_2017.jpg
-Брэд Питт | https://upload.wikimedia.org/wikipedia/commons/9/90/Brad_Pitt-69858.jpg
-Вячеслав Бутусов | https://upload.wikimedia.org/wikipedia/commons/5/5e/Vyacheslav_Butusov_2011-5.jpg
-Леонид Агутин | https://upload.wikimedia.org/wikipedia/commons/3/3e/Leonid_Agutin%27s_rehearsal_at_Laima_Rendez_Vous_Jurmala_2017_.jpg`,
+music:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно) | подсказка
+Земфира — Хочешь? | xpJ_fYyAeYk |  | 2000 · рок-певица из Уфы, альбом «ПММЛ»
+t.A.T.u. — Я сошла с ума | -F-JfWqMG6g |  | 2000 · скандальный девичий дуэт продюсера Ивана Шаповалова
+Eminem — Lose Yourself | xFYQQPAOz7Y |  | 2002 · рэпер из Детройта, фильм «8 миля»
+Дима Билан — Невозможное возможно | zcoGTd6I1PM |  | 2005 · будущий победитель Евровидения-2008
+Верка Сердючка — Dancing Lasha Tumbai | ELVD_2_eCWE |  | 2007 · Андрей Данилко в образе проводницы, 2-е место Евровидения
+ВИА Гра — Не оставляй меня, любимый | FFtbgbq-KnU |  | 2003 · женское трио Константина Меладзе
+Britney Spears — Toxic | LOZuxwVk7TU |  | 2003 · поп-принцесса в образе стюардессы
+Серебро — Song #1 | o_hZqbl-RIk |  | 2007 · трио Максима Фадеева, 3-е место Евровидения
+Руки Вверх — Он тебя целует | lluIQebmAMM |  | 2002 · поп-группа Сергея Жукова, «говорит, что любит»
+Баста — Моя игра | XDZEv-JU-GA |  | 2006 · ростовский рэпер, он же Ноггано
+Linkin Park — Numb | kXYiU_JCYtU |  | 2003 · ню-метал из Калифорнии, Честер Беннингтон
+Тимати — Не сходи с ума | 0I8UzeIJ_SY |  | 2007 · рэпер из «Фабрики звёзд-4», будущий основатель Black Star
+Корни — Ты узнаешь её | EXaCsgHVKS4 |  | 2003 · бойз-бенд, победители первой «Фабрики звёзд»
+Ленинград — WWW | XveGQdHa18I |  | 1999 · питерская ска-панк банда, «я сажаю алоэ»
+Shakira — Hips Don't Lie | DUT5rEU6pqM |  | 2006 · колумбийская певица и Wyclef Jean
+Фабрика — Про любовь | -dpQn82jzTY |  | 2003 · женское трио Игоря Матвиенко
+Глюк'oZa — Невеста | 9P_wHDW2VJY |  | 2003 · мультяшный проект Максима Фадеева
+Каста — Вокруг шум | 8zHjanBzZt8 |  | 2002 · ростовские хип-хоперы Влади и Шым
+50 Cent — In Da Club | 5qm8PH4xAss |  | 2003 · нью-йоркский рэпер, протеже Dr. Dre и Эминема
+Жанна Фриске — Ла-ла-ла | 2ncsibrgaS0 |  | 2005 · экс-солистка «Блестящих», сольный хит
+Звери — Районы-кварталы | 2C-XqZL63_w |  | 2004 · гимн спальных районов
+Валерия — Часики | 3rAQLk8zDmY |  | 2003 · певица из Аткарска, продюсер Иосиф Пригожин
+The Black Eyed Peas — Where Is the Love? | WpYeekQkAdc |  | 2003 · will.i.am и Fergie при участии Джастина Тимберлейка
+Smash!! — Belle | Lw8WADtqz-8 |  | 2002 · дуэт, хит из мюзикла «Нотр-Дам де Пари»
+Uma2rmaH — Проститься | -8L9AmmtgG8 |  | 2003 · братья Кристовские из Нижнего Новгорода
+Мумий Тролль — Невеста? | O6pd9JF3VRA |  | 2000 · рок-группа из Владивостока
+Rihanna — Umbrella | CvBfHwUxHIk |  | 2007 · певица с Барбадоса и Jay-Z, «ella-ella»
+Би-2 — Медленная звезда | rAUwgy4uDao |  | 2005 · рок-дуэт Лёвы и Шуры с Дианой Арбениной
+Ленинград — Мне бы в небо | R2_zN2QRbiA |  | 2003 · лирическая песня о полёте от питерской банды
+Город 312 — Останусь | 4tVriTuoll8 |  | 2006 · группа певицы Аи, саундтрек «Дневного дозора»
+Las Ketchup — The Ketchup Song (Aserejé) | 5llcBScGuAE |  | 2002 · три испанские сестры, танец руками
+Дискотека Авария — Небо | yWCbCGpSRy0 |  | 2003 · танцевальная группа из Кинешмы
+Чичерина — Ту-лу-ла | Jv13SGNJCwA |  | 2000 · рок-певица из Екатеринбурга, звучит в «Брате 2»
+Пропаганда — Яй-я | ugkdKRFUqCQ |  | 2003 · девичье поп-трио, песня про яблоки
+Gorillaz — Feel Good Inc. | HyHNuVaZJ-k |  | 2005 · виртуальная мультяшная группа Деймона Албарна
+Винтаж — Ева | cIZTEZahjxE |  | 2009 · дуэт Анны Плетнёвой и Алексея Романова
+Нюша — Выбирать чудо | RjObnc58fAM |  | 2009 · дебютный хит юной звезды с «Новой волны»
+Григорий Лепс — Рюмка водки на столе | X778LvF-FAk |  | 2003 · хриплый вокалист из Сочи, застольный хит
+Crazy Frog — Axel F | k85mRPqvMbE |  | 2005 · мультяшный лягушонок из рингтона
+Стас Михайлов — Всё для тебя | Vu6jeEUEP50 |  | 2007 · романтический шансонье, любимец женщин
+Ночные Снайперы — 31-я весна | zec60-e_yi8 |  | начало 2000-х · рок-группа Дианы Арбениной
+Noize MC — Устрой дестрой | EFD5cdTkeIg |  | 2010 · рэп-рок МС Иван Алексеев
+Timbaland — Apologize | ZSM3w1v-A_Y |  | 2007 · хип-хоп продюсер и группа OneRepublic
+Hi-Fi — Седьмой лепесток | d5qWwINZGhs |  | 2002 · поп-трио продюсера Эрика Чантурии
+Блестящие — За четыре моря | PR7BuUOrgW4 |  | 2001 · девичья поп-группа Андрея Грозного
+Ани Лорак — Солнце | CdeE_tN1NuQ |  | ≈2011 · украинская поп-дива, серебро Евровидения-2008
+Lady Gaga — Poker Face | bESGLojNYSo |  | 2008 · эпатажная дебютантка, альбом The Fame
+Сплин — Романс | 29lSd5ucOOI |  | 1999 · Александр Васильев, «Гранатовый альбом»
+Иванушки International — Тополиный пух | UUryvYF8tUs |  | 1998 · бойз-бенд Игоря Матвиенко
+Дима Билан — Believe | uE9oiDOsEmU |  | 2008 · победная песня Евровидения`,
+ost:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно) | подсказка
+Бригада | mv533P_VCzU |  | 2002 · криминальная сага на канале «Россия», Сергей Безруков
+Гарри Поттер | wtHra9tFISY |  | 2001 · фэнтези про мальчика-волшебника, музыка Джона Уильямса
+Бумер | CjFQrN7gCxE |  | 2003 · криминальная роуд-драма, чёрный BMW
+Счастливы вместе | JwJlYZRaEzo |  | 2006 · ситком ТНТ, продавец обуви Гена Букин
+Пираты Карибского моря | BuYf0taXoNw |  | 2003 · приключения капитана Джека Воробья
+Брат 2 | 1u7WN2zBEDc |  | 2000 · боевик Балабанова, песня Би-2
+Comedy Club | b9G969_T4GY |  | 2005 · юмористическое шоу ТНТ, резиденты в пиджаках
+Ночной дозор | EFeQ2ziNRA0 |  | 2004 · фэнтези-блокбастер Бекмамбетова, песня Uma2rmaH
+Друзья | RIjTq_OdFvo |  | 1994–2004 · ситком NBC про шестерых нью-йоркцев
+Кто хочет стать миллионером? | xXfupT6fwzg |  | 2001 · телевикторина Первого канала, Максим Галкин
+Универ | _WHZbCKiRXA |  | 2008 · ситком ТНТ про студенческую общагу
+Шрек | L_jWHffIx5E |  | 2001 · мультфильм DreamWorks про зелёного огра
+Дом-2 | PPzFdUXjGak |  | 2004 · реалити-шоу ТНТ, «строим любовь»
+Папины дочки | z0vpcINfcxE |  | 2007 · семейный ситком СТС, папа-стоматолог и пять девочек
+Матрица | KwVbcjJYctM |  | 1999 · киберпанк-боевик, Нео и красная таблетка
+Солдаты | 7bCzC2701HI |  | 2004 · армейский ситком на РЕН ТВ
+Фабрика звёзд | 8UDee5CCHLk |  | 2002 · музыкальное реалити Первого канала
+Властелин колец | CL_3mlOPnGI |  | 2001 · фэнтези-трилогия Питера Джексона, музыка Говарда Шора
+Кадетство | Bk4ddDKkrP8 |  | 2006 · молодёжный сериал СТС про суворовцев, песня «Корней»
+Не родись красивой | cRlfj4GIIJ0 |  | 2005 · теленовелла СТС про Катю Пушкарёву
+Доктор Хаус | u7K72X4eo_s |  | 2004 · медицинская драма FOX с Хью Лори
+Слабое звено | DWnLnVP5kxI |  | 2001 · жёсткая викторина ОРТ с Марией Киселёвой
+Улицы разбитых фонарей | JeMWi9nZiCc |  | 1998 · питерский милицейский сериал
+Титаник | CUmOFqQRkco |  | 1997 · мелодрама-катастрофа Джеймса Кэмерона
+Последний герой | G_t9ByGAn2Y |  | 2001 · реалити Первого канала на необитаемом острове
+Бандитский Петербург | 5U4WI_yVpA4 |  | 2000 · криминальный сериал НТВ, «Барон»
+Побег | zdilotXGiHA |  | 2005 · сериал FOX, Майкл Скофилд и татуировка-карта
+Каменская | y-QOe5B9Rvc |  | 1999 · детективный сериал НТВ по романам Марининой
+9 рота | HHzyk1F8L88 |  | 2005 · военная драма Фёдора Бондарчука про Афганистан
+Симпсоны | Fttst9dG6Ko |  | мультсериал FOX, в 2000-х шёл на РЕН ТВ и 2x2`,
+who:`# ответ | фото | обрезка | подсказка | видео
+Арнольд Шварценеггер | https://upload.wikimedia.org/wikipedia/commons/e/e3/Arnold_Schwarzenegger_-_Austrian_World_Summit_2026_BHO-2906.jpg |  | «I’ll be back», губернатор Калифорнии | vxyftCLN9Sw
+Джим Керри | https://upload.wikimedia.org/wikipedia/commons/e/ed/Jim_Carrey_2020_cropped.jpg |  | «Маска», «Тупой и ещё тупее» | CibSSkcej8s
+Леонид Якубович | https://upload.wikimedia.org/wikipedia/commons/e/e0/Channel_One_Russia_in_Navy_%2827-06-2013%29_08_%28cropped%29.jpg |  | «Приз в студию!», усы и барабан | U251PjyCMHM
+Майкл Джексон | https://upload.wikimedia.org/wikipedia/commons/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg |  | король поп-музыки, лунная походка | Zi_XLOBDo_Y
+Жан-Клод Ван Дамм | https://upload.wikimedia.org/wikipedia/commons/c/c6/Jean-Claude_Van_Damme_at_Brussels_Comic_Con_2023_DSC19480_Kiri_DxO.jpg |  | «мускулы из Брюсселя», шпагат между грузовиками | M7FIvfx5J10
+Киану Ривз | https://upload.wikimedia.org/wikipedia/commons/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg |  | Нео из «Матрицы» | dOe_4VeRZ6g
+Брюс Уиллис | https://upload.wikimedia.org/wikipedia/commons/c/c4/Bruce_Willis_by_Gage_Skidmore_3.jpg |  | Джон Макклейн, «Крепкий орешек» | lnsqSqZvZUw
+Илья Лагутенко | https://upload.wikimedia.org/wikipedia/commons/2/23/Ilya_Lagutenko_%40_Park_Live_%28cropped%29.JPG |  | солист рок-группы из Владивостока | nj5nuYYrZvg
+Мадонна | https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg |  | королева поп-музыки, «Hung Up» 2005 | EDwb9jOVRtU
+Валдис Пельш | https://upload.wikimedia.org/wikipedia/commons/a/a3/%D0%92%D0%B0%D0%BB%D0%B4%D0%B8%D1%81_%D0%9F%D0%B5%D0%BB%D1%8C%D1%88_%D0%B2_%D0%A6%D0%94%D0%9C_%D0%BD%D0%B0_%D0%9B%D1%83%D0%B1%D1%8F%D0%BD%D0%BA%D0%B5.jpg |  | ведущий «Угадай мелодию» | m2-O-mJT6bA
+Сильвестр Сталлоне | https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg/1920px-%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg |  | Рокки и Рэмбо | btPJPFnesV4
+Леонардо Ди Каприо | https://upload.wikimedia.org/wikipedia/commons/2/2d/LeoPTABFI191125-28_%28cropped%29.jpg |  | Джек из «Титаника» | nk7eReDe16Y
+Земфира | https://upload.wikimedia.org/wikipedia/commons/a/ac/%D0%97%D0%B5%D0%BC%D1%84%D0%B8%D1%80%D0%B0_%D0%BD%D0%B0_%D0%B2%D1%8B%D1%81%D1%82%D1%83%D0%BF%D0%BB%D0%B5%D0%BD%D0%B8%D0%B8_1_%D0%B0%D0%BF%D1%80%D0%B5%D0%BB%D1%8F_2016_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%9E%D0%BB%D0%B8%D0%BC%D0%BF%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%BC.jpg |  | рок-певица из Уфы | xpJ_fYyAeYk
+Чак Норрис | https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg/1920px-Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg |  | «Крутой Уокер», герой интернет-шуток | NIYZVSElmj4
+Валерий Меладзе | https://upload.wikimedia.org/wikipedia/commons/e/e1/Valeriy_Meladze_photoshooting_at_Laima_Rendez_Vous_Jurmala_2017.jpg |  | «Сэра», «Красиво», брат Константина | AHZOiY42L-U
+Брэд Питт | https://upload.wikimedia.org/wikipedia/commons/9/90/Brad_Pitt-69858.jpg |  | Тайлер Дёрден, «Бойцовский клуб» | C7-7qQ61QHU
+Леонид Агутин | https://upload.wikimedia.org/wikipedia/commons/3/3e/Leonid_Agutin%27s_rehearsal_at_Laima_Rendez_Vous_Jurmala_2017_.jpg |  | «Хоп хей лала лей», «Босоногий мальчик» | mlhfnvTmaek`,
 reverse:`# название | ссылка или ID YouTube | с какой секунды (необязательно)
+Хиты 90-х и 2000-х наоборот | CHYhScXH2EE
+Угадай хит 2000-х наоборот — шоу с участниками | F5iBibdU0Xo
+Мировые хиты 2000-х наоборот | VlPU3vTFkwY
+Рок наоборот: Sum 41, Korn, Rammstein… | xwFtOEesyNQ
+Зарубежный рок наоборот: Bon Jovi и другие | iWh0YgHkO_g
 Русские хиты 90-х наоборот (Руки Вверх, Губин, Иванушки…) | ST0lT5ePTmE
-Хиты 90-х наоборот (Королёва, Мираж, Сладкий сон…) | 4zNEfc9FFPo
-Песни 90-х наоборот (Розовые розы, Седая ночь, Крошка моя…) | 8_YCcmkMVzM
-Хиты 80-х наоборот (Весёлые ребята, Ротару…) | WwqqMbgd78M
-Советский фильм по перевёрнутой песне | Jvx3ViOCVcA
+Хиты 90-х наоборот (Королёва, Сладкий сон…) | 4zNEfc9FFPo
+Песни 90-х наоборот (Седая ночь, Крошка моя…) | 8_YCcmkMVzM
 Хиты 90-х наоборот, выпуск 5 | jpWXnH9NuiM`,
-frame:`# ответ | ссылка на картинку
-Ирония судьбы, или С лёгким паром! | https://i.ytimg.com/vi/L5GnqepBJkE/maxres3.jpg | 0.118,0,0.118,0
-Кавказская пленница | https://i.ytimg.com/vi/0f1LxDfNpv0/maxres3.jpg | 0.118,0,0.118,0
-Любовь и голуби | https://i.ytimg.com/vi/qYPVTBIgF7Q/maxres1.jpg | 0.118,0,0.118,0
-Бриллиантовая рука | https://i.ytimg.com/vi/M9cGHdVbNXI/maxres2.jpg | 0,0.125,0,0.125
-Брат | https://i.ytimg.com/vi/aDaaCGZz-Ok/maxres2.jpg
-Собачье сердце | https://i.ytimg.com/vi/IghryX6Aa6A/maxres3.jpg
-Иван Васильевич меняет профессию | https://i.ytimg.com/vi/TQ8onQu5QKY/maxres2.jpg | 0.118,0,0.118,0
-Особенности национальной охоты | https://i.ytimg.com/vi/oWK9K_RtRCM/maxres2.jpg
-Операция «Ы» и другие приключения Шурика | https://i.ytimg.com/vi/7ICl3sPny94/maxres2.jpg | 0.118,0,0.118,0
-Служебный роман | https://i.ytimg.com/vi/kUNy3NrxZAc/maxres1.jpg | 0.134,0,0.134,0
-Бумер | https://i.ytimg.com/vi/yOgEijEccrY/maxres3.jpg
-Белое солнце пустыни | https://i.ytimg.com/vi/GqnqFhc9aho/maxres2.jpg | 0.129,0,0.129,0
-Джентльмены удачи | https://i.ytimg.com/vi/OM2Rvkj3WEc/maxres3.jpg | 0,0.06,0,0.06
-Место встречи изменить нельзя | https://i.ytimg.com/vi/Z1ubDkZqVLk/maxres2.jpg | 0.129,0,0.129,0
-Кин-дза-дза! | https://i.ytimg.com/vi/EYHv8eJrW2Y/maxres2.jpg | 0.118,0,0.118,0
-Шерлок Холмс и доктор Ватсон | https://i.ytimg.com/vi/kDZgQU958t8/maxres2.jpg
-Москва слезам не верит | https://i.ytimg.com/vi/X7GuhjGZ-xs/maxres3.jpg | 0.133,0,0.133,0
-Д'Артаньян и три мушкетёра | https://i.ytimg.com/vi/ZkB5lxBUgDk/maxres2.jpg | 0.118,0,0.118,0
-Мимино | https://i.ytimg.com/vi/P4k2LNPRV-0/maxres2.jpg | 0.119,0,0.119,0
-Гостья из будущего | https://i.ytimg.com/vi/1iueT80-R48/maxres1.jpg | 0.128,0,0.128,0
-Афоня | https://i.ytimg.com/vi/L9HATyYkZLs/maxres2.jpg | 0.116,0,0.116,0
-Двенадцать стульев | https://i.ytimg.com/vi/P8t2dbJ7YXY/maxres2.jpg
-Покровские ворота | https://i.ytimg.com/vi/T-EM2avmxtQ/maxres1.jpg | 0.134,0,0.134,0
-Экипаж | https://i.ytimg.com/vi/lgSl7D_vtEE/maxres1.jpg
-Осенний марафон | https://i.ytimg.com/vi/deEuVTAAzbg/maxres3.jpg | 0.118,0,0.118,0
-Неуловимые мстители | https://i.ytimg.com/vi/3V0g1gM2P6o/maxres2.jpg | 0,0.126,0,0.126
-Мужики! | https://i.ytimg.com/vi/N2T0QwhmO70/maxres2.jpg | 0.118,0,0.118,0
-Карнавальная ночь | https://i.ytimg.com/vi/fEntSqfPC0g/maxres1.jpg | 0.118,0,0.118,0
-Девчата | https://i.ytimg.com/vi/8CYY8EM5xYE/maxres1.jpg | 0,0.126,0,0.126
-Берегись автомобиля | https://i.ytimg.com/vi/PGr-NddVue0/maxres3.jpg | 0.118,0,0.118,0`
+frame:`# ответ | картинка | обрезка | подсказка | видео (трейлер)
+Брат | https://i.ytimg.com/vi/ipOkqEoxuJg/maxres3.jpg | 0,0.1,0,0.1 | 1997 · криминальная драма · Сергей Бодров | Zq55yxODJiA
+Брат 2 | https://i.ytimg.com/vi/UvaqR3pjDHM/maxres2.jpg |  | 2000 · криминальный боевик · Сергей Бодров | HBAADCHpS5s
+Титаник | https://i.ytimg.com/vi/-gT74orMfYQ/maxres1.jpg |  | 1997 · драма-катастрофа · Леонардо Ди Каприо | WHtZ4NmIN1k
+Бумер | https://i.ytimg.com/vi/2dCcAaZk8Fo/maxres1.jpg |  | 2003 · криминальная драма · Владимир Вдовиченков | tLbgHMnhlz4
+ДМБ | https://i.ytimg.com/vi/gt3Anp7Vt0U/maxres2.jpg |  | 2000 · армейская комедия · Станислав Дужников | 6owl7PsMN4g
+Матрица | https://i.ytimg.com/vi/YihPA42fdQ8/maxres1.jpg |  | 1999 · фантастический боевик · Киану Ривз | YihPA42fdQ8
+Жмурки | https://i.ytimg.com/vi/hFGBmr5lOjo/maxres3.jpg |  | 2005 · криминальная комедия · Никита Михалков | JROndKTL5Y8
+Особенности национальной охоты | https://i.ytimg.com/vi/yIZmWbqqEc0/maxres2.jpg |  | 1995 · комедия · Алексей Булдаков | yIZmWbqqEc0
+Гарри Поттер и философский камень | https://i.ytimg.com/vi/VyHV0BRtdxo/maxres2.jpg | 0,0.124,0,0.124 | 2001 · фэнтези · Дэниел Рэдклифф | AFwrmkAHEk4
+Бригада | https://i.ytimg.com/vi/kUTSJTn54xg/maxres2.jpg | 0.031,0,0.031,0 | 2002 · криминальный сериал · Сергей Безруков | Jv98XZIBJAI
+Ночной дозор | https://i.ytimg.com/vi/uWQ2_0HBucw/maxres2.jpg |  | 2004 · мистический боевик · Константин Хабенский | cgQMmn-zK54
+Властелин колец | https://i.ytimg.com/vi/JV-tKAntxCw/maxres1.jpg | 0,0.122,0,0.122 | 2001 · фэнтези · Элайджа Вуд | RNksw9VU2BQ
+Дневной дозор | https://i.ytimg.com/vi/PdNZL-BWzNQ/maxres1.jpg | 0,0.122,0,0.122 | 2006 · фэнтези-боевик · Константин Хабенский | BAteiVwEfjU
+9 рота | https://i.ytimg.com/vi/l4-pAqEUdyg/maxres3.jpg | 0,0.143,0,0.143 | 2005 · военная драма · Михаил Пореченков | nT52t12aOhI
+Пираты Карибского моря | https://i.ytimg.com/vi/a27YX-ToMM4/maxres2.jpg | 0,0.122,0,0.122 | 2003 · приключения · Джонни Депп | i_JvLLSwWPg
+Ирония судьбы. Продолжение | https://i.ytimg.com/vi/Fc5XBUjFBxI/maxres2.jpg | 0,0.144,0,0.144 | 2007 · новогодняя комедия · Сергей Безруков | rTEl5uy2i88
+Мы из будущего | https://i.ytimg.com/vi/FaHyih12uew/maxres3.jpg |  | 2008 · военная фантастика · Данила Козловский | uTfXAGDs2Es
+Шрек | https://i.ytimg.com/vi/1w1wBO-hlmA/maxres2.jpg |  | 2001 · мультфильм · Майк Майерс (голос) | 1w1wBO-hlmA
+Даже не думай! | https://i.ytimg.com/vi/VknTjt3_i2E/maxres2.jpg | 0.008,0,0.008,0 | 2003 · молодёжная комедия · Алексей Панин | VknTjt3_i2E
+Антикиллер | https://i.ytimg.com/vi/bSeB9GrTxB0/maxres1.jpg |  | 2002 · криминальный боевик · Гоша Куценко | cfm9AU1Un-s
+Аватар | https://i.ytimg.com/vi/uXC_0wE6k7k/maxres2.jpg | 0,0.129,0,0.129 | 2009 · фантастика · Сэм Уортингтон | uXC_0wE6k7k
+Сёстры | https://i.ytimg.com/vi/k744_BylOTE/maxres3.jpg |  | 2001 · криминальная драма · Оксана Акиньшина | w00FkDFva3Q
+Кадетство | https://i.ytimg.com/vi/MTBzooNPLFw/maxres1.jpg |  | 2006 · молодёжный сериал · Кирилл Емельянов | ra2OTrafUA0
+Один дома | https://i.ytimg.com/vi/bBU_64CTNsw/maxres3.jpg |  | 1990 · рождественская комедия · Маколей Калкин | bBU_64CTNsw
+Универ | https://i.ytimg.com/vi/1We_H9bi3P4/maxres2.jpg |  | 2008 · ситком ТНТ · Виталий Гогунский | LrgdX7cKcyk
+Счастливы вместе | https://i.ytimg.com/vi/ipfauTWRLAQ/maxres1.jpg | 0.1,0.1,0.1,0.1 | 2006 · ситком ТНТ · Виктор Логинов | GwCBFZ6vOVk
+Форрест Гамп | https://i.ytimg.com/vi/eYSnxZKTZzU/maxres1.jpg | 0,0.119,0,0.119 | 1994 · драма · Том Хэнкс | otmeAaifX04
+Стиляги | https://i.ytimg.com/vi/qm1VyKf2kRs/maxres3.jpg | 0,0.121,0,0.121 | 2008 · мюзикл · Оксана Акиньшина | c56a_MwnNns
+Остров | https://i.ytimg.com/vi/ScYwnnhK0GY/maxres3.jpg | 0,0.122,0,0.122 | 2006 · драма · Пётр Мамонов | FSx2SB8dGYo
+Терминатор 2: Судный день | https://i.ytimg.com/vi/CRRlbK5w8AE/maxres1.jpg |  | 1991 · фантастический боевик · Арнольд Шварценеггер | M-SIftG16hU
+Мадагаскар | https://i.ytimg.com/vi/qbWE7fOa0KM/maxres1.jpg |  | 2005 · мультфильм · Бен Стиллер (голос) | qbWE7fOa0KM
+Хатико | https://i.ytimg.com/vi/k8qM14qF_Kc/maxres3.jpg | 0,0.021,0,0.021 | 2009 · драма · Ричард Гир | nRiYwfZ-5qA
+Сумерки | https://i.ytimg.com/vi/QDRLSqm_WVg/maxres1.jpg |  | 2008 · фэнтези-мелодрама · Роберт Паттинсон | g-4luIE5u-s
+Начало | https://i.ytimg.com/vi/YoHD9XEInc0/maxres1.jpg | 0,0.131,0,0.131 | 2010 · фантастический триллер · Леонардо Ди Каприо | 85Zz1CCXyDI`
 };
 
 const DEFAULT_REVERSE = `# песня | подсказка (видит только исполнитель)
@@ -545,22 +589,22 @@ const DEFAULT_REVERSE = `# песня | подсказка (видит толь�
 Happy Birthday to You | для именинника!`;
 
 const ROUNDS = [
-  {id:'music',   num:'I',    title:'Угадай мелодию',   sub:'хиты 90-х и нулевых', unit:['песня','песни','песен'], type:'audio',
+  {id:'music',   num:'I',    title:'Угадай мелодию',   sub:'хиты нулевых', unit:['песня','песни','песен'], type:'audio',
    help:'Свои песни (mp3, m4a, wav…) — играют первыми. Ниже готовый список с YouTube.'},
-  {id:'ost',     num:'II',   title:'Фильм по музыке',  sub:'саундтреки и заставки', unit:['мелодия','мелодии','мелодий'], type:'audio',
+  {id:'ost',     num:'II',   title:'Фильм по музыке',  sub:'кино и сериалы', unit:['мелодия','мелодии','мелодий'], type:'audio',
    help:'Свои саундтреки — играют первыми. Ниже готовый список с YouTube.'},
   {id:'reverse', num:'III',  title:'Задом наперёд',    sub:'хиты наоборот', unit:['викторина','викторины','викторин'], type:'video',
    help:'Свои mp3: игра вырежет фрагмент (с секунды «Начинать с», длиной «Фрагмент задом») и сыграет его задом наперёд. На ответе — как в оригинале.'},
-  {id:'who',     num:'IV',   title:'Угадай кто',       sub:'лица эпохи', unit:['лицо','лица','лиц'], type:'image', mode:'blur',
+  {id:'who',     num:'IV',   title:'Угадай кто',       sub:'звёзды нулевых', unit:['лицо','лица','лиц'], type:'image', mode:'blur',
    help:'Свои фото — особенно детские фото гостей и именинника. Открываются постепенно.'},
   {id:'frame',   num:'V',    title:'Фильм по кадру',   sub:'один кадр — один фильм', unit:['фильм','фильма','фильмов'], type:'image', mode:'tiles',
    help:'Скриншоты из фильмов (без названия на картинке). Кадр закрыт плитками.'},
   {id:'emoji',   num:'VI',   title:'Фильм по эмодзи',  sub:'ребус из смайликов', unit:['ребус','ребуса','ребусов'], type:'text', big:true,
-   help:'Строка: эмодзи | ответ | примечание.'},
+   help:'Строка: эмодзи | ответ | примечание | подсказка | видео (ID YouTube или ID@секунда).'},
   {id:'quote',   num:'VII',  title:'Продолжи цитату',  sub:'классика кино', unit:['цитата','цитаты','цитат'], type:'text', quote:true,
-   help:'Строка: начало | продолжение | фильм.'},
-  {id:'retro',   num:'VIII', title:'Ностальгия',       sub:'80-е и 90-е', unit:['вопрос','вопроса','вопросов'], type:'text',
-   help:'Строка: вопрос | ответ | комментарий. Добавьте пару вопросов про самого именинника.'},
+   help:'Строка: начало | продолжение | фильм | подсказка | видео сцены (ID@секунда).'},
+  {id:'retro',   num:'VIII', title:'Нулевые',           sub:'вспомнить всё', unit:['вопрос','вопроса','вопросов'], type:'text',
+   help:'Строка: вопрос | ответ | комментарий | подсказка | видео. Добавьте пару вопросов про самого именинника.'},
 ];
 const R = id => ROUNDS.find(r => r.id === id);
 const plural = (n, f) => { const a = n % 100, b = n % 10; return f[a > 10 && a < 20 ? 2 : b === 1 ? 0 : b >= 2 && b <= 4 ? 1 : 2]; };
@@ -568,7 +612,7 @@ const MODES = ['blur', 'zoom', 'tiles'];
 const MODE_NAMES = {blur:'размытие', zoom:'приближение', tiles:'плитки'};
 
 /* ======================= STATE ======================= */
-const LS = 'bd-party-v4';
+const LS = 'bd-party-v5';
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) {}
@@ -584,16 +628,19 @@ const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const lines = t => (t || '').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-const parseText = t => lines(t).map(l => { const [q, a = '', n = ''] = l.split('|').map(x => x.trim()); return {q, a, n}; });
+// text rounds:  вопрос | ответ | примечание | подсказка | видео (ID или ID@старт-конец)
+const parseVid = v => { const m = String(v || '').match(/^\s*([\w-]{11})(?:@(\d+)(?:-(\d+))?)?\s*$/) || String(v || '').match(/(?:v=|youtu\.be\/)([\w-]{11})()()/); return m ? {id:m[1], start:+m[2] || 0, end:+m[3] || undefined} : null; };
+const parseText = t => lines(t).map((l, i) => { const [q, a = '', n = '', hint = '', video = ''] = l.split('|').map(x => x.trim()); return {id:'t' + i, q, a, n, hint, video:parseVid(video)}; });
 const nameToAnswer = n => n.replace(/\.[^.]+$/, '').replace(/^\d+\s*[-._)]?\s*/, '').replace(/_/g, ' ').trim();
 const ytId = s => { const m = String(s).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : (/^[\w-]{11}$/.test(s) ? s : null); };
 function parseOnline(rid) {
   const r = R(rid);
   return lines(S.online[rid]).map((l, i) => {
-    const [a, src = '', st = ''] = l.split('|').map(x => x.trim());
-    if (r.type === 'audio' || r.type === 'video') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st} : null; }
+    // audio: ответ | YouTube | старт | подсказка      image: ответ | картинка | обрезка | подсказка | видео
+    const [a, src = '', st = '', hint = '', video = ''] = l.split('|').map(x => x.trim());
+    if (r.type === 'audio' || r.type === 'video') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st, hint} : null; }
     const crop = st ? st.split(',').map(Number).filter(n => !isNaN(n)) : null;
-    return /^https?:\/\//.test(src) ? {id:`web${i}`, url:src, answer:a, crop:crop && crop.length === 4 ? crop : null} : null;
+    return /^https?:\/\//.test(src) ? {id:`web${i}`, url:src, answer:a, crop:crop && crop.length === 4 ? crop : null, hint, video:parseVid(video)} : null;
   }).filter(Boolean);
 }
 
@@ -663,11 +710,39 @@ function tone(f, d, type = 'sine', t0 = 0, vol = .14) {
   o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .05);
 }
 const bell = (f, t = 0, v = .12, d = 1.6) => { tone(f, d, 'sine', t, v); tone(f * 2, d * .6, 'sine', t, v * .35); tone(f * 3.01, d * .3, 'sine', t, v * .15); };
+let NOISE = null;
+function noise(t0, d, {type = 'bandpass', freq = 1000, q = 1, vol = .2, attack = .004, sweep = null} = {}) {
+  const c = ac(), t = c.currentTime + t0;
+  if (!NOISE) { NOISE = c.createBuffer(1, c.sampleRate * 2, c.sampleRate); const x = NOISE.getChannelData(0); for (let i = 0; i < x.length; i++) x[i] = Math.random() * 2 - 1; }
+  const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = NOISE; s.loop = true; f.type = type; f.frequency.setValueAtTime(freq, t); f.Q.value = q;
+  if (sweep) f.frequency.exponentialRampToValueAtTime(sweep, t + d);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  s.connect(f).connect(g).connect(c.destination); s.start(t, Math.random()); s.stop(t + d + .05);
+}
+function drop(f1, f2, d, t0 = 0, vol = .5) {     // pitched drum / boom
+  const c = ac(), t = c.currentTime + t0, o = c.createOscillator(), g = c.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .05);
+}
 const sfx = {
-  chime: () => bell(1318.5, 0, .08, .6),
-  reveal: () => [523.25, 659.25, 783.99, 987.77, 1046.5].forEach((f, i) => bell(f, i * .085, .09, 1.4)),
+  chime: () => { bell(1318.5, 0, .07, .6); bell(1975.5, .07, .05, .6); },
+  pop: () => { drop(500, 1400, .12, 0, .25); bell(1760, .05, .05, .4); },
+  whoosh: () => noise(0, .55, {freq:400, sweep:4000, q:.8, vol:.16, attack:.25}),
+  boom: (t = 0) => { drop(120, 38, 1.1, t, .6); noise(t, .5, {type:'lowpass', freq:600, vol:.25}); },
+  cymbal: (t = 0) => noise(t, 1.8, {type:'highpass', freq:6500, q:.5, vol:.12, attack:.002}),
+  drumroll: (dur = .9) => {
+    for (let x = 0, i = 0; x < dur; x += .045, i++) noise(x, .07, {type:'highpass', freq:1800, q:.6, vol:.03 + .17 * (x / dur), attack:.002});
+    drop(90, 60, .3, dur - .05, .35);
+  },
+  applause: (dur = 2.6) => {
+    for (let i = 0; i < 170; i++) { const t = Math.pow(Math.random(), 1.6) * dur; noise(t, .05 + Math.random() * .04, {freq:1100 + Math.random() * 1600, q:1.2, vol:(.04 + Math.random() * .06) * (1 - t / dur * .8), attack:.002}); }
+  },
+  intro: () => { sfx.whoosh(); sfx.boom(.45); [392, 523.25, 659.25, 783.99].forEach((f, i) => bell(f, .5 + i * .07, .06, 1.6)); sfx.cymbal(.45); },
+  reveal: () => { sfx.cymbal(); drop(110, 55, .5, 0, .35); [523.25, 659.25, 783.99, 987.77, 1046.5].forEach((f, i) => bell(f, i * .07, .08, 1.4)); sfx.applause(); },
   tick: () => tone(1400, .05, 'sine', 0, .06),
-  end: () => { bell(392, 0, .14, 1.2); bell(311.1, .25, .14, 1.6); },
+  end: () => { sfx.boom(); bell(392, 0, .14, 1.2); bell(311.1, .25, .14, 1.6); },
   fanfare: () => [[523.25,0,.25],[659.25,.22,.25],[783.99,.44,.25],[1046.5,.7,1.6],[783.99,.7,1.6],[659.25,.7,1.6]].forEach(([f,t,d]) => { bell(f, t, .11, d); tone(f / 2, d, 'triangle', t, .05); }),
 };
 
@@ -716,26 +791,36 @@ function openRound(rid) {
   if (r.type !== 'meter' && !itemsOf(rid).length) return show('prep');
   show('game');
   G = {rid, idx:0};
+  introRound(r);
   resetItem(); renderGame();
 }
 const cur = () => G && itemsOf(G.rid)[G.idx];
 const rtype = () => G && R(G.rid).type;
 function resetItem() {
   stopAllAudio(); ytShow(false); stopTimer();
-  Object.assign(G, {revealed:false, hint:0, started:false, tiles:new Set(Array.from({length:24}, (_, i) => i)),
+  Object.assign(G, {revealed:false, revealing:false, hint:0, open:0, started:false, rv:null, choices:null, tiles:new Set(Array.from({length:24}, (_, i) => i)),
     origin:`${25 + Math.random() * 50}% ${25 + Math.random() * 50}%`});
+}
+function introRound(r) {
+  const el = $('#intro'); clearTimeout(el._t);
+  $('#inNum').textContent = r.num; $('#inTitle').textContent = r.title;
+  const n = itemsOf(r.id).length; $('#inSub').textContent = r.unit ? `${n} ${plural(n, r.unit)}` : '';
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  sfx.intro(); confetti(60);
+  el._t = setTimeout(() => el.classList.remove('on'), 2600);
 }
 function go(d) {
   if (!G || rtype() === 'meter') return;
   const n = itemsOf(G.rid).length, ni = Math.max(0, Math.min(n, G.idx + d));
   if (ni === G.idx) return;
-  G.idx = ni; resetItem(); renderGame();
+  G.idx = ni; resetItem(); renderGame(); if (ni < n) sfx.whoosh();
 }
 function renderGame() {
   const r = R(G.rid), list = itemsOf(G.rid), n = list.length;
   $('#gNum').textContent = `— ${r.num} —`;
   $('#gTitle').textContent = r.title;
   $('#gCounter').innerHTML = r.type === 'meter' || G.idx >= n ? '' : `<b>${G.idx + 1}</b> / ${n}`;
+  $('#gProg').style.width = (n ? Math.min(100, (G.idx + (G.idx >= n ? 0 : 1)) / n * 100) : 0) + '%';
   const stage = $('#stage'), ctr = $('#controls');
   stage.className = 'stage'; $('#answer').innerHTML = '';
   $('#game').classList.toggle('imgmode', r.type === 'image'); $('#game').classList.toggle('vidmode', r.type === 'video');
@@ -743,13 +828,17 @@ function renderGame() {
   if (G.idx >= n) {
     stage.innerHTML = `<div class="endcard"><div class="caps">раунд ${r.num}</div><div class="big gold">Раунд сыгран</div><div class="orn">✦</div></div>`;
     ctr.innerHTML = `<button data-act="prev">‹ Назад</button><button class="main" data-go="home">К раундам</button>`;
-    confetti(160); sfx.fanfare(); return;
+    confetti(220); sfx.fanfare(); sfx.applause(3.5); return;
   }
   const it = list[G.idx];
   const nav = mid => `<button data-act="prev">‹<kbd>←</kbd></button>${mid}<button data-act="timer">Таймер<kbd>T</kbd></button><button class="main" data-act="reveal">Ответ<kbd>⏎</kbd></button><button data-act="next">›<kbd>→</kbd></button>`;
 
-  if (r.type === 'text') {
-    const len = [...it.q].length, size = r.big ? 'emoji' : len > 70 ? 'm' : len > 32 ? 'l' : '';
+  if (r.type === 'text' && r.big) {           // emoji rebus: emojis appear one by one
+    if (!G.open) G.open = 1;
+    stage.innerHTML = `<div class="q emoji">${graphemes(it.q).map((g, i) => `<span class="em${i < G.open ? ' on' : ''}" data-i="${i}"><i>${esc(g)}</i></span>`).join('')}</div>`;
+    ctr.innerHTML = nav(`<button data-act="uncover">Ещё эмодзи</button><button data-act="hint">Подсказка<kbd>H</kbd></button>`);
+  } else if (r.type === 'text') {
+    const len = [...it.q].length, size = len > 70 ? 'm' : len > 32 ? 'l' : '';
     stage.innerHTML = `<div class="q ${size} ${r.quote ? 'q-quote' : ''}">${esc(it.q)}</div>`;
     ctr.innerHTML = nav(`<button data-act="hint">Подсказка<kbd>H</kbd></button>`);
   } else if (r.type === 'image') {
@@ -758,11 +847,11 @@ function renderGame() {
       ${mode === 'tiles' ? `<div class="tgrid">${Array.from({length:24}, (_, i) => `<div class="tcell" data-tile="${i}">${i + 1}</div>`).join('')}</div>` : ''}</div>`;
     $('#gimg').addEventListener('load', fitImg); if ($('#gimg').complete) fitImg();
     $('#gimg').addEventListener('error', () => { $('#answer').innerHTML = '<div class="caps">картинка не загрузилась — нет интернета?</div>'; });
-    ctr.innerHTML = nav(`<button data-act="hint">Открыть ещё<kbd>H</kbd></button><button data-act="mode">${MODE_NAMES[mode]}<kbd>M</kbd></button>`);
+    ctr.innerHTML = nav(`<button data-act="uncover">Открыть ещё<kbd>O</kbd></button><button data-act="hint">Подсказка<kbd>H</kbd></button><button data-act="mode">${MODE_NAMES[mode]}<kbd>M</kbd></button>`);
     applyReveal(true);
   } else if (r.type === 'audio') {
     stage.innerHTML = audioBox('Слушаем и угадываем');
-    ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 5 сек<kbd>A</kbd></button><button data-act="restart">С начала</button>`);
+    ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 5 сек<kbd>A</kbd></button><button data-act="hint">Подсказка<kbd>H</kbd></button>`);
   } else if (r.type === 'video') {
     stage.innerHTML = '';
     ctr.innerHTML = `<button data-act="prev">‹<kbd>←</kbd></button><button class="main" data-act="play">Играть / пауза<kbd>␣</kbd></button><button data-act="back10">« 10 сек</button><button data-act="fwd10">10 сек »</button><button data-act="next">›<kbd>→</kbd></button>`;
@@ -778,20 +867,28 @@ function setStatus(t) { const s = $('#astatus'); if (s) s.textContent = t; }
 
 function renderAnswer() {
   const it = cur(), el = $('#answer'); if (!it || !G) return;
-  const r = R(G.rid);
   const a = it.answer ?? it.a ?? '';
   const note = it.n || '';
   const sz = a.length > 44 ? ' xs' : a.length > 24 ? ' s' : '';
-  if (G.revealed) el.innerHTML = `<div class="a gold${sz}">${esc(a)}</div>${note ? `<div class="nt caps">${esc(note)}</div>` : ''}`;
-  else if (G.hint > 0 && r.type === 'text') el.innerHTML = `<div class="mask${sz ? ' s' : ''}">${esc(mask(a, G.hint))}</div>`;
-  else el.innerHTML = `<div class="ph caps">✦</div>`;
+  if (G.revealed) { el.innerHTML = `<div class="a gold${sz}">${esc(a)}</div>${note ? `<div class="nt caps">${esc(note)}</div>` : ''}`; return; }
+  const parts = [];
+  if (G.hint >= 1 && it.hint) parts.push(`<div class="hintbox"><span class="caps">подсказка</span><span class="ht">${esc(it.hint)}</span></div>`);
+  if (G.hint >= 2 || (G.hint >= 1 && !it.hint)) { const cs = choicesOf(it), lng = Math.max(...cs.map(c => c.length)) > 34; parts.push(`<div class="choices${lng ? ' long' : ''}">${cs.map((c, i) => `<div class="ch"><b>${'ABCD'[i]}</b><span>${esc(c)}</span></div>`).join('')}</div>`); }
+  el.innerHTML = parts.length ? parts.join('') : `<div class="ph caps">✦</div>`;
 }
-function mask(a, k) {
-  return a.split(/(\s+)/).map(w => {
-    if (/^\s+$/.test(w)) return w;
-    let i = 0;
-    return [...w].map(c => /[\p{L}\p{N}]/u.test(c) ? (i++ < k ? c : '_') : c).join('');
-  }).join('');
+// four answer options: the right one + three others from the same round, stable for each question
+function choicesOf(it) {
+  if (G.choices && G.choicesFor === it.id) return G.choices;
+  const ans = x => x.answer ?? x.a ?? '';
+  const right = ans(it);
+  let seed = [...String(it.id) + right].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const pool = [...new Set(itemsOf(G.rid).map(ans).filter(x => x && x !== right))];
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  const opts = [right, ...pool.slice(0, 3)];
+  for (let i = opts.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [opts[i], opts[j]] = [opts[j], opts[i]]; }
+  G.choices = opts; G.choicesFor = it.id;
+  return opts;
 }
 function fitImg() {
   const img = $('#gimg'), st = $('#stage'), wrap = $('#imgwrap'); if (!img || !img.naturalWidth || !G) return;
@@ -804,35 +901,64 @@ function fitImg() {
 const BLUR = [48, 32, 22, 14, 8, 3], ZOOM = [7, 4.6, 3.1, 2.1, 1.5, 1.15];
 function applyReveal(instant) {
   const img = $('#gimg'); if (!img) return;
-  const mode = S.modes[G.rid] || R(G.rid).mode, h = Math.min(G.hint, BLUR.length - 1);
+  const mode = S.modes[G.rid] || R(G.rid).mode, h = Math.min(G.open, BLUR.length - 1);
   if (instant) { img.style.transition = 'none'; requestAnimationFrame(() => requestAnimationFrame(() => img.style.transition = '')); }
   img.style.filter = mode === 'blur' && !G.revealed ? `blur(${BLUR[h]}px)` : 'none';
   img.style.transformOrigin = G.origin;
   img.style.transform = mode === 'zoom' && !G.revealed ? `scale(${ZOOM[h]})` : 'none';
   document.querySelectorAll('.tcell').forEach(c => c.classList.toggle('off', G.revealed || !G.tiles.has(+c.dataset.tile)));
 }
+// Hints: 1st press — a text clue, 2nd — four answer options.
 function hint() {
-  if (!G || G.revealed || !cur()) return;
-  const t = rtype();
-  if (t !== 'text' && t !== 'image') return;
-  G.hint++;
-  if (t === 'image') {
-    const left = [...G.tiles];
-    for (let i = 0; i < 3 && left.length; i++) G.tiles.delete(left.splice(Math.floor(Math.random() * left.length), 1)[0]);
-    applyReveal();
+  if (!G || G.revealed || !cur() || !['text', 'image', 'audio'].includes(rtype())) return;
+  const max = cur().hint ? 2 : 1;
+  if (G.hint >= max) return;
+  G.hint++; sfx.chime(); renderAnswer();
+}
+// Pictures: uncover a bit more (tiles / less blur / less zoom).
+const graphemes = s => { try { return [...new Intl.Segmenter('ru', {granularity:'grapheme'}).segment(s)].map(x => x.segment).filter(x => x.trim()); } catch (e) { return Array.from(s).filter(x => x.trim()); } };
+function showEmojis(all) {
+  document.querySelectorAll('.em').forEach(e => { if (all || +e.dataset.i < G.open) e.classList.add('on'); });
+}
+function uncover() {
+  if (!G || G.revealed) return;
+  if (rtype() === 'text' && R(G.rid).big) {
+    const n = graphemes(cur().q).length; if (G.open >= n) return;
+    G.open++; showEmojis(); sfx.pop(); return;
   }
-  sfx.chime(); renderAnswer();
+  if (rtype() !== 'image') return;
+  G.open++;
+  const left = [...G.tiles];
+  for (let i = 0; i < 3 && left.length; i++) G.tiles.delete(left.splice(Math.floor(Math.random() * left.length), 1)[0]);
+  applyReveal(); sfx.chime();
 }
 function reveal() {
-  if (!G || rtype() === 'meter' || rtype() === 'video' || !cur() || G.revealed) return;
-  G.revealed = true; stopTimer();
+  if (!G || rtype() === 'meter' || rtype() === 'video' || !cur() || G.revealed || G.revealing) return;
+  G.revealing = true; stopTimer();
+  const id = cur().id;
+  $('#answer').innerHTML = '<div class="drum caps">барабанная дробь…</div>';
+  sfx.drumroll(.95);
+  setTimeout(() => { if (!G || cur()?.id !== id) return; G.revealing = false; doReveal(); }, 1000);
+}
+function doReveal() {
+  G.revealed = true;
+  showEmojis(true);
   applyReveal(); renderAnswer(); sfx.reveal(); confetti(90);
   const t = rtype(), it = cur();
   if (t === 'audio') {
     if (it.yt) ytShow(true);
     if (!G.started) playFrom(startOf(), 0); else if (mPaused()) mPlay(0);
+  } else if (it.video) {           // after the answer: the scene / trailer / clip
+    const id = it.id;
+    setTimeout(() => { if (G && G.revealed && cur()?.id === id) playRevealVideo(it.video); }, t === 'image' ? 1600 : 1100);
   }
-  if (t === 'reverse' && it.kind === 'file') setTimeout(() => rvPlay('orig'), 700);
+}
+async function playRevealVideo(v) {
+  const p = await ytLoad(); if (!p || !G) return;
+  G.rv = v; G.started = true; ytPendingFrag = null;
+  ytCur = v.id;
+  p.loadVideoById({videoId:v.id, startSeconds:v.start || 0, ...(v.end ? {endSeconds:v.end} : {})});
+  ytShow(true);
 }
 function cycleMode() {
   if (rtype() !== 'image') return;
@@ -883,18 +1009,19 @@ function ytErr(e) {
   G && (G.ytError = true);
   setStatus(`Это видео не играет (${codes[e.data] || e.data}) — листайте дальше ›`);
 }
-function ytShow(on) {
-  const w = $('#ytwrap'); w.classList.toggle('show', !!on); $('#stage').classList.toggle('vidon', !!on);
+function ytShow(on, target) {
+  const w = $('#ytwrap'); w.classList.toggle('show', !!on); $('#stage').classList.toggle('vidon', !!on && !target);
+  NET.ytTarget = on ? target || null : null;
   if (on) placeYt();
 }
 function placeYt() {
-  const r = $('#stage').getBoundingClientRect(), pad = 16;
+  const r = (NET.ytTarget || $('#stage')).getBoundingClientRect(), pad = NET.ytTarget ? 0 : 16;
   let w = r.width - pad * 2, h = w * 9 / 16;
   if (h > r.height - pad * 2) { h = r.height - pad * 2; w = h * 16 / 9; }
   Object.assign($('#ytwrap').style, {width:w + 'px', height:h + 'px', left:(r.left + (r.width - w) / 2) + 'px', top:(r.top + (r.height - h) / 2) + 'px'});
 }
 const isMedia = t => t === 'audio' || t === 'video';
-const isYt = () => !!(G && isMedia(rtype()) && cur() && cur().yt);
+const isYt = () => !!(G && cur() && ((isMedia(rtype()) && cur().yt) || G.rv));
 function noCaptions() { try { YTP.unloadModule('captions'); YTP.unloadModule('cc'); YTP.setOption('captions', 'track', {}); } catch (e) {} }
 function seekBy(d) { if (!isYt() || !YTP) return; try { YTP.seekTo(Math.max(0, YTP.getCurrentTime() + d), true); } catch (e) {} }
 function mPause() { clearTimeout(stopT); player.pause(); ytPendingFrag = null; try { YTP && YTP.pauseVideo(); } catch (e) {} }
@@ -929,7 +1056,9 @@ async function playFrom(start, sec) {
   clearTimeout(stopT); if (sec) stopT = setTimeout(mPause, sec * 1000);
 }
 function space() {
+  if (!G && $('#finale').classList.contains('active') && YTP) { try { YTP.getPlayerState() === 1 ? YTP.pauseVideo() : YTP.playVideo(); } catch (e) {} return; }
   if (!G || !cur()) return;
+  if (G.rv) { if (mPaused()) mPlay(0); else mPause(); return; }
   if (!isMedia(rtype())) return;
   if (!G.started) return playFrom(startOf(), rtype() === 'video' ? 0 : (+S.frag || 7));
   if (mPaused()) mPlay(0); else mPause();
@@ -1158,9 +1287,19 @@ async function reorder(rid, list) { let base = Date.now(); for (const m of list)
 const findM = key => { const [rid, id] = key.split(':'); return [rid, media[rid].find(m => String(m.id) === id)]; };
 
 /* ======================= FINALE ======================= */
+const BIRTHDAY_SONG = 'RcVZfJO01NI';   // Stevie Wonder — Happy Birthday
 function renderFinale() {
   $('#fName').textContent = S.name || 'дорогой друг';
-  setTimeout(() => { sfx.fanfare(); confetti(320); }, 300);
+  $('#finale').classList.remove('withvid');
+  setTimeout(() => { sfx.fanfare(); sfx.applause(4); confetti(320); }, 300);
+  setTimeout(async () => {
+    if (!$('#finale').classList.contains('active')) return;
+    const p = await ytLoad(); if (!p || !$('#finale').classList.contains('active')) return;
+    $('#finale').classList.add('withvid');
+    ytCur = BIRTHDAY_SONG; p.loadVideoById({videoId:BIRTHDAY_SONG, startSeconds:0});
+    requestAnimationFrame(() => ytShow(true, $('#finVid')));
+    setInterval(() => confetti(60), 6000);
+  }, 3500);
 }
 
 /* ======================= CONFETTI + LOOP ======================= */
@@ -1173,10 +1312,21 @@ function confetti(n = 150) {
     w:4 + Math.random() * 7, h:6 + Math.random() * 12, rot:Math.random() * 6, vr:(Math.random() - .5) * .35, c:GOLDS[i % GOLDS.length], round:Math.random() < .3, life:0});
 }
 let vizData = null;
+const dust = Array.from({length:46}, () => ({x:Math.random(), y:Math.random(), r:.6 + Math.random() * 1.8, v:.00012 + Math.random() * .00035, a:.15 + Math.random() * .35, p:Math.random() * 6.28}));
+function drawDust() {
+  if (REMOTE_MODE || $('#ytwrap').classList.contains('show')) return;
+  const W = cv.width, H = cv.height, t = performance.now() / 1000;
+  for (const d of dust) {
+    d.y -= d.v; if (d.y < -.02) { d.y = 1.02; d.x = Math.random(); }
+    const x = (d.x + Math.sin(t * .3 + d.p) * .01) * W, y = d.y * H, al = d.a * (.6 + .4 * Math.sin(t * 1.3 + d.p));
+    cx.beginPath(); cx.arc(x, y, d.r * (W / 1280), 0, 6.283); cx.fillStyle = `rgba(233,205,138,${al})`; cx.fill();
+  }
+}
 function loop() {
   requestAnimationFrame(loop);
   if (cv.width !== innerWidth || cv.height !== innerHeight) { cv.width = innerWidth; cv.height = innerHeight; }
   cx.clearRect(0, 0, cv.width, cv.height);
+  drawDust();
   parts = parts.filter(p => p.y < innerHeight + 40 && p.life < 420);
   for (const p of parts) {
     p.vy += .38; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
@@ -1239,6 +1389,7 @@ document.addEventListener('click', e => {
     case 'prev': return go(-1);
     case 'next': return go(1);
     case 'hint': return hint();
+    case 'uncover': return uncover();
     case 'reveal': return reveal();
     case 'timer': return toggleTimer();
     case 'mode': return cycleMode();
@@ -1281,9 +1432,10 @@ document.addEventListener('keydown', e => {
   if (!G) return;
   if (rtype() === 'meter') { if (c === 'Space') { e.preventDefault(); measure(); } return; }
   const map = {ArrowRight:() => go(1), ArrowLeft:() => go(-1), Enter:reveal, NumpadEnter:reveal, KeyH:hint, KeyT:toggleTimer, KeyM:cycleMode,
-    Space:space, KeyA:more};
+    Space:space, KeyA:more, KeyO:uncover};
   if (map[c]) { e.preventDefault(); map[c](); }
 });
+try { new ResizeObserver(() => { fitImg(); if ($('#ytwrap').classList.contains('show')) placeYt(); }).observe($('#stage')); } catch (e) {}
 addEventListener('resize', () => { if ($('#ytwrap').classList.contains('show')) placeYt(); fitImg(); });
 
 /* ======================= TV ⇄ PHONE LINK (MQTT over WebSocket) =======================
@@ -1345,7 +1497,7 @@ function snapshot() {
       answer:it ? (it.answer ?? it.a ?? '') : '', note:it ? (it.n || '') : '',
       revealed:G.revealed, mode:MODE_NAMES[S.modes[G.rid] || r.mode] || '',
       status:($('#astatus') || {}).textContent || '',
-      playing:isMedia(r.type) ? !mPaused() : false, timer:T.iv ? T.left : null});
+      playing:isMedia(r.type) || G.rv ? !mPaused() : false, video:!!(it && it.video), rv:!!G.rv, emoji:!!r.big, emojiLeft:r.big && it ? graphemes(it.q).length - (G.open || 1) : 0, hintN:G.hint, hasHint:!!(it && it.hint), timer:T.iv ? T.left : null});
   }
   return st;
 }
@@ -1383,7 +1535,8 @@ function handleCmd(d) {
   if (c === 'go') return show(d.to);
   if (c === 'start') return startGame(true);
   if (c === 'name') { S.name = String(d.v || '').slice(0, 40); save(); $('#sName').textContent = S.name || 'дорогой друг'; if ($('#home').classList.contains('active')) renderHome(); return; }
-  const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, reveal, timer:toggleTimer, mode:cycleMode,
+  const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, uncover, reveal,
+    video:() => { const it = cur(); if (G && G.revealed && it && it.video) playRevealVideo(it.video); }, timer:toggleTimer, mode:cycleMode,
     restart:() => { if (isMedia(rtype())) { G.started = false; playFrom(0, 0); } },
     back10:() => seekBy(-10), fwd10:() => seekBy(10), party:() => { sfx.fanfare(); confetti(320); }};
   map[c] && map[c]();
@@ -1431,7 +1584,7 @@ function rmRender() {
   const st = RM.state, net = !!(RM.client && RM.client.connected);
   const fresh = st && performance.now() - RM.gotState < 12000;     // TV publishes at least every 5 s
   const ok = net && fresh;
-  const key = JSON.stringify([ok, net, st && [st.screen, st.started, st.rid, st.idx, st.end, st.revealed, st.type, st.playing, st.mode, st.timer, st.rounds.map(r => r.n).join()], RM.showAns]);
+  const key = JSON.stringify([ok, net, st && [st.screen, st.started, st.rid, st.idx, st.end, st.revealed, st.type, st.playing, st.mode, st.timer, st.hintN, st.rv, st.emojiLeft, st.rounds.map(r => r.n).join()], RM.showAns]);
   if (key === RM.key) { rmMsg(st?.status || ''); return; }
   const item = st ? st.rid + ':' + st.idx : '';
   if (item !== RM.itemKey) { RM.itemKey = item; RM.showAns = false; }
@@ -1461,9 +1614,13 @@ function rmGame(st) {
   const ansBtn = `<button class="main big wide" data-c="reveal" ${st.revealed ? 'disabled style="opacity:.5"' : ''}>${st.revealed ? 'Ответ на экране' : 'Показать ответ на ТВ'}</button>`;
   const ans = `<div class="rm-ans" data-c="ans"><div class="caps">ответ (видите только вы) · ${RM.showAns ? 'нажмите, чтобы скрыть' : 'нажмите, чтобы подсмотреть'}</div><div class="v ${RM.showAns ? '' : 'hid'}">${esc(st.answer)}</div></div>`;
   let g = '';
-  if (st.type === 'text') g = `<button class="big wide" data-c="hint">Подсказка (буквы)</button>`;
-  if (st.type === 'image') g = `<button class="big" data-c="hint">Открыть ещё</button><button class="big" data-c="mode">Режим: ${esc(st.mode)}</button>`;
-  if (st.type === 'audio') g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+5 секунд</button><button data-c="restart">С начала</button>`;
+  const hintLbl = st.hintN === 0 ? (st.hasHint ? 'Подсказка' : 'Варианты ответа') : st.hintN === 1 && st.hasHint ? 'Варианты ответа' : 'Подсказки показаны';
+  const hintBtn = (cls = 'big wide') => `<button class="${cls}" data-c="hint" ${st.revealed || (st.hintN >= (st.hasHint ? 2 : 1)) ? 'disabled style="opacity:.45"' : ''}>${hintLbl}</button>`;
+  if (st.revealed && (st.video || st.type === 'audio')) g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза видео' : '▶ Смотреть видео'}</button>`;
+  else if (st.type === 'text' && st.emoji) g = `<button class="big wide" data-c="uncover" ${st.emojiLeft > 0 ? '' : 'disabled style="opacity:.45"'}>Ещё эмодзи${st.emojiLeft > 0 ? ` (осталось ${st.emojiLeft})` : ''}</button>${hintBtn()}`;
+  else if (st.type === 'text') g = hintBtn();
+  if (!st.revealed && st.type === 'image') g = `<button class="big" data-c="uncover">Открыть ещё</button><button class="big" data-c="mode">Режим: ${esc(st.mode)}</button>${hintBtn()}`;
+  if (st.type === 'audio' && !st.revealed) g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+5 секунд</button><button data-c="restart">С начала</button>${hintBtn()}`;
   return head + ans + `<div class="rm-grid">${g}${ansBtn}${nav}${timer}</div>`;
 }
 document.addEventListener('click', e => {
