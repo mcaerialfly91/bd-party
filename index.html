@@ -978,6 +978,8 @@ function doReveal() {
   applyReveal(); renderAnswer(); sfx.reveal(); confetti(90);
   const t = rtype(), it = cur();
   if (t === 'audio') {
+    // once the answer is shown the song keeps playing until the host switches: cancel the fragment timer
+    clearTimeout(stopT); if (ytPendingFrag != null) ytPendingFrag = 0;
     if (it.yt) ytShow(true);
     if (!G.started) playFrom(startOf(), 0); else if (mPaused()) mPlay(0);
   } else if (it.video) {           // after the answer: the scene / trailer / clip
@@ -1100,6 +1102,7 @@ function space() {
 function more() {
   if (rtype() === 'video') return seekBy(10);
   if (rtype() !== 'audio' || !cur()) return;
+  if (G.revealed) { if (mPaused()) mPlay(0); return; }
   if (!G.started) return playFrom(startOf(), 5);
   mPlay(5);
 }
