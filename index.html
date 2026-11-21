@@ -1,0 +1,1491 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Вечер угадываний</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09080a; --ink:#f3ead7; --muted:#a3967c; --dim:#6f6552;
+  --g1:#fbefc4; --g2:#d9b46a; --g3:#9a7031; --line:rgba(217,180,106,.32); --line2:rgba(217,180,106,.14);
+  --wine:#7a1a2a; --glass:rgba(255,244,220,.035);
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif; --sans:Montserrat,system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;color:var(--ink);font-family:var(--sans);font-weight:400;
+  background:
+    radial-gradient(1100px 520px at 50% -12%,rgba(217,180,106,.16),transparent 65%),
+    radial-gradient(900px 600px at 50% 115%,rgba(122,26,42,.28),transparent 60%),
+    radial-gradient(circle at 50% 50%,#121014 0%,#09080a 70%);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;
+  background-image:repeating-linear-gradient(45deg,#d9b46a 0 1px,transparent 1px 22px),repeating-linear-gradient(-45deg,#d9b46a 0 1px,transparent 1px 22px)}
+.frame{position:fixed;inset:12px;border:1px solid var(--line);pointer-events:none;z-index:30}
+.frame::before{content:"";position:absolute;inset:6px;border:1px solid var(--line2)}
+.frame i{position:absolute;width:12px;height:12px;background:var(--g2);transform:rotate(45deg)}
+.frame i:nth-child(1){top:-6px;left:-6px}.frame i:nth-child(2){top:-6px;right:-6px}
+.frame i:nth-child(3){bottom:-6px;left:-6px}.frame i:nth-child(4){bottom:-6px;right:-6px}
+
+.gold{background:linear-gradient(180deg,var(--g1) 0%,var(--g2) 48%,var(--g3) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.caps{text-transform:uppercase;letter-spacing:.32em;font-weight:500;font-size:clamp(11px,.9vw,15px);color:var(--muted)}
+.orn{display:flex;align-items:center;gap:14px;color:var(--g2);justify-content:center}
+.orn::before,.orn::after{content:"";height:1px;width:min(160px,14vw);background:linear-gradient(90deg,transparent,var(--g2))}
+.orn::after{transform:scaleX(-1)}
+
+.screen{position:fixed;inset:0;display:none;padding:28px}
+.screen.active{display:flex;flex-direction:column}
+
+button{font-family:var(--sans);font-size:clamp(11px,.85vw,14px);letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+  color:var(--ink);background:transparent;border:1px solid var(--line);padding:.85em 1.4em;cursor:pointer;transition:.25s;border-radius:2px}
+button:hover{border-color:var(--g2);color:var(--g1);background:rgba(217,180,106,.07)}
+button.main{background:linear-gradient(180deg,#e9cd8a,#b88a43);color:#1a1206;border-color:transparent;font-weight:600}
+button.main:hover{filter:brightness(1.08);color:#1a1206}
+button.ghost{border-color:transparent;color:var(--muted)}
+button.ghost:hover{color:var(--g1)}
+button.rec{border-color:#c43b4f;color:#ff8e9e}
+button.rec.on{background:#c43b4f;color:#fff;animation:recp 1s infinite}
+@keyframes recp{50%{opacity:.6}}
+kbd{font-family:var(--sans);font-size:.85em;opacity:.5;margin-left:.6em;letter-spacing:0}
+input,textarea{font:inherit;font-size:15px;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid var(--line2);border-radius:2px;padding:.55em .8em}
+input:focus,textarea:focus{outline:none;border-color:var(--g2)}
+textarea{width:100%;line-height:1.55;font-size:14px}
+
+/* ---------- HOME ---------- */
+#home{align-items:center;justify-content:center;gap:3.2vh;text-align:center}
+.h-pre{margin:0}
+.h-title{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,64px);margin:0;color:var(--ink);line-height:1}
+.h-name{font-family:var(--serif);font-weight:800;font-size:clamp(46px,7.4vw,140px);margin:-.1em 0 0;line-height:1.05;filter:drop-shadow(0 6px 30px rgba(217,180,106,.25))}
+.rounds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(1380px,90vw);margin-top:1vh}
+.rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:2.1vh 1.6vw 2vh;cursor:pointer;transition:.3s;text-align:left;display:flex;align-items:center;gap:1.4vw}
+.rcard::after{content:"";position:absolute;inset:4px;border:1px solid transparent;transition:.3s;pointer-events:none}
+.rcard:hover{border-color:var(--line);background:rgba(217,180,106,.06);transform:translateY(-2px)}
+.rcard:hover::after{border-color:var(--line2)}
+.rnum{font-family:var(--serif);font-size:clamp(26px,2.6vw,48px);min-width:1.9em;text-align:center;line-height:1}
+.rtxt{min-width:0}
+.rtt{font-family:var(--serif);font-size:clamp(17px,1.55vw,28px);line-height:1.15}
+.rsub{margin-top:.45em;font-size:clamp(10px,.75vw,13px);letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.rcard.empty{opacity:.45}
+.h-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.warn-box{border:1px solid #c43b4f;color:#ffb3bf;padding:.7em 1.2em;font-size:14px;max-width:90vw}
+
+/* ---------- GAME ---------- */
+#game.active{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:1.2vh}
+.g-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:4px 10px 0}
+.g-title{text-align:center}
+.g-title .n{font-family:var(--serif);font-size:clamp(14px,1.1vw,20px);color:var(--g2);letter-spacing:.2em}
+.g-title .t{font-family:var(--serif);font-size:clamp(22px,2.2vw,40px);line-height:1.1}
+.g-right{display:flex;justify-content:flex-end;align-items:center;gap:2vw}
+.counter{font-family:var(--serif);font-size:clamp(16px,1.4vw,26px);color:var(--muted)}
+.counter b{color:var(--ink);font-weight:400}
+.timer{font-family:var(--serif);font-size:clamp(26px,2.6vw,48px);min-width:2.2em;text-align:center;visibility:hidden}
+.timer.on{visibility:visible}
+.timer.warn{color:#ff6b81;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.12)}}
+.stage{position:relative;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.answer{min-height:15vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 4vw}
+.answer .a{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,64px);line-height:1.15;animation:rise .7s cubic-bezier(.2,.9,.3,1.2) both}
+.answer .nt{margin-top:.6em;animation:rise .7s .15s both}
+.answer .mask{font-family:var(--serif);font-size:clamp(24px,2.8vw,52px);letter-spacing:.14em;color:var(--ink)}
+.answer .ph{color:var(--dim)}
+@keyframes rise{from{opacity:0;transform:translateY(18px);filter:blur(6px)}}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding-bottom:6px}
+
+.q{font-family:var(--serif);text-align:center;line-height:1.25;max-width:84vw;font-size:clamp(30px,4vw,76px)}
+.q.l{font-size:clamp(26px,3.2vw,60px)}
+.q.m{font-size:clamp(22px,2.6vw,48px)}
+.q.emoji{font-family:var(--sans);font-size:min(13vw,26vh);letter-spacing:.06em;line-height:1.2}
+.q-quote::before{content:"«";color:var(--g2)}.q-quote::after{content:"»";color:var(--g2)}
+
+.imgwrap{position:relative;overflow:hidden;line-height:0;outline:1px solid var(--line);outline-offset:8px}
+.imgwrap img{display:block;transition:filter .9s,transform .9s}
+.tgrid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr)}
+.tcell{background:linear-gradient(135deg,#1c1712,#0e0c0a);border:1px solid rgba(217,180,106,.22);display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:clamp(14px,1.6vw,28px);color:rgba(217,180,106,.45);cursor:pointer;transition:opacity .6s,transform .6s;line-height:1}
+.tcell.off{opacity:0;transform:scale(.7);pointer-events:none}
+
+.audiobox{display:flex;flex-direction:column;align-items:center;gap:3vh;width:100%}
+.vinyl{width:min(34vh,30vw);aspect-ratio:1;border-radius:50%;position:relative;
+  background:radial-gradient(circle,#d9b46a 0 17%,#1a1408 17.5% 19%,transparent 19.5%),
+    repeating-radial-gradient(circle,#0b0b0b 0 2px,#161616 2px 4px);
+  box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.7),inset 0 0 60px rgba(255,255,255,.04)}
+.vinyl::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,transparent 0 20%,rgba(255,255,255,.08) 25%,transparent 30% 70%,rgba(255,255,255,.06) 75%,transparent 80%)}
+.vinyl::before{content:"";position:absolute;left:50%;top:50%;width:3%;height:3%;border-radius:50%;background:#09080a;transform:translate(-50%,-50%);z-index:1}
+.playing .vinyl{animation:spin 1.8s linear infinite}
+.playing.backwards .vinyl{animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+#viz{width:min(1000px,80vw);height:9vh}
+.astatus{min-height:1.4em}
+.vidon .audiobox{visibility:hidden}
+
+.meter{width:min(1100px,86vw);text-align:center;display:flex;flex-direction:column;gap:2.2vh;align-items:center}
+.mnum{font-family:var(--serif);font-size:min(22vh,12vw);line-height:1}
+.mbar{position:relative;width:100%;height:14px;background:rgba(255,255,255,.05);border:1px solid var(--line2)}
+.mfill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--g3),var(--g1))}
+.mpeak{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink);left:0;display:none}
+.mres{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.mres span{border:1px solid var(--line2);padding:.4em .9em;font-family:var(--serif);font-size:clamp(15px,1.3vw,24px)}
+.mres span.best{border-color:var(--g2);color:var(--g1)}
+
+.endcard{text-align:center;display:flex;flex-direction:column;gap:2vh;align-items:center}
+.endcard .big{font-family:var(--serif);font-size:clamp(40px,5vw,96px);font-style:italic}
+
+#ytwrap{position:fixed;left:0;top:0;width:320px;height:180px;opacity:0;pointer-events:none;z-index:-1;transition:opacity .8s;outline:1px solid var(--line);outline-offset:8px}
+#ytwrap.show{opacity:1;z-index:5}
+#ytwrap iframe{width:100%;height:100%;border:0;display:block}
+
+/* secret card */
+#secret{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;flex-direction:column;gap:3vh;text-align:center;
+  background:radial-gradient(circle,#1a1410,#060506 75%);cursor:pointer;padding:5vw}
+#secret.on{display:flex}
+#secret .big{font-family:var(--serif);font-size:clamp(40px,6vw,110px);line-height:1.1}
+#secret .cd{font-family:var(--serif);font-size:min(30vh,18vw);line-height:1}
+
+/* ---------- PREP ---------- */
+#prep.active{display:block;overflow:auto;padding:0}
+.prep-wrap{max-width:1040px;margin:0 auto;padding:36px 24px 100px}
+.prep-head{display:flex;align-items:center;gap:14px;position:sticky;top:0;background:linear-gradient(#0b0a0c 80%,transparent);padding:18px 0 22px;z-index:3}
+.prep-head h2{flex:1;margin:0;font-family:var(--serif);font-weight:400;font-size:34px}
+.card{border:1px solid var(--line2);background:var(--glass);padding:20px 24px;margin:18px 0}
+.card h3{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:24px}
+.card h3 small,.card h4 small{font-family:var(--sans);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-left:10px}
+.card h4{font-family:var(--serif);font-weight:400;font-size:18px;margin:18px 0 4px}
+.help{color:var(--muted);margin:4px 0 12px;font-size:14px;line-height:1.6}
+.row{display:flex;align-items:center;gap:12px;margin:8px 0;flex-wrap:wrap}
+.drop{display:block;border:1px dashed var(--line);padding:18px;text-align:center;color:var(--muted);cursor:pointer;margin-bottom:10px;font-size:14px}
+.drop.over{border-color:var(--g1);color:var(--g1)}
+.mlist{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto;margin-bottom:10px}
+.mitem{display:flex;align-items:center;gap:8px}
+.mitem img{width:56px;height:40px;object-fit:cover}
+.mitem .num{color:var(--muted);width:26px;text-align:right;font-size:13px}
+.mitem input{flex:1}
+.mitem button{padding:.4em .7em}
+.tips{line-height:1.75;font-size:15px}
+.tips b{color:var(--g1);font-weight:500}
+
+/* ---------- FINALE ---------- */
+#finale{align-items:center;justify-content:center;text-align:center;gap:3vh}
+#finale .h-name{font-size:clamp(56px,9vw,170px)}
+.toast{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2vw,36px);color:var(--ink);max-width:70vw;line-height:1.4}
+
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+body.linked #controls{display:none}
+body.linked .h-actions{opacity:.35}
+
+/* ---------- START OVERLAY + QR ---------- */
+#start{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;gap:6vw;padding:6vw;cursor:pointer;
+  background:radial-gradient(1100px 520px at 50% -12%,rgba(217,180,106,.16),transparent 65%),#09080a}
+#start.off{display:none}
+.st-left{display:flex;flex-direction:column;gap:2.4vh;max-width:46vw}
+.st-left .h-title{text-align:left}
+.st-go{font-family:var(--serif);font-size:clamp(20px,2vw,36px);color:var(--ink)}
+.st-go b{color:var(--g1);font-weight:400}
+.qrbox{display:inline-block;background:#f3ead7;padding:18px;line-height:0;outline:1px solid var(--line);outline-offset:10px}
+.qrbox img,.qrbox canvas{width:min(30vh,26vw)!important;height:auto!important}
+.qrcap{margin-top:22px;text-align:center}
+#qrmini[hidden]{display:none!important}
+#qrmini{position:fixed;right:44px;bottom:40px;display:flex;align-items:center;gap:14px;z-index:4}
+#qrmini .qrbox{padding:8px}
+#qrmini .qrbox img,#qrmini .qrbox canvas{width:92px!important}
+#qrmini .caps{text-align:right;line-height:1.7}
+.linked{color:var(--g1)!important}
+
+/* ---------- PHONE REMOTE ---------- */
+body.remote{overflow:auto;height:auto;min-height:100%}
+body.remote .frame{position:fixed;inset:8px}
+#remote{display:none;padding:26px 20px 60px;max-width:560px;margin:0 auto}
+body.remote #remote{display:block}
+body.remote .screen,body.remote #start,body.remote #qrmini,body.remote #ytwrap{display:none!important}
+.rm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.rm-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c43b4f;margin-right:8px;vertical-align:middle}
+.rm-dot.ok{background:#5fd38d}
+.rm-h{font-family:var(--serif);font-size:30px;line-height:1.15;margin:4px 0 2px}
+.rm-sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+.rm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rm-grid .wide{grid-column:1/-1}
+#remote button{padding:1.15em .6em;font-size:13px;width:100%}
+#remote button.big{font-size:16px;padding:1.4em .6em}
+.rm-list{display:flex;flex-direction:column;gap:8px}
+.rm-list button{text-align:left;display:flex;align-items:center;gap:14px;text-transform:none;letter-spacing:.02em;font-size:16px!important}
+.rm-list .rn{font-family:var(--serif);color:var(--g2);min-width:2.2em;text-align:center;font-size:18px}
+.rm-ans{border:1px solid var(--line);padding:14px 16px;margin:14px 0;background:var(--glass)}
+.rm-ans .v{font-family:var(--serif);font-size:22px;color:var(--g1);margin-top:6px;line-height:1.25}
+.rm-ans .v.hid{filter:blur(9px);user-select:none}
+.rm-status{min-height:1.4em;margin:6px 0 14px;text-align:center}
+.rm-level{height:10px;border:1px solid var(--line2);margin:10px 0;position:relative}
+.rm-level i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--g3),var(--g1));width:0}
+#remote input{width:100%;margin:6px 0 14px}
+</style>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<div class="frame"><i></i><i></i><i></i><i></i></div>
+
+<!-- HOME -->
+<section id="home" class="screen active">
+  <div class="caps h-pre">Вечер в честь именинника</div>
+  <h1 class="h-title">С днём рождения</h1>
+  <div class="h-name gold" id="hName">дорогой друг</div>
+  <div class="orn">✦</div>
+  <div class="warn-box" id="fileWarn" hidden>Страница открыта как файл — музыка с YouTube так не заиграет. Закройте её и запустите двойным кликом <b>start.command</b> в папке с игрой.</div>
+  <div class="rounds" id="rounds"></div>
+  <div class="h-actions">
+    <button class="ghost" data-go="prep">Подготовка</button>
+    <button class="ghost" data-act="fs">Во весь экран <kbd>F</kbd></button>
+    <button class="ghost" data-go="finale">Финал ✦</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <header class="g-head">
+    <div><button class="ghost" data-go="home">‹ Меню</button></div>
+    <div class="g-title"><div class="n" id="gNum"></div><div class="t" id="gTitle"></div></div>
+    <div class="g-right"><div class="timer" id="timer"></div><div class="counter" id="gCounter"></div></div>
+  </header>
+  <main class="stage" id="stage"></main>
+  <div class="answer" id="answer"></div>
+  <div class="controls" id="controls"></div>
+</section>
+
+<!-- PREP -->
+<section id="prep" class="screen">
+  <div class="prep-wrap">
+    <div class="prep-head"><h2>Подготовка</h2><button class="main" data-go="home">Готово</button></div>
+    <div class="card tips">
+      <h3>Как провести вечер</h3>
+      Ноутбук — к телевизору по HDMI. Запустите игру через <b>start.command</b>, нажмите <b>F</b> — полный экран. Звук пойдёт в ТВ.<br>
+      Музыка и фото уже подобраны и проверены: официальные клипы YouTube и фото из Википедии. Нужен <b>интернет</b>.<br>
+      Всё, что меняете здесь, сохраняется в браузере. Свои файлы: <b>ответ = имя файла</b> («01 Кино - Группа крови.mp3» → «Кино - Группа крови», номер задаёт порядок).<br>
+      <b>Клавиши:</b> ← → вопросы · <b>Пробел</b> играть / пауза · <b>A</b> ещё 5 сек · <b>H</b> подсказка · <b>Enter</b> ответ · <b>T</b> таймер ·
+      <b>M</b> режим открытия фото · <b>R</b> запись с микрофона · <b>S</b> показать песню исполнителю · <b>O</b> оригинал · <b>Esc</b> меню
+    </div>
+    <div id="prepBody"></div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section id="finale" class="screen">
+  <div class="caps">И главное за этот вечер</div>
+  <h1 class="h-title">С днём рождения</h1>
+  <div class="h-name gold" id="fName"></div>
+  <div class="orn">✦</div>
+  <div class="toast">Пусть следующие сорок будут ещё громче, ярче и вкуснее.<br>За именинника!</div>
+  <div class="h-actions"><button class="ghost" data-act="party">Ещё салют</button><button class="ghost" data-go="home">Меню</button></div>
+</section>
+
+<div id="qrmini" hidden><div class="caps" id="qrminiCap">пульт —<br>сканируйте</div><div class="qrbox" id="qrSmall"></div></div>
+
+<div id="start">
+  <div class="st-left">
+    <div class="caps">Вечер в честь именинника</div>
+    <h1 class="h-title">С днём рождения</h1>
+    <div class="h-name gold" id="sName" style="text-align:left">дорогой друг</div>
+    <div class="st-go">1. Отсканируйте QR телефоном — это пульт<br>2. Нажмите <b>OK</b> на пульте телевизора, чтобы начать</div>
+  </div>
+  <div><div class="qrbox" id="qrBig"></div><div class="caps qrcap" id="qrCap">подключение…</div></div>
+</div>
+
+<div id="remote"></div>
+<div id="secret"></div>
+<div id="ytwrap"><div id="ytplayer"></div></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ======================= DATA ======================= */
+const DEFAULT_TEXT = {
+emoji:`# эмодзи | ответ | примечание
+🛁🍾✈️❄️ | Ирония судьбы, или С лёгким паром! | 1975
+💎🦾🎣 | Бриллиантовая рука | 1968
+👑⏳🔧📞 | Иван Васильевич меняет профессию | 1973
+🏔️👰🚗🐑 | Кавказская пленница | 1967
+🏜️⛵🎖️ | Белое солнце пустыни | 1970
+👩‍💼🏢❤️ | Служебный роман | 1977
+🏙️😭🙅‍♀️ | Москва слезам не верит | 1979
+🧑‍🏫🔒🐫 | Джентльмены удачи | 1971
+🔔🪐🏜️ | Кин-дза-дза! | 1986
+🐕🧑‍⚕️🏛️ | Собачье сердце | 1988
+👧⏳🚀 | Гостья из будущего | 1985
+🔫🎸🧥 | Брат | 1997
+🦌🔫🥃 | Особенности национальной охоты | 1995
+👊👊👊👊🏙️ | Бригада | 2002
+🚢🧊💔 | Титаник | 1997
+🤖🏍️🔫 | Терминатор 2 | 1991
+🚗⚡⏰ | Назад в будущее | 1985
+🦖🧬🏝️ | Парк Юрского периода | 1993
+👦🏠🎄🪤 | Один дома | 1990
+🕶️💊🐇 | Матрица | 1999
+🏃🍫🪶 | Форрест Гамп | 1994
+👻🚫📞 | Охотники за привидениями | 1984
+🦁👑🌅 | Король Лев | 1994
+🎭💚💰 | Маска | 1994
+👽📞🏠🚲 | Инопланетянин | 1982`,
+quote:`# начало | продолжение | фильм
+Икра красная, икра чёрная, икра заморская… | …баклажанная! | Иван Васильевич меняет профессию
+Ты чьих… | …будешь? | Иван Васильевич меняет профессию
+Какая гадость… | …эта ваша заливная рыба! | Ирония судьбы, или С лёгким паром!
+Студентка, комсомолка, спортсменка… | …и, наконец, просто красавица! | Кавказская пленница
+Бамбарбия! | Кергуду! | Кавказская пленница
+Тебя посодют… | …а ты не воруй! | Берегись автомобиля
+Огласите весь список… | …пожалуйста! | Операция «Ы» и другие приключения Шурика
+Надо, Федя… | …надо! | Операция «Ы» и другие приключения Шурика
+Восток — … | …дело тонкое, Петруха! | Белое солнце пустыни
+Цигель, цигель… | …ай-лю-лю! | Бриллиантовая рука
+Шампанское по утрам пьют… | …или аристократы, или дегенераты! | Бриллиантовая рука
+Граждане, храните деньги… | …в сберегательной кассе! | Бриллиантовая рука
+Вор должен… | …сидеть в тюрьме! | Место встречи изменить нельзя
+Пасть порву… | …моргалы выколю! | Джентльмены удачи
+Скрипач… | …не нужен! | Кин-дза-дза!
+Вот скажи мне, американец, в чём сила? | …Я вот думаю, что сила в правде! | Брат 2
+Hasta la vista… | …baby! | Терминатор 2
+Жизнь как коробка шоколадных конфет… | …никогда не знаешь, какая начинка тебе попадётся | Форрест Гамп
+Хьюстон… | …у нас проблема | Аполлон-13
+Улыбаемся и… | …машем! | Мадагаскар`,
+retro:`# вопрос | ответ | комментарий
+Зачем к аудиокассете нужен был карандаш? | Перематывать плёнку | экономили батарейки в плеере
+Сколько стоил проезд в метро в СССР? | 5 копеек | пятак в турникет
+Газировка из автомата: сколько стоила с сиропом? | 3 копейки | без сиропа — 1 копейка
+Как называлась «наша» восьмибитная приставка? | Dendy | «Денди — играют все!»
+Что ловил волк в электронной игре «Ну, погоди!»? | Яйца | «Электроника ИМ-02»
+Как звали синего ёжика с приставки Sega? | Соник | Sonic the Hedgehog
+Какую фразу кричали в Mortal Kombat перед добиванием? | Finish him! |
+В какой стране придумали «Тетрис»? | В СССР | Алексей Пажитнов, 1984
+Кто вёл «Угадай мелодию»? | Валдис Пельш | с 1995 года
+Кто был ПЕРВЫМ ведущим «Поля чудес»? | Владислав Листьев | Якубович — с 1991
+Кто такой Лёня Голубков? | Герой рекламы МММ | «Я не халявщик, я партнёр!»
+Продолжи рекламу: «Invite — …» | «…просто добавь воды!» |
+Вкладыши какой жвачки были про любовь? | Love is… |
+Из какой страны была жвачка «Turbo» с машинками? | Турция |
+Как звали изобретательницу-мышку в «Чип и Дейл»? | Гаечка |
+Как назывался мультсериал про Скруджа Макдака? | Утиные истории | «Ву-у-у!»
+Кто вёл «Сам себе режиссёр»? | Алексей Лысенков |
+Номер телефона «скорой» в СССР? | 03 |
+Кто пел «Белые розы»? | Ласковый май | Юра Шатунов`
+};
+
+/* Онлайн-материал: музыка — официальные клипы на YouTube (проверены, встраивание разрешено),
+   фото — Википедия/Wikimedia Commons. Нужен интернет и запуск через start.command. */
+const DEFAULT_ONLINE = {
+music:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно)
+Руки Вверх! — Крошка моя | tO91c8vbT7A
+Любэ — Комбат | d1pABMCtf3M
+Мумий Тролль — Утекай | Ok1-XYV3k60
+Кар-Мэн — Лондон, гуд бай! | ylpNEb31k4U
+Nirvana — Smells Like Teen Spirit | hTWKbfoikeg
+Звери — Районы-кварталы | 2C-XqZL63_w
+Мурат Насыров — Мальчик хочет в Тамбов | AA7LF2GjHMo
+Агата Кристи — Как на войне | W-YSYFkRNvg
+Земфира — Искала | Jn1kng-nFuY
+Haddaway — What Is Love | HEXWRTEbj1I
+Михаил Шуфутинский — Третье сентября | Kv-tbdVOuOA
+Король и Шут — Лесник | jT-OnptvBI0
+t.A.T.u. — Нас не догонят | zOhH8cp93lE
+ВИА Гра — Попытка №5 | 4HvFuzOP8ys
+Scooter — How Much Is the Fish? | cbB3iGRHtqA
+Серёга — Чёрный бумер | jjWbL5nFMWc
+Кино — Группа крови | _3DT_05ZJiE
+Леонид Агутин — Хоп хей лала лей | mlhfnvTmaek
+Блестящие — А я всё летала | GUSFaLuS81k
+Aqua — Barbie Girl | ZyhrYis509A
+Машина времени — Поворот | 6cw-vz7vS-8
+Верка Сердючка — Всё будет хорошо | KRVhWPignvU
+Би-2 — Полковнику никто не пишет | 1u7WN2zBEDc
+Чиж & Co — Фантом | OaagAmLYSlU
+Coolio — Gangsta's Paradise | fPO76Jlnz6c
+Руки Вверх! — 18 мне уже | Hxab_Sr132o
+Валерий Меладзе — Самба белого мотылька | 09Oek7bYVqg
+Глюк'oZa — Невеста | 9P_wHDW2VJY
+Сектор Газа — Лирика | 14w176fRVaQ
+Ария — Беспечный ангел | qXBORMBTfDs
+Backstreet Boys — Everybody | 6M6samPEMpM
+Филипп Киркоров — Зайка моя | dGPRnzQY11U
+Иванушки International — Тучи | tHsjdESaLd8
+Дискотека Авария — Если хочешь остаться | AsMTTh5Z1j8
+Сплин — Выхода нет | cI-flbjLC6M
+The Prodigy — Firestarter | wmin5WkOuPw
+Наташа Королёва — Жёлтые тюльпаны | h9nhOEdXRfI
+ДДТ — Что такое осень | LvaYk-phy14
+Hi-Fi — Седьмой лепесток | ikWEytTXiY4
+Ленинград — WWW | XveGQdHa18I
+Rammstein — Du Hast | W3q8Od5qJio
+Дюна — Привет с большого бодуна | FKYgIoxMGF0
+Владимир Пресняков — Стюардесса по имени Жанна | kpn-GcGrYQs
+Ногу свело! — Хару Мамбуру | xutpxia3Qkc
+Кристина Орбакайте — Перелётная птица | PirSkTcW_84
+Eiffel 65 — Blue (Da Ba Dee) | 68ugkg9RePc
+Мираж — Музыка нас связала | YSRFE3NGKqM
+Земфира — Хочешь? | xpJ_fYyAeYk
+Чайф — Не спеши | 9Uiom8VfslI
+Ласковый май — Белые розы | BPsRX7m6CX4
+Linkin Park — In the End | eVTXPUF4Oz4
+Мумий Тролль — Владивосток 2000 | nj5nuYYrZvg
+Валерия — Часики | 3rAQLk8zDmY
+Андрей Губин — Мальчик-бродяга | aatSpPbHInw
+Наутилус Помпилиус — Прогулки по воде | O1sowtGA67w
+Би-2 — Варвара | T18deTeV0RI
+Иванушки International — Тополиный пух | UUryvYF8tUs
+Сплин — Романс | 29lSd5ucOOI
+Алла Пугачёва — Миллион алых роз | BQV0TrlB0gA`,
+ost:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно)
+Бригада | mv533P_VCzU
+Ирония судьбы, или С лёгким паром! («Если у вас нету тёти») | 7lR9nDzLKXE
+Улицы разбитых фонарей | F4r0Ac1pIaE
+Бриллиантовая рука («Остров невезения») | goFIxxWru78
+Терминатор 2 | CnQm2_cAZvo
+Бумер («Мобильник») | CjFQrN7gCxE
+Кавказская пленница («Песенка о медведях») | dExwT_pEr9w
+Программа «Время» | ZWHgeMX4RcA
+Д'Артаньян и три мушкетёра | BCi6h34adNo
+Бандитский Петербург («Город, которого нет») | HR9D5tk4VtI
+Иван Васильевич меняет профессию («Звенит январская вьюга») | zacy2GOu3TI
+Ну, погоди! | 3Jxh1IRc-AU
+Семнадцать мгновений весны («Мгновения») | Sh8V9uX_sRc
+Брат («Крылья», Наутилус Помпилиус) | 4owHHfZBsyI
+Титаник | 9bFHsd3o1w0
+Гардемарины, вперёд! | ca4xGimYX9E
+В мире животных | RTDq7NLn4vI
+Москва слезам не верит («Александра») | 0lXVVAqpsIk
+Служебный роман («У природы нет плохой погоды») | W_0J4oclPTs
+Поле чудес | U251PjyCMHM
+Чародеи («Три белых коня») | eRB45a3gCb4
+Секретные материалы | Qz2wnSVeITg
+Белое солнце пустыни («Ваше благородие, госпожа Удача») | Id9iif6PK0w
+Спокойной ночи, малыши! | -97vgdIk6-g
+Джентльмены удачи | 13U9UCW_mMw
+Кто хочет стать миллионером? | HuviezuvYUI
+Карнавальная ночь («Пять минут») | 5viIzp4rxC0
+Гостья из будущего («Прекрасное далёко») | -oTSm9xd04k
+Утиные истории | _wVbicbJNAw
+Чип и Дейл спешат на помощь | s6OsG9vZcHM
+Миссия невыполнима | cSpGbYTZbpk
+Охотники за привидениями | Fe93CLbHjxQ
+Твин Пикс | 18ApLy2M838`,
+who:`# ответ | ссылка на картинку
+Виктор Цой | https://upload.wikimedia.org/wikipedia/commons/4/4e/Victor_Tsoi_1986_cropped.jpg
+Арнольд Шварценеггер | https://upload.wikimedia.org/wikipedia/commons/e/e3/Arnold_Schwarzenegger_-_Austrian_World_Summit_2026_BHO-2906.jpg
+Юра Шатунов | https://upload.wikimedia.org/wikipedia/commons/4/40/Shatunov_%28Laskoviy_May%29.jpg
+Джим Керри | https://upload.wikimedia.org/wikipedia/commons/e/ed/Jim_Carrey_2020_cropped.jpg
+Леонид Якубович | https://upload.wikimedia.org/wikipedia/commons/e/e0/Channel_One_Russia_in_Navy_%2827-06-2013%29_08_%28cropped%29.jpg
+Майкл Джексон | https://upload.wikimedia.org/wikipedia/commons/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg
+Сергей Бодров-младший | https://upload.wikimedia.org/wikipedia/ru/a/aa/%D0%A4%D0%BE%D1%82%D0%BE_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D1%8F_%D0%91%D0%BE%D0%B4%D1%80%D0%BE%D0%B2%D0%B0_%28%D0%BC%D0%BB%D0%B0%D0%B4%D1%88%D0%B5%D0%B3%D0%BE%29.jpg
+Жан-Клод Ван Дамм | https://upload.wikimedia.org/wikipedia/commons/c/c6/Jean-Claude_Van_Damme_at_Brussels_Comic_Con_2023_DSC19480_Kiri_DxO.jpg
+Алла Пугачёва | https://upload.wikimedia.org/wikipedia/commons/6/66/%D0%90%D0%BB%D0%BB%D0%B0_%D0%9F%D1%83%D0%B3%D0%B0%D1%87%D0%B5%D0%B2%D0%B0_%D0%BD%D0%B0_%D1%84%D0%B5%D1%81%D1%82%D0%B8%D0%B2%D0%B0%D0%BB%D0%B5_%D0%A1%D0%BB%D0%BE%D0%B2%D0%BE_%D0%9D%D0%BE%D0%B2%D0%BE_%28cropped%29.jpg
+Киану Ривз | https://upload.wikimedia.org/wikipedia/commons/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg
+Владислав Листьев | https://upload.wikimedia.org/wikipedia/commons/8/8f/Listiev_%28cropped%29.jpeg
+Брюс Уиллис | https://upload.wikimedia.org/wikipedia/commons/c/c4/Bruce_Willis_by_Gage_Skidmore_3.jpg
+Илья Лагутенко | https://upload.wikimedia.org/wikipedia/commons/2/23/Ilya_Lagutenko_%40_Park_Live_%28cropped%29.JPG
+Мадонна | https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg
+Валдис Пельш | https://upload.wikimedia.org/wikipedia/commons/a/a3/%D0%92%D0%B0%D0%BB%D0%B4%D0%B8%D1%81_%D0%9F%D0%B5%D0%BB%D1%8C%D1%88_%D0%B2_%D0%A6%D0%94%D0%9C_%D0%BD%D0%B0_%D0%9B%D1%83%D0%B1%D1%8F%D0%BD%D0%BA%D0%B5.jpg
+Сильвестр Сталлоне | https://upload.wikimedia.org/wikipedia/commons/1/19/P20251206DT-0472_%28cropped%3B_Sylvester_Stallone%29.jpg
+Юрий Шевчук | https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/%D0%AE%D1%80%D0%B8%D0%B9%D0%A8%D0%B5%D0%B2%D1%87%D1%83%D0%BA.jpg/1280px-%D0%AE%D1%80%D0%B8%D0%B9%D0%A8%D0%B5%D0%B2%D1%87%D1%83%D0%BA.jpg
+Леонардо Ди Каприо | https://upload.wikimedia.org/wikipedia/commons/2/2d/LeoPTABFI191125-28_%28cropped%29.jpg
+Земфира | https://upload.wikimedia.org/wikipedia/commons/a/ac/%D0%97%D0%B5%D0%BC%D1%84%D0%B8%D1%80%D0%B0_%D0%BD%D0%B0_%D0%B2%D1%8B%D1%81%D1%82%D1%83%D0%BF%D0%BB%D0%B5%D0%BD%D0%B8%D0%B8_1_%D0%B0%D0%BF%D1%80%D0%B5%D0%BB%D1%8F_2016_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%9E%D0%BB%D0%B8%D0%BC%D0%BF%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%BC.jpg
+Чак Норрис | https://upload.wikimedia.org/wikipedia/commons/3/30/Chuck_Norris_May_2015.jpg
+Валерий Меладзе | https://upload.wikimedia.org/wikipedia/commons/e/e1/Valeriy_Meladze_photoshooting_at_Laima_Rendez_Vous_Jurmala_2017.jpg
+Брэд Питт | https://upload.wikimedia.org/wikipedia/commons/9/90/Brad_Pitt-69858.jpg
+Вячеслав Бутусов | https://upload.wikimedia.org/wikipedia/commons/d/d9/Viacheslav_Butusov_Nautilius_Pompilius_butusov-15-50_by_Alexey_Nikishin.jpg
+Курт Кобейн | https://upload.wikimedia.org/wikipedia/commons/3/37/Nirvana_around_1992_%28cropped%29.jpg
+Леонид Агутин | https://upload.wikimedia.org/wikipedia/commons/3/3e/Leonid_Agutin%27s_rehearsal_at_Laima_Rendez_Vous_Jurmala_2017_.jpg`,
+frame:`# ответ | ссылка на картинку
+Ирония судьбы, или С лёгким паром! | https://i.ytimg.com/vi/L5GnqepBJkE/maxres3.jpg | 0.118,0,0.118,0
+Кавказская пленница | https://i.ytimg.com/vi/0f1LxDfNpv0/maxres3.jpg | 0.118,0,0.118,0
+Любовь и голуби | https://i.ytimg.com/vi/qYPVTBIgF7Q/maxres1.jpg | 0.118,0,0.118,0
+Бриллиантовая рука | https://i.ytimg.com/vi/M9cGHdVbNXI/maxres2.jpg | 0,0.125,0,0.125
+Брат | https://i.ytimg.com/vi/aDaaCGZz-Ok/maxres2.jpg
+Собачье сердце | https://i.ytimg.com/vi/IghryX6Aa6A/maxres3.jpg
+Иван Васильевич меняет профессию | https://i.ytimg.com/vi/TQ8onQu5QKY/maxres2.jpg | 0.118,0,0.118,0
+Особенности национальной охоты | https://i.ytimg.com/vi/oWK9K_RtRCM/maxres2.jpg
+Операция «Ы» и другие приключения Шурика | https://i.ytimg.com/vi/7ICl3sPny94/maxres2.jpg | 0.118,0,0.118,0
+Служебный роман | https://i.ytimg.com/vi/kUNy3NrxZAc/maxres1.jpg | 0.134,0,0.134,0
+Бумер | https://i.ytimg.com/vi/yOgEijEccrY/maxres3.jpg
+Белое солнце пустыни | https://i.ytimg.com/vi/GqnqFhc9aho/maxres2.jpg | 0.129,0,0.129,0
+Джентльмены удачи | https://i.ytimg.com/vi/OM2Rvkj3WEc/maxres3.jpg | 0,0.06,0,0.06
+Место встречи изменить нельзя | https://i.ytimg.com/vi/Z1ubDkZqVLk/maxres2.jpg | 0.129,0,0.129,0
+Кин-дза-дза! | https://i.ytimg.com/vi/EYHv8eJrW2Y/maxres2.jpg | 0.118,0,0.118,0
+Шерлок Холмс и доктор Ватсон | https://i.ytimg.com/vi/kDZgQU958t8/maxres2.jpg
+Москва слезам не верит | https://i.ytimg.com/vi/X7GuhjGZ-xs/maxres3.jpg | 0.133,0,0.133,0
+Д'Артаньян и три мушкетёра | https://i.ytimg.com/vi/_uAxmy_TtvM/hq1.jpg
+Мимино | https://i.ytimg.com/vi/P4k2LNPRV-0/maxres2.jpg | 0.119,0,0.119,0
+Гостья из будущего | https://i.ytimg.com/vi/1iueT80-R48/maxres1.jpg | 0.128,0,0.128,0
+Афоня | https://i.ytimg.com/vi/L9HATyYkZLs/maxres2.jpg | 0.116,0,0.116,0
+Двенадцать стульев | https://i.ytimg.com/vi/P8t2dbJ7YXY/maxres2.jpg
+Покровские ворота | https://i.ytimg.com/vi/T-EM2avmxtQ/maxres1.jpg | 0.134,0,0.134,0
+Экипаж | https://i.ytimg.com/vi/lgSl7D_vtEE/maxres1.jpg
+Осенний марафон | https://i.ytimg.com/vi/deEuVTAAzbg/maxres3.jpg | 0.118,0,0.118,0
+Неуловимые мстители | https://i.ytimg.com/vi/3V0g1gM2P6o/maxres2.jpg | 0,0.126,0,0.126
+Мужики! | https://i.ytimg.com/vi/N2T0QwhmO70/maxres2.jpg | 0.118,0,0.118,0
+Карнавальная ночь | https://i.ytimg.com/vi/fEntSqfPC0g/maxres1.jpg | 0.118,0,0.118,0
+Девчата | https://i.ytimg.com/vi/8CYY8EM5xYE/maxres1.jpg | 0,0.126,0,0.126
+Берегись автомобиля | https://i.ytimg.com/vi/PGr-NddVue0/maxres3.jpg | 0.118,0,0.118,0`
+};
+
+const DEFAULT_REVERSE = `# песня | подсказка (видит только исполнитель)
+В лесу родилась ёлочка | первый куплет
+Пусть бегут неуклюже | песенка крокодила Гены
+Голубой вагон | «Медленно минуты уплывают вдаль…»
+Улыбка | «От улыбки станет всем светлей…»
+Чунга-Чанга | припев
+Кино — Группа крови | припев
+Руки Вверх! — Крошка моя | припев
+Ласковый май — Белые розы | припев
+Миллион алых роз | припев
+Катюша | «Расцветали яблони и груши…»
+Иванушки — Тучи | припев
+Мумий Тролль — Утекай | припев
+Арлекино | «Арлекино, Арлекино…»
+Песенка о медведях | «Где-то на белом свете…»
+Happy Birthday to You | для именинника!`;
+
+const ROUNDS = [
+  {id:'music',   num:'I',    title:'Угадай мелодию',   sub:'хиты 90-х и нулевых', type:'audio',
+   help:'Свои песни (mp3, m4a, wav…) — играют первыми. Ниже готовый список с YouTube.'},
+  {id:'ost',     num:'II',   title:'Фильм по музыке',  sub:'саундтреки и заставки', type:'audio',
+   help:'Свои саундтреки — играют первыми. Ниже готовый список с YouTube.'},
+  {id:'reverse', num:'III',  title:'Задом наперёд',    sub:'песня наоборот', type:'reverse',
+   help:'Свои mp3: игра вырежет фрагмент (с секунды «Начинать с», длиной «Фрагмент задом») и сыграет его задом наперёд. На ответе — как в оригинале.'},
+  {id:'who',     num:'IV',   title:'Угадай кто',       sub:'лица эпохи', type:'image', mode:'blur',
+   help:'Свои фото — особенно детские фото гостей и именинника. Открываются постепенно.'},
+  {id:'frame',   num:'V',    title:'Фильм по кадру',   sub:'один кадр — один фильм', type:'image', mode:'tiles',
+   help:'Скриншоты из фильмов (без названия на картинке). Кадр закрыт плитками.'},
+  {id:'emoji',   num:'VI',   title:'Фильм по эмодзи',  sub:'ребус из смайликов', type:'text', big:true,
+   help:'Строка: эмодзи | ответ | примечание.'},
+  {id:'quote',   num:'VII',  title:'Продолжи цитату',  sub:'классика кино', type:'text', quote:true,
+   help:'Строка: начало | продолжение | фильм.'},
+  {id:'retro',   num:'VIII', title:'Ностальгия',       sub:'80-е и 90-е', type:'text',
+   help:'Строка: вопрос | ответ | комментарий. Добавьте пару вопросов про самого именинника.'},
+  {id:'applause',num:'IX',   title:'Аплодисметр',      sub:'кто громче поздравит', type:'meter'},
+];
+const R = id => ROUNDS.find(r => r.id === id);
+const MODES = ['blur', 'zoom', 'tiles'];
+const MODE_NAMES = {blur:'размытие', zoom:'приближение', tiles:'плитки'};
+
+/* ======================= STATE ======================= */
+const LS = 'bd-party-v3';
+const S = (() => {
+  let s = {};
+  try { s = JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) {}
+  return {
+    name: s.name || '', timer: s.timer || 30, frag: s.frag || 7, offset: s.offset || 0, revLen: s.revLen || 12,
+    texts: Object.assign({...DEFAULT_TEXT, reverse:DEFAULT_REVERSE}, s.texts || {}),
+    online: Object.assign({...DEFAULT_ONLINE}, s.online || {}),
+    modes: Object.assign({who:'blur', frame:'tiles'}, s.modes || {}),
+  };
+})();
+const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lines = t => (t || '').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+const parseText = t => lines(t).map(l => { const [q, a = '', n = ''] = l.split('|').map(x => x.trim()); return {q, a, n}; });
+const nameToAnswer = n => n.replace(/\.[^.]+$/, '').replace(/^\d+\s*[-._)]?\s*/, '').replace(/_/g, ' ').trim();
+const ytId = s => { const m = String(s).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : (/^[\w-]{11}$/.test(s) ? s : null); };
+function parseOnline(rid) {
+  const r = R(rid);
+  return lines(S.online[rid]).map((l, i) => {
+    const [a, src = '', st = ''] = l.split('|').map(x => x.trim());
+    if (r.type === 'audio') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st} : null; }
+    const crop = st ? st.split(',').map(Number).filter(n => !isNaN(n)) : null;
+    return /^https?:\/\//.test(src) ? {id:`web${i}`, url:src, answer:a, crop:crop && crop.length === 4 ? crop : null} : null;
+  }).filter(Boolean);
+}
+
+/* ======================= MEDIA STORAGE (IndexedDB) ======================= */
+const media = {music:[], ost:[], reverse:[], who:[], frame:[]};
+let DB = null, fakeId = 1e9;
+function idbOpen() {
+  return new Promise(res => {
+    try {
+      const rq = indexedDB.open('bd-party', 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore('media', {keyPath:'id', autoIncrement:true});
+      rq.onsuccess = () => { DB = rq.result; res(); };
+      rq.onerror = () => res();
+    } catch (e) { res(); }
+  });
+}
+const strip = m => ({id:m.id, round:m.round, name:m.name, answer:m.answer, blob:m.blob, order:m.order});
+function idbPut(rec) {
+  return new Promise(res => {
+    if (!DB) return res(rec.id ?? fakeId++);
+    try {
+      const o = strip(rec); if (o.id == null) delete o.id;
+      const rq = DB.transaction('media', 'readwrite').objectStore('media').put(o);
+      rq.onsuccess = () => res(rq.result); rq.onerror = () => res(rec.id ?? fakeId++);
+    } catch (e) { res(rec.id ?? fakeId++); }
+  });
+}
+function idbDel(id) {
+  return new Promise(res => {
+    if (!DB) return res();
+    try { const rq = DB.transaction('media', 'readwrite').objectStore('media').delete(id); rq.onsuccess = rq.onerror = () => res(); } catch (e) { res(); }
+  });
+}
+function idbAll() {
+  return new Promise(res => {
+    if (!DB) return res([]);
+    try { const rq = DB.transaction('media').objectStore('media').getAll(); rq.onsuccess = () => res(rq.result || []); rq.onerror = () => res([]); } catch (e) { res([]); }
+  });
+}
+
+/* ======================= ITEMS ======================= */
+function itemsOf(rid) {
+  const r = R(rid);
+  if (r.type === 'text') return parseText(S.texts[rid]);
+  if (r.type === 'meter') return [{id:'meter'}];
+  if (r.type === 'reverse') return media.reverse.map(m => Object.assign(m, {kind:'file'}))
+    .concat(parseText(S.texts.reverse).map((x, i) => ({id:`mic${i}`, kind:'mic', answer:x.q, hint:x.a})));
+  return media[rid].concat(parseOnline(rid));
+}
+
+/* ======================= SOUND ======================= */
+const player = new Audio(); player.preload = 'auto';
+let AC = null, mediaAn = null, outBus = null;
+function ac() {
+  if (!AC) {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    mediaAn = AC.createAnalyser(); mediaAn.fftSize = 256; mediaAn.smoothingTimeConstant = .8;
+    mediaAn.connect(AC.destination); outBus = mediaAn;
+    try { AC.createMediaElementSource(player).connect(mediaAn); } catch (e) {}
+  }
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function tone(f, d, type = 'sine', t0 = 0, vol = .14) {
+  const c = ac(), o = c.createOscillator(), g = c.createGain(), t = c.currentTime + t0;
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .05);
+}
+const bell = (f, t = 0, v = .12, d = 1.6) => { tone(f, d, 'sine', t, v); tone(f * 2, d * .6, 'sine', t, v * .35); tone(f * 3.01, d * .3, 'sine', t, v * .15); };
+const sfx = {
+  chime: () => bell(1318.5, 0, .08, .6),
+  reveal: () => [523.25, 659.25, 783.99, 987.77, 1046.5].forEach((f, i) => bell(f, i * .085, .09, 1.4)),
+  tick: () => tone(1400, .05, 'sine', 0, .06),
+  end: () => { bell(392, 0, .14, 1.2); bell(311.1, .25, .14, 1.6); },
+  fanfare: () => [[523.25,0,.25],[659.25,.22,.25],[783.99,.44,.25],[1046.5,.7,1.6],[783.99,.7,1.6],[659.25,.7,1.6]].forEach(([f,t,d]) => { bell(f, t, .11, d); tone(f / 2, d, 'triangle', t, .05); }),
+};
+
+/* ======================= NAV ======================= */
+let G = null;
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  $('#qrmini').hidden = id !== 'home' || !NET.url;
+  if (id !== 'game') { stopAllAudio(); ytShow(false); stopTimer(); G = null; }
+  if (id === 'home') renderHome();
+  if (id === 'prep') renderPrep();
+  if (id === 'finale') renderFinale();
+}
+const toggleFs = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.().catch(() => {});
+
+/* ======================= HOME ======================= */
+function renderHome() {
+  $('#hName').textContent = S.name || 'дорогой друг';
+  $('#fileWarn').hidden = location.protocol !== 'file:';
+  $('#rounds').innerHTML = ROUNDS.map(r => {
+    const n = r.type === 'meter' ? 1 : itemsOf(r.id).length;
+    const sub = r.type === 'meter' ? r.sub : n ? `${r.sub} · ${n}` : 'добавьте в подготовке';
+    return `<div class="rcard ${n ? '' : 'empty'}" data-round="${r.id}"><div class="rnum gold">${r.num}</div>
+      <div class="rtxt"><div class="rtt">${esc(r.title)}</div><div class="rsub">${esc(sub)}</div></div></div>`;
+  }).join('');
+}
+
+/* ======================= TIMER ======================= */
+const T = {left:0, iv:null};
+function toggleTimer() {
+  if (T.iv) return stopTimer();
+  T.left = S.timer; drawTimer();
+  T.iv = setInterval(() => {
+    T.left--; drawTimer();
+    if (T.left > 0 && T.left <= 5) sfx.tick();
+    if (T.left <= 0) { clearInterval(T.iv); T.iv = null; sfx.end(); $('#timer').textContent = '✦'; setTimeout(() => { if (!T.iv) $('#timer').className = 'timer'; }, 2200); }
+  }, 1000);
+}
+function drawTimer() { const el = $('#timer'); el.textContent = T.left; el.className = 'timer on' + (T.left <= 5 ? ' warn' : ''); }
+function stopTimer() { clearInterval(T.iv); T.iv = null; $('#timer').className = 'timer'; }
+
+/* ======================= GAME CORE ======================= */
+let stopT = null;
+function openRound(rid) {
+  const r = R(rid);
+  if (r.type !== 'meter' && !itemsOf(rid).length) return show('prep');
+  show('game');
+  G = {rid, idx:0};
+  resetItem(); renderGame();
+}
+const cur = () => G && itemsOf(G.rid)[G.idx];
+const rtype = () => G && R(G.rid).type;
+function resetItem() {
+  stopAllAudio(); ytShow(false); stopTimer();
+  Object.assign(G, {revealed:false, hint:0, started:false, tiles:new Set(Array.from({length:24}, (_, i) => i)),
+    origin:`${25 + Math.random() * 50}% ${25 + Math.random() * 50}%`});
+}
+function go(d) {
+  if (!G || rtype() === 'meter') return;
+  const n = itemsOf(G.rid).length, ni = Math.max(0, Math.min(n, G.idx + d));
+  if (ni === G.idx) return;
+  G.idx = ni; resetItem(); renderGame();
+}
+function renderGame() {
+  const r = R(G.rid), list = itemsOf(G.rid), n = list.length;
+  $('#gNum').textContent = `— ${r.num} —`;
+  $('#gTitle').textContent = r.title;
+  $('#gCounter').innerHTML = r.type === 'meter' || G.idx >= n ? '' : `<b>${G.idx + 1}</b> / ${n}`;
+  const stage = $('#stage'), ctr = $('#controls');
+  stage.className = 'stage'; $('#answer').innerHTML = '';
+  if (r.type === 'meter') return renderMeter();
+  if (G.idx >= n) {
+    stage.innerHTML = `<div class="endcard"><div class="caps">раунд ${r.num}</div><div class="big gold">Раунд сыгран</div><div class="orn">✦</div></div>`;
+    ctr.innerHTML = `<button data-act="prev">‹ Назад</button><button class="main" data-go="home">К раундам</button>`;
+    confetti(160); sfx.fanfare(); return;
+  }
+  const it = list[G.idx];
+  const nav = mid => `<button data-act="prev">‹<kbd>←</kbd></button>${mid}<button data-act="timer">Таймер<kbd>T</kbd></button><button class="main" data-act="reveal">Ответ<kbd>⏎</kbd></button><button data-act="next">›<kbd>→</kbd></button>`;
+
+  if (r.type === 'text') {
+    const len = [...it.q].length, size = r.big ? 'emoji' : len > 70 ? 'm' : len > 32 ? 'l' : '';
+    stage.innerHTML = `<div class="q ${size} ${r.quote ? 'q-quote' : ''}">${esc(it.q)}</div>`;
+    ctr.innerHTML = nav(`<button data-act="hint">Подсказка<kbd>H</kbd></button>`);
+  } else if (r.type === 'image') {
+    const mode = S.modes[G.rid] || r.mode;
+    stage.innerHTML = `<div class="imgwrap" id="imgwrap"><img id="gimg" src="${esc(it.url)}" alt="">
+      ${mode === 'tiles' ? `<div class="tgrid">${Array.from({length:24}, (_, i) => `<div class="tcell" data-tile="${i}">${i + 1}</div>`).join('')}</div>` : ''}</div>`;
+    $('#gimg').addEventListener('load', fitImg); if ($('#gimg').complete) fitImg();
+    $('#gimg').addEventListener('error', () => { $('#answer').innerHTML = '<div class="caps">картинка не загрузилась — нет интернета?</div>'; });
+    ctr.innerHTML = nav(`<button data-act="hint">Открыть ещё<kbd>H</kbd></button><button data-act="mode">${MODE_NAMES[mode]}<kbd>M</kbd></button>`);
+    applyReveal(true);
+  } else if (r.type === 'audio') {
+    stage.innerHTML = audioBox('Слушаем и угадываем');
+    ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 5 сек<kbd>A</kbd></button><button data-act="restart">С начала</button>`);
+  } else if (r.type === 'reverse') {
+    stage.classList.add('backwards');
+    if (it.kind === 'mic') {
+      stage.innerHTML = audioBox('Исполнитель поёт в микрофон — остальные угадывают');
+      ctr.innerHTML = nav(`<button data-act="secret">Песня исполнителю<kbd>S</kbd></button><button class="rec" data-act="record" id="recBtn">● Запись<kbd>R</kbd></button><button data-act="play">Задом наперёд<kbd>␣</kbd></button><button data-act="orig">Как спели<kbd>O</kbd></button>`);
+    } else {
+      stage.innerHTML = audioBox('Песня задом наперёд');
+      ctr.innerHTML = nav(`<button data-act="play">Задом наперёд<kbd>␣</kbd></button><button data-act="orig">Оригинал<kbd>O</kbd></button>`);
+    }
+  }
+  renderAnswer();
+}
+const audioBox = st => `<div class="audiobox"><div class="vinyl"></div><canvas id="viz"></canvas><div class="caps astatus" id="astatus">${esc(st)}</div></div>`;
+function setStatus(t) { const s = $('#astatus'); if (s) s.textContent = t; }
+
+function renderAnswer() {
+  const it = cur(), el = $('#answer'); if (!it || !G) return;
+  const r = R(G.rid);
+  const a = it.answer ?? it.a ?? '';
+  const note = it.n || '';
+  if (G.revealed) el.innerHTML = `<div class="a gold">${esc(a)}</div>${note ? `<div class="nt caps">${esc(note)}</div>` : ''}`;
+  else if (G.hint > 0 && r.type === 'text') el.innerHTML = `<div class="mask">${esc(mask(a, G.hint))}</div>`;
+  else el.innerHTML = `<div class="ph caps">✦</div>`;
+}
+function mask(a, k) {
+  return a.split(/(\s+)/).map(w => {
+    if (/^\s+$/.test(w)) return w;
+    let i = 0;
+    return [...w].map(c => /[\p{L}\p{N}]/u.test(c) ? (i++ < k ? c : '_') : c).join('');
+  }).join('');
+}
+function fitImg() {
+  const img = $('#gimg'), st = $('#stage'), wrap = $('#imgwrap'); if (!img || !img.naturalWidth || !G) return;
+  const [l, t, r, b] = cur()?.crop || [0, 0, 0, 0];           // black letterbox bars to hide
+  const nw = img.naturalWidth, nh = img.naturalHeight, cw = nw * (1 - l - r), ch = nh * (1 - t - b);
+  const k = Math.min((st.clientWidth - 40) / cw, (st.clientHeight - 24) / ch);
+  Object.assign(img.style, {width:nw * k + 'px', height:nh * k + 'px', marginLeft:-nw * l * k + 'px', marginTop:-nh * t * k + 'px', marginBottom:-nh * b * k + 'px', marginRight:-nw * r * k + 'px'});
+  Object.assign(wrap.style, {width:cw * k + 'px', height:ch * k + 'px'});
+}
+const BLUR = [48, 32, 22, 14, 8, 3], ZOOM = [7, 4.6, 3.1, 2.1, 1.5, 1.15];
+function applyReveal(instant) {
+  const img = $('#gimg'); if (!img) return;
+  const mode = S.modes[G.rid] || R(G.rid).mode, h = Math.min(G.hint, BLUR.length - 1);
+  if (instant) { img.style.transition = 'none'; requestAnimationFrame(() => requestAnimationFrame(() => img.style.transition = '')); }
+  img.style.filter = mode === 'blur' && !G.revealed ? `blur(${BLUR[h]}px)` : 'none';
+  img.style.transformOrigin = G.origin;
+  img.style.transform = mode === 'zoom' && !G.revealed ? `scale(${ZOOM[h]})` : 'none';
+  document.querySelectorAll('.tcell').forEach(c => c.classList.toggle('off', G.revealed || !G.tiles.has(+c.dataset.tile)));
+}
+function hint() {
+  if (!G || G.revealed || !cur()) return;
+  const t = rtype();
+  if (t !== 'text' && t !== 'image') return;
+  G.hint++;
+  if (t === 'image') {
+    const left = [...G.tiles];
+    for (let i = 0; i < 3 && left.length; i++) G.tiles.delete(left.splice(Math.floor(Math.random() * left.length), 1)[0]);
+    applyReveal();
+  }
+  sfx.chime(); renderAnswer();
+}
+function reveal() {
+  if (!G || rtype() === 'meter' || !cur() || G.revealed) return;
+  G.revealed = true; stopTimer();
+  applyReveal(); renderAnswer(); sfx.reveal(); confetti(90);
+  const t = rtype(), it = cur();
+  if (t === 'audio') {
+    if (it.yt) ytShow(true);
+    if (!G.started) playFrom(startOf(), 0); else if (mPaused()) mPlay(0);
+  }
+  if (t === 'reverse' && it.kind === 'file') setTimeout(() => rvPlay('orig'), 700);
+}
+function cycleMode() {
+  if (rtype() !== 'image') return;
+  const m = S.modes[G.rid] || R(G.rid).mode;
+  S.modes[G.rid] = MODES[(MODES.indexOf(m) + 1) % MODES.length]; save(); renderGame();
+}
+
+/* ======================= AUDIO ROUND (files + YouTube) ======================= */
+let YTP = null, ytReady = null, ytCur = null, ytPendingFrag = null, ytPlaying = false;
+function ytLoad() {
+  if (ytReady) return ytReady;
+  ytReady = new Promise(res => {
+    window.onYouTubeIframeAPIReady = () => {
+      YTP = new YT.Player('ytplayer', {width:'100%', height:'100%',
+        playerVars:{controls:0, disablekb:1, rel:0, playsinline:1, iv_load_policy:3, fs:0, modestbranding:1, origin:location.origin},
+        events:{onReady:() => res(YTP), onStateChange:ytState, onError:ytErr}});
+    };
+    const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api';
+    s.onerror = () => { ytReady = null; setStatus('YouTube не загрузился — проверьте интернет'); res(null); };
+    document.head.appendChild(s);
+  });
+  return ytReady;
+}
+function ytState(e) {
+  ytPlaying = e.data === 1;
+  if (ytPlaying && ytPendingFrag != null) { clearTimeout(stopT); const s = ytPendingFrag; ytPendingFrag = null; if (s) stopT = setTimeout(mPause, s * 1000); }
+  updAudioStatus();
+}
+function ytErr(e) {
+  const codes = {2:'неверная ссылка', 5:'ошибка плеера', 100:'видео удалено', 101:'встраивание запрещено', 150:'встраивание запрещено', 153:'запустите через start.command'};
+  G && (G.ytError = true);
+  setStatus(`Это видео не играет (${codes[e.data] || e.data}) — листайте дальше ›`);
+}
+function ytShow(on) {
+  const w = $('#ytwrap'); w.classList.toggle('show', !!on); $('#stage').classList.toggle('vidon', !!on);
+  if (on) placeYt();
+}
+function placeYt() {
+  const r = $('#stage').getBoundingClientRect(), pad = 16;
+  let w = r.width - pad * 2, h = w * 9 / 16;
+  if (h > r.height - pad * 2) { h = r.height - pad * 2; w = h * 16 / 9; }
+  Object.assign($('#ytwrap').style, {width:w + 'px', height:h + 'px', left:(r.left + (r.width - w) / 2) + 'px', top:(r.top + (r.height - h) / 2) + 'px'});
+}
+const isYt = () => !!(G && rtype() === 'audio' && cur() && cur().yt);
+function mPause() { clearTimeout(stopT); player.pause(); ytPendingFrag = null; try { YTP && YTP.pauseVideo(); } catch (e) {} }
+function mPaused() { return isYt() ? !ytPlaying : player.paused; }
+function mPlay(sec) {
+  clearTimeout(stopT);
+  if (isYt()) { ytPendingFrag = sec || 0; try { YTP && YTP.playVideo(); } catch (e) {} }
+  else { player.play().catch(() => {}); if (sec) stopT = setTimeout(mPause, sec * 1000); }
+}
+function mTime() { try { return isYt() ? (YTP && YTP.getCurrentTime ? YTP.getCurrentTime() : 0) : player.currentTime; } catch (e) { return 0; } }
+const startOf = () => cur().start ?? (+S.offset || 0);
+async function playFrom(start, sec) {
+  const it = cur(); if (!it || rtype() !== 'audio') return;
+  ac(); G.started = true; G.ytError = false;
+  if (it.yt) {
+    if (location.protocol === 'file:') return setStatus('YouTube не играет из файла — запустите start.command');
+    setStatus('загрузка…');
+    const p = await ytLoad(); if (!p || !G || cur()?.id !== it.id) return;
+    ytPendingFrag = sec || 0;
+    if (ytCur !== it.yt) { ytCur = it.yt; p.loadVideoById({videoId:it.yt, startSeconds:start}); }
+    else { p.seekTo(start, true); p.playVideo(); }
+    return;
+  }
+  if (player.dataset.id !== String(it.id)) {
+    player.src = it.url; player.dataset.id = it.id;
+    await new Promise(r => { if (player.readyState >= 1) r(); else player.addEventListener('loadedmetadata', r, {once:true}); });
+  }
+  const dur = isFinite(player.duration) ? player.duration : 0;
+  player.currentTime = dur ? Math.min(start, Math.max(0, dur - 3)) : start;
+  await player.play().catch(() => {});
+  clearTimeout(stopT); if (sec) stopT = setTimeout(mPause, sec * 1000);
+}
+function space() {
+  if (!G || !cur()) return;
+  if (rtype() === 'reverse') return rvToggle('rev');
+  if (rtype() !== 'audio') return;
+  if (!G.started) return playFrom(startOf(), +S.frag || 7);
+  if (mPaused()) mPlay(0); else mPause();
+}
+function more() {
+  if (rtype() !== 'audio' || !cur()) return;
+  if (!G.started) return playFrom(startOf(), 5);
+  mPlay(5);
+}
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function updAudioStatus() {
+  if (!G || rtype() !== 'audio' || !$('#astatus')) return;
+  const paused = mPaused();
+  $('#stage').classList.toggle('playing', !paused);
+  if (G.started && !G.ytError && !(isYt() && paused && /загрузка/.test($('#astatus').textContent)))
+    setStatus((paused ? 'пауза · ' : 'звучит · ') + fmt(mTime()));
+}
+['play', 'pause', 'timeupdate'].forEach(ev => player.addEventListener(ev, updAudioStatus));
+function stopAllAudio() { mPause(); rvStop(); if (RV.recording) try { RV.rec.stop(); } catch (e) {} }
+
+/* ======================= REVERSE ROUND ======================= */
+const RV = {fwd:null, rev:null, src:null, playing:null, rec:null, recording:false, itemId:null, t:null};
+function fadeEdges(b) {
+  const n = Math.min(1024, Math.floor(b.length / 4));
+  for (let c = 0; c < b.numberOfChannels; c++) { const d = b.getChannelData(c); for (let i = 0; i < n; i++) { const k = i / n; d[i] *= k; d[d.length - 1 - i] *= k; } }
+  return b;
+}
+function sliceBuf(b, st, len) {
+  const sr = b.sampleRate, s0 = Math.max(0, Math.floor(st * sr)), n = Math.max(1, Math.min(b.length - s0, Math.floor(len * sr)));
+  const out = AC.createBuffer(b.numberOfChannels, n, sr);
+  for (let c = 0; c < b.numberOfChannels; c++) out.getChannelData(c).set(b.getChannelData(c).subarray(s0, s0 + n));
+  return fadeEdges(out);
+}
+function reverseBuf(b) {
+  const out = AC.createBuffer(b.numberOfChannels, b.length, b.sampleRate);
+  for (let c = 0; c < b.numberOfChannels; c++) { const d = b.getChannelData(c), o = out.getChannelData(c), n = d.length; for (let i = 0; i < n; i++) o[i] = d[n - 1 - i]; }
+  return out;
+}
+async function rvPrepare() {
+  const it = cur(); if (!it) return false;
+  if (RV.itemId === it.id && RV.fwd) return true;
+  if (it.kind !== 'file') return false;
+  try {
+    ac(); setStatus('готовлю фрагмент…');
+    const full = await AC.decodeAudioData(await it.blob.arrayBuffer());
+    if (cur()?.id !== it.id) return false;
+    const len = Math.min(+S.revLen || 12, full.duration);
+    const st = Math.min(+S.offset || 0, Math.max(0, full.duration - len));
+    RV.fwd = sliceBuf(full, st, len); RV.rev = reverseBuf(RV.fwd); RV.itemId = it.id;
+    return true;
+  } catch (e) { setStatus('не удалось прочитать файл'); return false; }
+}
+async function rvPlay(which) {
+  if (rtype() !== 'reverse') return;
+  const ok = await rvPrepare();
+  if (!ok) { if (cur()?.kind === 'mic') setStatus('сначала запишите исполнителя — R'); return; }
+  rvStop();
+  const s = AC.createBufferSource(); s.buffer = which === 'rev' ? RV.rev : RV.fwd; s.connect(outBus);
+  s.onended = () => { if (RV.src === s) { RV.src = null; RV.playing = null; rvUi(); } };
+  s.start(); RV.src = s; RV.playing = which; rvUi();
+}
+function rvToggle(which) { if (RV.src && RV.playing === which) { rvStop(); rvUi(); } else rvPlay(which); }
+function rvStop() { if (RV.src) { try { RV.src.onended = null; RV.src.stop(); } catch (e) {} } RV.src = null; RV.playing = null; }
+function rvUi() {
+  const st = $('#stage'); if (!st || rtype() !== 'reverse') return;
+  st.classList.toggle('playing', !!RV.playing || RV.recording);
+  st.classList.toggle('backwards', RV.playing !== 'orig');
+  const b = $('#recBtn'); if (b) { b.classList.toggle('on', RV.recording); b.innerHTML = RV.recording ? '■ Стоп<kbd>R</kbd>' : '● Запись<kbd>R</kbd>'; }
+  if (RV.recording) setStatus('идёт запись… пойте! (R — стоп)');
+  else if (RV.playing === 'rev') setStatus('звучит задом наперёд');
+  else if (RV.playing === 'orig') setStatus('звучит как в оригинале');
+  else if (RV.fwd && RV.itemId === cur()?.id) setStatus('запись готова — слушаем задом наперёд');
+}
+async function rvRecord() {
+  if (rtype() !== 'reverse' || cur()?.kind !== 'mic') return;
+  if (RV.recording) { try { RV.rec.stop(); } catch (e) {} return; }
+  if (!(await micOn())) return setStatus('нет доступа к микрофону — разрешите его в браузере');
+  rvStop();
+  const itemId = cur().id, chunks = [];
+  let rec; try { rec = new MediaRecorder(mic.stream); } catch (e) { return setStatus('запись не поддерживается этим браузером'); }
+  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+  rec.onstop = async () => {
+    RV.recording = false; clearTimeout(RV.t); rvUi();
+    try {
+      const b = await AC.decodeAudioData(await new Blob(chunks, {type:rec.mimeType}).arrayBuffer());
+      if (cur()?.id !== itemId) return;
+      RV.fwd = fadeEdges(b); RV.rev = reverseBuf(RV.fwd); RV.itemId = itemId;
+      sfx.chime(); rvUi();
+    } catch (e) { setStatus('не удалось обработать запись, попробуйте ещё раз'); }
+  };
+  rec.start(); RV.rec = rec; RV.recording = true; RV.fwd = null; RV.itemId = null;
+  RV.t = setTimeout(() => rec.state === 'recording' && rec.stop(), 25000);
+  rvUi();
+}
+function secretCard() {
+  const it = cur(); if (rtype() !== 'reverse' || !it || it.kind !== 'mic') return;
+  const el = $('#secret'); let n = 3; el.classList.add('on');
+  const step = () => {
+    if (!el.classList.contains('on')) return;
+    if (n > 0) { el.innerHTML = `<div class="caps">все, кроме исполнителя</div><div class="big">Отвернитесь!</div><div class="cd gold">${n}</div>`; sfx.tick(); n--; el._t = setTimeout(step, 1000); }
+    else { el.innerHTML = `<div class="caps">исполнитель, ваша песня</div><div class="big gold">${esc(it.answer)}</div>${it.hint ? `<div class="caps">${esc(it.hint)}</div>` : ''}<div class="caps" style="margin-top:4vh">клик — скрыть</div>`;
+      el._t = setTimeout(hideSecret, 6000); }
+  };
+  step();
+}
+function hideSecret() { const el = $('#secret'); clearTimeout(el._t); el.classList.remove('on'); el.innerHTML = ''; }
+
+/* ======================= APPLAUSE METER ======================= */
+const mic = {an:null, buf:null, stream:null, level:0, measuring:null, results:[]};
+async function micOn() {
+  ac();
+  if (mic.an) return true;
+  try {
+    mic.stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
+    const s = AC.createMediaStreamSource(mic.stream);
+    mic.an = AC.createAnalyser(); mic.an.fftSize = 2048; mic.buf = new Float32Array(2048);
+    s.connect(mic.an);
+    return true;
+  } catch (e) { return false; }
+}
+function micLevel() {
+  mic.an.getFloatTimeDomainData(mic.buf);
+  let s = 0; for (let i = 0; i < mic.buf.length; i++) s += mic.buf[i] * mic.buf[i];
+  return Math.max(0, Math.min(100, (20 * Math.log10(Math.sqrt(s / mic.buf.length) + 1e-8) + 60) / 60 * 100));
+}
+function renderMeter() {
+  $('#stage').innerHTML = `<div class="meter"><div class="caps" id="mstatus">Кто громче всех поздравит именинника?</div>
+    <div class="mnum gold" id="mnum">0</div><div class="mbar"><div class="mfill" id="mfill"></div><div class="mpeak" id="mpeak"></div></div>
+    <div class="mres" id="mres"></div></div>`;
+  $('#controls').innerHTML = `<button class="main" data-act="measure">Замер 5 секунд<kbd>␣</kbd></button><button data-act="mreset">Сбросить</button>`;
+  $('#answer').innerHTML = '';
+  renderMeterResults();
+}
+function renderMeterResults() {
+  const el = $('#mres'); if (!el) return;
+  const best = Math.max(0, ...mic.results);
+  el.innerHTML = mic.results.map((v, i) => `<span class="${v === best ? 'best' : ''}">${i + 1}. ${v}</span>`).join('');
+  if (mic.results.length) $('#answer').innerHTML = `<div class="caps">рекорд вечера</div><div class="a gold">${best}</div>`;
+}
+async function measure() {
+  if (mic.measuring) return;
+  if (remoteLevel() == null && !(await micOn())) { const s = $('#mstatus'); if (s) s.textContent = 'Нет доступа к микрофону — разрешите его в браузере'; return; }
+  const now = performance.now();
+  mic.measuring = {start:now + 3000, end:now + 8000, peak:0, last:-1};
+}
+const remoteLevel = () => mic.remote && performance.now() - mic.remote.t < 700 ? mic.remote.v : null;
+function meterFrame() {
+  if (!$('#mfill')) return;
+  const rl = remoteLevel();
+  if (rl == null && !mic.an) return;
+  mic.level = Math.max(rl ?? micLevel(), mic.level - .8);
+  $('#mfill').style.width = mic.level + '%';
+  const m = mic.measuring;
+  if (!m) { $('#mnum').textContent = Math.round(mic.level); return; }
+  const now = performance.now(), st = $('#mstatus'), pk = $('#mpeak');
+  if (now < m.start) {
+    const s = Math.ceil((m.start - now) / 1000);
+    if (s !== m.last) { m.last = s; sfx.tick(); }
+    st.textContent = 'Приготовились…'; $('#mnum').textContent = s;
+  } else if (now < m.end) {
+    if (m.last !== 0) { m.last = 0; bell(880, 0, .12, .5); }
+    m.peak = Math.max(m.peak, mic.level);
+    st.textContent = `Громче! ${Math.ceil((m.end - now) / 1000)}`; $('#mnum').textContent = Math.round(mic.level);
+    pk.style.display = 'block'; pk.style.left = m.peak + '%';
+  } else {
+    const v = Math.round(m.peak), rec = v > Math.max(0, ...mic.results);
+    mic.results.push(v); mic.measuring = null;
+    st.textContent = rec ? 'Новый рекорд вечера!' : 'Неплохо! Но рекорд держится'; $('#mnum').textContent = v;
+    rec ? (sfx.fanfare(), confetti(220)) : sfx.reveal();
+    renderMeterResults();
+  }
+}
+
+/* ======================= PREP ======================= */
+function renderPrep() {
+  const mediaCard = r => `<div class="card"><h3>${r.num}. ${esc(r.title)} <small>своих файлов: ${media[r.id].length}</small></h3>
+    <p class="help">${esc(r.help)}</p>
+    <label class="drop" data-drop="${r.id}">Перетащите файлы сюда или <u>выберите</u>
+      <input type="file" multiple hidden accept="${r.type === 'image' ? 'image/*' : 'audio/*,video/*,.mp3,.m4a,.wav,.ogg,.flac'}" data-file="${r.id}"></label>
+    <div class="mlist">${media[r.id].map((m, i) => `<div class="mitem">
+      ${r.type === 'image' ? `<img src="${m.url}" alt="">` : `<button data-preview="${r.id}:${m.id}" title="Прослушать">▶</button>`}
+      <span class="num">${i + 1}</span><input data-ans="${r.id}:${m.id}" value="${esc(m.answer)}" title="Правильный ответ">
+      <button data-del="${r.id}:${m.id}" title="Удалить">✕</button></div>`).join('')}</div>
+    ${media[r.id].length ? `<div class="row"><button data-shuffle="${r.id}">Перемешать</button><button data-sort="${r.id}">По имени</button><button data-clear="${r.id}">Удалить все</button></div>` : ''}
+    ${r.type === 'reverse' ? textBlock('reverse', 'Песни для исполнения в микрофон', 'Строка: песня | подсказка исполнителю. Порядок: сначала ваши mp3, потом эти песни.', 'texts')
+      : textBlock(r.id, r.type === 'audio' ? 'Готовый список (YouTube)' : 'Картинки по ссылкам',
+        r.type === 'audio' ? 'Строка: ответ | ссылка или ID YouTube | с какой секунды начать (необязательно). Лишнее удалите или поставьте # в начале строки.' : 'Строка: ответ | ссылка на картинку.', 'online')}
+    </div>`;
+  const textBlock = (id, title, help, store) => {
+    const n = store === 'online' ? parseOnline(id).length : parseText(S.texts[id]).length;
+    return `<h4>${title} <small data-count="${store}:${id}">${n}</small></h4><p class="help">${help}</p>
+      <textarea data-store="${store}:${id}" rows="8" spellcheck="false">${esc(S[store][id] || '')}</textarea>
+      <div class="row"><button data-reset="${store}:${id}">Вернуть исходный список</button></div>`;
+  };
+  const textCard = r => `<div class="card"><h3>${r.num}. ${esc(r.title)}</h3><p class="help">${esc(r.help)}</p>${textBlock(r.id, 'Вопросы', '', 'texts')}</div>`;
+  $('#prepBody').innerHTML = `
+    <div class="card"><h3>Именинник</h3>
+      <div class="row">Имя на экране: <input id="pName" value="${esc(S.name)}" placeholder="например, Серёга"></div></div>
+    <div class="card"><h3>Настройки</h3>
+      <div class="row">Таймер на ответ: <input type="number" min="5" max="300" data-set="timer" value="${S.timer}" style="width:90px"> сек</div>
+      <div class="row">Фрагмент песни: <input type="number" min="1" max="120" data-set="frag" value="${S.frag}" style="width:90px"> сек</div>
+      <div class="row">Начинать песню с: <input type="number" min="0" max="600" data-set="offset" value="${S.offset}" style="width:90px"> сек <span class="help" style="margin:0">(если у песни в списке своя секунда — берётся она)</span></div>
+      <div class="row">Фрагмент задом наперёд: <input type="number" min="3" max="60" data-set="revLen" value="${S.revLen}" style="width:90px"> сек</div></div>
+    ${ROUNDS.filter(r => media[r.id]).map(mediaCard).join('')}
+    ${ROUNDS.filter(r => r.type === 'text').map(textCard).join('')}`;
+}
+const DEFAULTS = {texts:{...DEFAULT_TEXT, reverse:DEFAULT_REVERSE}, online:DEFAULT_ONLINE};
+async function addFiles(rid, files) {
+  const img = R(rid).type === 'image';
+  const ok = f => img ? (/^image\//.test(f.type) || /\.(jpe?g|png|gif|webp|avif)$/i.test(f.name))
+                      : (/^(audio|video)\//.test(f.type) || /\.(mp3|m4a|wav|ogg|aac|flac|mp4)$/i.test(f.name));
+  const arr = [...files].filter(ok).sort((a, b) => a.name.localeCompare(b.name, 'ru', {numeric:true}));
+  let base = Date.now();
+  for (const f of arr) {
+    const rec = {round:rid, name:f.name, answer:nameToAnswer(f.name), blob:f, order:base++};
+    rec.id = await idbPut(rec); rec.url = URL.createObjectURL(f); media[rid].push(rec);
+  }
+  renderPrep();
+}
+async function reorder(rid, list) { let base = Date.now(); for (const m of list) { m.order = base++; await idbPut(m); } media[rid] = list; renderPrep(); }
+const findM = key => { const [rid, id] = key.split(':'); return [rid, media[rid].find(m => String(m.id) === id)]; };
+
+/* ======================= FINALE ======================= */
+function renderFinale() {
+  $('#fName').textContent = S.name || 'дорогой друг';
+  setTimeout(() => { sfx.fanfare(); confetti(320); }, 300);
+}
+
+/* ======================= CONFETTI + LOOP ======================= */
+const cv = $('#confetti'), cx = cv.getContext('2d');
+const GOLDS = ['#fbefc4', '#e9cd8a', '#d9b46a', '#b88a43', '#f3ead7', '#9a7031', '#7a1a2a'];
+let parts = [];
+function confetti(n = 150) {
+  const W = innerWidth, H = innerHeight;
+  for (let i = 0; i < n; i++) parts.push({x:W * (.15 + Math.random() * .7), y:H * .6, vx:(Math.random() - .5) * 20, vy:-Math.random() * 20 - 8,
+    w:4 + Math.random() * 7, h:6 + Math.random() * 12, rot:Math.random() * 6, vr:(Math.random() - .5) * .35, c:GOLDS[i % GOLDS.length], round:Math.random() < .3, life:0});
+}
+let vizData = null;
+function loop() {
+  requestAnimationFrame(loop);
+  if (cv.width !== innerWidth || cv.height !== innerHeight) { cv.width = innerWidth; cv.height = innerHeight; }
+  cx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter(p => p.y < innerHeight + 40 && p.life < 420);
+  for (const p of parts) {
+    p.vy += .38; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.fillStyle = p.c; cx.globalAlpha = .6 + .4 * Math.abs(Math.sin(p.rot * 3));
+    if (p.round) { cx.beginPath(); cx.arc(0, 0, p.w / 2, 0, 7); cx.fill(); } else cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.rot * 2)));
+    cx.restore();
+  }
+  const v = document.getElementById('viz');
+  if (v) {
+    const dpr = devicePixelRatio || 1, W = v.clientWidth * dpr, H = v.clientHeight * dpr;
+    if (v.width !== W || v.height !== H) { v.width = W; v.height = H; }
+    const c = v.getContext('2d'); c.clearRect(0, 0, W, H);
+    const N = 56; let data = null;
+    if (isYt()) {
+      const t = performance.now() / 1000;
+      data = Array.from({length:N}, (_, i) => ytPlaying ? 255 * Math.min(1, (.35 + .3 * Math.sin(t * 6 + i * .7) * Math.sin(t * 2.3 + i * .3) + .25 * Math.random()) * (1 - i / N * .6)) : 0);
+      if (Math.floor(t * 4) !== loop.q) { loop.q = Math.floor(t * 4); updAudioStatus(); }
+    } else if (RV.recording && mic.an) {
+      const l = micLevel() / 100; data = Array.from({length:N}, (_, i) => 255 * l * (1 - i / N * .7) * (.6 + .4 * Math.random()));
+    } else if (mediaAn) { vizData = vizData || new Uint8Array(mediaAn.frequencyBinCount); mediaAn.getByteFrequencyData(vizData); data = vizData; }
+    const bw = W / (N * 2), g = c.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#fbefc4'); g.addColorStop(.5, '#d9b46a'); g.addColorStop(1, '#9a7031'); c.fillStyle = g;
+    for (let i = 0; i < N; i++) {
+      const val = data ? data[Math.floor(i * (data.length === N ? 1 : data.length * .7 / N))] / 255 : 0;
+      const h = Math.max(2 * dpr, val * H);
+      for (const x of [W / 2 + i * bw, W / 2 - (i + 1) * bw]) c.fillRect(x + bw * .3, (H - h) / 2, bw * .4, h);
+    }
+  }
+  if (G && rtype() === 'meter') meterFrame();
+}
+
+/* ======================= EVENTS ======================= */
+document.addEventListener('click', e => {
+  if (document.body.classList.contains('remote')) return;
+  if (e.target.closest('#start')) return startGame();
+  if (e.target.closest('#secret')) return hideSecret();
+  const t = e.target.closest('[data-go],[data-act],[data-round],[data-tile],[data-del],[data-clear],[data-shuffle],[data-sort],[data-preview],[data-reset]');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.go) return show(d.go);
+  if (d.round) return openRound(d.round);
+  if (d.tile) { if (G) { G.tiles.delete(+d.tile); applyReveal(); sfx.chime(); } return; }
+  if (d.del) { const [rid, m] = findM(d.del); if (m) { idbDel(m.id); URL.revokeObjectURL(m.url); media[rid] = media[rid].filter(x => x !== m); renderPrep(); } return; }
+  if (d.clear) {
+    if (t.dataset.sure) { media[d.clear].forEach(m => { idbDel(m.id); URL.revokeObjectURL(m.url); }); media[d.clear] = []; renderPrep(); }
+    else { t.dataset.sure = 1; t.textContent = 'Точно удалить все?'; }
+    return;
+  }
+  if (d.shuffle) { const l = [...media[d.shuffle]]; for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; } return reorder(d.shuffle, l); }
+  if (d.sort) return reorder(d.sort, [...media[d.sort]].sort((a, b) => a.name.localeCompare(b.name, 'ru', {numeric:true})));
+  if (d.preview) {
+    const [, m] = findM(d.preview); if (!m) return; ac();
+    if (player.dataset.id === String(m.id) && !player.paused) return player.pause();
+    player.src = m.url; player.dataset.id = m.id; player.currentTime = 0; player.play().catch(() => {}); return;
+  }
+  if (d.reset) { const [store, id] = d.reset.split(':'); S[store][id] = DEFAULTS[store][id] || ''; save(); return renderPrep(); }
+  switch (d.act) {
+    case 'fs': return toggleFs();
+    case 'prev': return go(-1);
+    case 'next': return go(1);
+    case 'hint': return hint();
+    case 'reveal': return reveal();
+    case 'timer': return toggleTimer();
+    case 'mode': return cycleMode();
+    case 'play': return space();
+    case 'more': return more();
+    case 'restart': G.started = false; return playFrom(0, 0);
+    case 'record': return rvRecord();
+    case 'orig': return rvToggle('orig');
+    case 'secret': return secretCard();
+    case 'measure': return measure();
+    case 'mreset': mic.results = []; mic.measuring = null; return renderMeter();
+    case 'party': sfx.fanfare(); return confetti(320);
+  }
+});
+document.addEventListener('input', e => {
+  const t = e.target, d = t.dataset;
+  if (t.id === 'pName') { S.name = t.value.trim(); save(); }
+  else if (d.set) { S[d.set] = Math.max(0, +t.value || 0); save(); }
+  else if (d.store) {
+    const [store, id] = d.store.split(':'); S[store][id] = t.value; save();
+    const c = document.querySelector(`[data-count="${d.store}"]`);
+    if (c) c.textContent = store === 'online' ? parseOnline(id).length : parseText(t.value).length;
+  }
+  else if (d.ans) { const [, m] = findM(d.ans); if (m) { m.answer = t.value; idbPut(m); } }
+});
+document.addEventListener('change', e => { const d = e.target.dataset; if (d.file) { addFiles(d.file, e.target.files); e.target.value = ''; } });
+document.addEventListener('dragover', e => { e.preventDefault(); const z = e.target.closest?.('[data-drop]'); if (z) z.classList.add('over'); });
+document.addEventListener('dragleave', e => { const z = e.target.closest?.('[data-drop]'); if (z) z.classList.remove('over'); });
+document.addEventListener('drop', e => { e.preventDefault(); const z = e.target.closest?.('[data-drop]'); if (z) { z.classList.remove('over'); addFiles(z.dataset.drop, e.dataTransfer.files); } });
+document.addEventListener('keydown', e => {
+  if (document.body.classList.contains('remote') || e.target.matches?.('input,textarea,select') || e.metaKey || e.ctrlKey || e.altKey) return;
+  const c = e.code;
+  if (!$('#start').classList.contains('off')) { if (['Enter', 'NumpadEnter', 'Space'].includes(c) || e.key === 'Enter') { e.preventDefault(); startGame(); } return; }
+  if ($('#secret').classList.contains('on')) { e.preventDefault(); return hideSecret(); }
+  if (c === 'KeyF') return toggleFs();
+  if (c === 'Escape' && !$('#home').classList.contains('active')) return show('home');
+  if (!G) return;
+  if (rtype() === 'meter') { if (c === 'Space') { e.preventDefault(); measure(); } return; }
+  const map = {ArrowRight:() => go(1), ArrowLeft:() => go(-1), Enter:reveal, NumpadEnter:reveal, KeyH:hint, KeyT:toggleTimer, KeyM:cycleMode,
+    Space:space, KeyA:more, KeyR:rvRecord, KeyO:() => rtype() === 'reverse' && rvToggle('orig'), KeyS:secretCard};
+  if (map[c]) { e.preventDefault(); map[c](); }
+});
+addEventListener('resize', () => { if ($('#ytwrap').classList.contains('show')) placeYt(); fitImg(); });
+
+/* ======================= TV ⇄ PHONE LINK (PeerJS) ======================= */
+const NET = {peer:null, conns:new Set(), last:'', url:'', tries:0};
+function startGame() {
+  ac(); ytLoad();
+  $('#start').classList.add('off');
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  show('home');
+}
+function drawQR(url) {
+  for (const [sel, size] of [['#qrBig', 320], ['#qrSmall', 160]]) {
+    const el = $(sel); el.innerHTML = '';
+    try { new QRCode(el, {text:url, width:size, height:size, colorDark:'#09080a', colorLight:'#f3ead7', correctLevel:QRCode.CorrectLevel.M}); }
+    catch (e) { el.textContent = url; }
+  }
+}
+function updLinked() {
+  const n = [...NET.conns].filter(c => c.open).length;
+  $('#qrCap').textContent = n ? 'пульт подключён ✓' : 'сканируйте камерой телефона';
+  $('#qrCap').classList.toggle('linked', !!n);
+  $('#qrminiCap').innerHTML = n ? 'пульт<br>подключён ✓' : 'пульт —<br>сканируйте';
+  document.body.classList.toggle('linked', !!n);
+}
+function snapshot() {
+  const scr = ['home', 'game', 'prep', 'finale'].find(id => $('#' + id).classList.contains('active'));
+  const st = {screen:scr, started:$('#start').classList.contains('off'), name:S.name,
+    rounds:ROUNDS.map(r => ({id:r.id, num:r.num, title:r.title, n:r.type === 'meter' ? 1 : itemsOf(r.id).length}))};
+  if (G) {
+    const r = R(G.rid), list = itemsOf(G.rid), it = list[G.idx];
+    Object.assign(st, {rid:G.rid, num:r.num, title:r.title, type:r.type, idx:G.idx, n:list.length, end:G.idx >= list.length,
+      kind:it && it.kind, answer:it ? (it.answer ?? it.a ?? '') : '', note:it ? (it.n || it.hint || '') : '',
+      revealed:G.revealed, mode:MODE_NAMES[S.modes[G.rid] || r.mode] || '',
+      status:($('#astatus') || $('#mstatus') || {}).textContent || '',
+      playing:r.type === 'audio' ? !mPaused() : !!RV.playing, recorded:!!(it && RV.fwd && RV.itemId === it.id),
+      best:mic.results.length ? Math.max(...mic.results) : null, timer:T.iv ? T.left : null});
+  }
+  return st;
+}
+function netTV() {
+  if (!window.Peer) { $('#qrCap').textContent = 'пульт недоступен — нет интернета?'; return; }
+  let id = null; try { id = localStorage.getItem('bd-peer'); } catch (e) {}
+  if (!id) { id = 'bdp-' + Math.random().toString(36).slice(2, 10); try { localStorage.setItem('bd-peer', id); } catch (e) {} }
+  const peer = new Peer(id); NET.peer = peer;
+  peer.on('open', pid => {
+    NET.tries = 0; NET.url = location.origin + location.pathname + '?r=' + pid;
+    drawQR(NET.url); updLinked(); if ($('#home').classList.contains('active')) $('#qrmini').hidden = false;
+  });
+  peer.on('connection', c => {
+    c.on('open', () => { NET.conns.add(c); NET.last = ''; sfx.chime(); updLinked(); });
+    c.on('data', handleCmd);
+    const drop = () => { NET.conns.delete(c); updLinked(); };
+    c.on('close', drop); c.on('error', drop);
+  });
+  peer.on('disconnected', () => setTimeout(() => { try { if (!peer.destroyed) peer.reconnect(); } catch (e) {} }, 2000));
+  peer.on('error', e => {
+    if (e.type === 'unavailable-id') {   // the same TV reloaded: the server still holds the old session — retry, then give up the id
+      peer.destroy();
+      if (++NET.tries > 6) { try { localStorage.removeItem('bd-peer'); } catch (_) {} }
+      setTimeout(netTV, 3000);
+    } else if (['network', 'server-error', 'socket-error', 'socket-closed'].includes(e.type)) {
+      $('#qrCap').textContent = 'нет связи с сервером пульта, пробую снова…';
+    }
+  });
+}
+setInterval(() => {
+  if (!NET.conns.size) return;
+  const s = JSON.stringify(snapshot()); if (s === NET.last) return; NET.last = s;
+  const msg = {type:'state', state:JSON.parse(s)};
+  for (const c of NET.conns) if (c.open) try { c.send(msg); } catch (e) {}
+}, 300);
+function handleCmd(d) {
+  if (!d || typeof d !== 'object') return;
+  const c = d.cmd;
+  if (c === 'level') { mic.remote = {v:+d.v || 0, t:performance.now()}; return; }
+  if (c === 'audio') return rvFromRemote(d);
+  if (c === 'open') return openRound(d.rid);
+  if (c === 'go') return show(d.to);
+  if (c === 'start') return startGame();
+  if (c === 'name') { S.name = String(d.v || '').slice(0, 40); save(); $('#sName').textContent = S.name || 'дорогой друг'; if ($('#home').classList.contains('active')) renderHome(); return; }
+  const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, reveal, timer:toggleTimer, mode:cycleMode,
+    restart:() => { if (rtype() === 'audio') { G.started = false; playFrom(0, 0); } },
+    rev:() => rvToggle('rev'), orig:() => rvToggle('orig'), measure,
+    mreset:() => { mic.results = []; mic.measuring = null; renderMeter(); }, party:() => { sfx.fanfare(); confetti(320); }};
+  map[c] && map[c]();
+}
+function rvFromRemote(d) {
+  if (rtype() !== 'reverse' || cur()?.kind !== 'mic' || !d.pcm) return;
+  ac();
+  const pcm = new Int16Array(d.pcm instanceof ArrayBuffer ? d.pcm : d.pcm.buffer);
+  if (pcm.length < 2000) return setStatus('запись слишком короткая — попробуйте ещё');
+  const b = AC.createBuffer(1, pcm.length, d.sr || 22050), ch = b.getChannelData(0);
+  for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+  rvStop(); RV.fwd = fadeEdges(b); RV.rev = reverseBuf(RV.fwd); RV.itemId = cur().id;
+  sfx.chime(); rvUi();
+}
+
+/* ======================= PHONE REMOTE APP ======================= */
+const RM = {peer:null, conn:null, state:null, showAns:false, key:'', stream:null, ac:null, an:null, buf:null, rec:null, recording:false, sending:false, lvl:null, connecting:false};
+function remoteApp(tvId) {
+  document.body.classList.add('remote');
+  document.title = 'Пульт · Вечер угадываний';
+  const conn = () => {
+    if (RM.connecting) return; RM.connecting = true;
+    try { RM.peer && RM.peer.destroy(); } catch (e) {}
+    if (!window.Peer) { RM.connecting = false; rmMsg('Нет интернета — пульт не подключается'); return; }
+    const p = new Peer(); RM.peer = p;
+    p.on('open', () => {
+      const c = p.connect(tvId, {reliable:true});
+      c.on('open', () => { RM.conn = c; RM.connecting = false; RM.key = ''; rmRender(); });
+      c.on('data', d => { if (d && d.type === 'state') { RM.state = d.state; rmRender(); } });
+      c.on('close', () => { RM.conn = null; RM.connecting = false; RM.key = ''; rmRender(); setTimeout(conn, 1500); });
+    });
+    p.on('error', () => { RM.connecting = false; RM.key = ''; rmRender(); setTimeout(conn, 2500); });
+  };
+  conn();
+  setInterval(() => { if (!RM.conn || !RM.conn.open) { RM.connecting = false; conn(); } }, 8000);
+  try { navigator.wakeLock?.request('screen').catch(() => {}); } catch (e) {}
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { try { navigator.wakeLock?.request('screen').catch(() => {}); } catch (e) {} if (!RM.conn || !RM.conn.open) { RM.connecting = false; conn(); } } });
+  rmRender();
+}
+const rmSend = o => { if (RM.conn && RM.conn.open) try { RM.conn.send(o); } catch (e) {} };
+function rmMsg(t) { const el = $('#rmStatus'); if (el) el.textContent = t; }
+function rmRender() {
+  const st = RM.state, ok = !!(RM.conn && RM.conn.open);
+  const key = JSON.stringify([ok, st && [st.screen, st.started, st.rid, st.idx, st.end, st.revealed, st.type, st.kind, st.recorded, st.playing, st.mode, st.best, st.timer, st.rounds.map(r => r.n).join()], RM.showAns, RM.recording, RM.sending, !!RM.an]);
+  if (key === RM.key) { rmMsg(st?.status || ''); return; }
+  const prevItem = RM.itemKey; RM.itemKey = st ? st.rid + ':' + st.idx : '';
+  if (prevItem !== RM.itemKey) RM.showAns = false;
+  RM.key = key;
+  const top = `<div class="rm-top"><div class="caps"><span class="rm-dot ${ok ? 'ok' : ''}"></span>${ok ? 'пульт подключён' : 'подключение к ТВ…'}</div>
+    ${st && st.screen !== 'home' ? '<button class="ghost" data-c="go" data-to="home" style="width:auto">Меню</button>' : ''}</div>`;
+  let body = '';
+  if (!ok || !st) body = `<div class="rm-h">Пульт</div><p class="help">Ждём телевизор. Страница игры должна быть открыта на ТВ, а телефон — в интернете.</p>`;
+  else if (!st.started) body = `<div class="rm-h">Почти готово</div><p class="help">Нажмите <b>OK</b> на пульте телевизора, чтобы включить звук и начать. Или нажмите здесь (звук может не включиться, пока не нажмёте OK на ТВ):</p><button class="main big" data-c="start">Начать</button>`;
+  else if (st.screen === 'game') body = rmGame(st);
+  else if (st.screen === 'finale') body = `<div class="caps">финал</div><div class="rm-h">С днём рождения!</div><div class="rm-grid" style="margin-top:16px"><button class="main big wide" data-c="party">Ещё салют</button><button class="wide" data-c="go" data-to="home">Меню</button></div>`;
+  else body = `<div class="caps">вечер угадываний</div><div class="rm-h">Выберите раунд</div>
+    <div class="rm-list" style="margin-top:14px">${st.rounds.map(r => `<button data-c="open" data-rid="${r.id}" ${r.n ? '' : 'disabled style="opacity:.4"'}><span class="rn">${r.num}</span>${esc(r.title)}</button>`).join('')}
+    <button data-c="go" data-to="finale"><span class="rn">✦</span>Финал — поздравление</button></div>
+    <p class="caps" style="margin-top:22px">имя именинника на экране</p><input id="rmName" value="${esc(st.name)}" placeholder="например, Серёга">`;
+  $('#remote').innerHTML = top + body + `<div class="caps rm-status" id="rmStatus">${esc(st?.status || '')}</div>`;
+}
+function rmGame(st) {
+  const head = `<div class="caps">— ${st.num} —</div><div class="rm-h">${esc(st.title)}</div><div class="rm-sub">${st.end ? 'раунд сыгран' : st.type === 'meter' ? '' : `${st.idx + 1} из ${st.n}`}</div>`;
+  if (st.end) return head + `<div class="rm-grid"><button data-c="prev">‹ Назад</button><button class="main" data-c="go" data-to="home">К раундам</button></div>`;
+  const nav = `<button data-c="prev">‹ Назад</button><button data-c="next">Дальше ›</button>`;
+  const ansBtn = `<button class="main big wide" data-c="reveal" ${st.revealed ? 'disabled style="opacity:.5"' : ''}>${st.revealed ? 'Ответ на экране' : 'Показать ответ на ТВ'}</button>`;
+  const ans = (label, v) => `<div class="rm-ans" data-c="ans"><div class="caps">${label} · ${RM.showAns ? 'нажмите, чтобы скрыть' : 'нажмите, чтобы подсмотреть'}</div><div class="v ${RM.showAns ? '' : 'hid'}">${esc(v)}</div></div>`;
+  if (st.type === 'meter') return head + `<div class="rm-level"><i id="rmLvl"></i></div>
+    <div class="rm-grid">${RM.an ? '' : '<button class="wide" data-c="mic">Включить микрофон телефона</button>'}
+    <button class="main big wide" data-c="measure">Замер 5 секунд</button><button class="wide" data-c="mreset">Сбросить</button></div>
+    ${st.best != null ? `<div class="rm-ans"><div class="caps">рекорд вечера</div><div class="v">${st.best}</div></div>` : ''}`;
+  let g = '';
+  if (st.type === 'text') g = `<button class="big wide" data-c="hint">Подсказка (буквы)</button>`;
+  if (st.type === 'image') g = `<button class="big" data-c="hint">Открыть ещё</button><button class="big" data-c="mode">${esc(st.mode)}</button>`;
+  if (st.type === 'audio') g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+5 секунд</button><button data-c="restart">С начала</button>`;
+  if (st.type === 'reverse' && st.kind === 'mic') g = `
+    <button class="rec big wide ${RM.recording ? 'on' : ''}" data-c="rec">${RM.recording ? '■ Стоп — отправить на ТВ' : RM.sending ? 'Отправляю…' : '● Записать исполнителя'}</button>
+    <button class="big" data-c="rev" ${st.recorded ? '' : 'disabled style="opacity:.4"'}>Задом наперёд</button><button class="big" data-c="orig" ${st.recorded ? '' : 'disabled style="opacity:.4"'}>Как спели</button>`;
+  if (st.type === 'reverse' && st.kind === 'file') g = `<button class="big" data-c="rev">Задом наперёд</button><button class="big" data-c="orig">Оригинал</button>`;
+  const label = st.type === 'reverse' && st.kind === 'mic' ? 'песня для исполнителя — дайте ему телефон' : 'ответ (видите только вы)';
+  return head + ans(label, st.answer + (st.note && st.type === 'reverse' ? ` (${st.note})` : '')) +
+    `<div class="rm-grid">${g}${ansBtn}${nav}<button class="wide" data-c="timer">${st.timer != null ? `Таймер: ${st.timer}` : 'Таймер'}</button></div>`;
+}
+async function rmMic() {
+  if (RM.an) return true;
+  try {
+    RM.stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
+    RM.ac = RM.ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (RM.ac.state === 'suspended') await RM.ac.resume();
+    const s = RM.ac.createMediaStreamSource(RM.stream);
+    RM.an = RM.ac.createAnalyser(); RM.an.fftSize = 2048; RM.buf = new Float32Array(2048); s.connect(RM.an);
+    RM.lvl = setInterval(() => {
+      RM.an.getFloatTimeDomainData(RM.buf);
+      let q = 0; for (let i = 0; i < RM.buf.length; i++) q += RM.buf[i] * RM.buf[i];
+      const v = Math.max(0, Math.min(100, (20 * Math.log10(Math.sqrt(q / RM.buf.length) + 1e-8) + 60) / 60 * 100));
+      const el = $('#rmLvl'); if (el) el.style.width = v + '%';
+      if (RM.state?.type === 'meter') rmSend({cmd:'level', v});
+    }, 80);
+    RM.key = ''; rmRender();
+    return true;
+  } catch (e) { rmMsg('Нет доступа к микрофону — разрешите его в настройках браузера'); return false; }
+}
+async function rmRecord() {
+  if (RM.recording) { try { RM.rec.stop(); } catch (e) {} return; }
+  if (!(await rmMic())) return;
+  let rec; try { rec = new MediaRecorder(RM.stream); } catch (e) { return rmMsg('Этот телефон не умеет записывать звук в браузере'); }
+  const chunks = [];
+  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+  rec.onstop = async () => {
+    RM.recording = false; RM.sending = true; clearTimeout(RM.recT); rmRender();
+    try {
+      const ab = await new Blob(chunks, {type:rec.mimeType}).arrayBuffer();
+      const dec = await new Promise((res, rej) => { const p = RM.ac.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
+      const sr = 22050, len = Math.max(1, Math.ceil(dec.duration * sr));
+      const off = new OfflineAudioContext(1, len, sr), src = off.createBufferSource();
+      src.buffer = dec; src.connect(off.destination); src.start();
+      const out = (await off.startRendering()).getChannelData(0);
+      let peak = 0; for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
+      const gain = peak > 0.01 ? Math.min(4, 0.9 / peak) : 1;   // normalise quiet phone recordings
+      const pcm = new Int16Array(out.length);
+      for (let i = 0; i < out.length; i++) pcm[i] = Math.max(-32767, Math.min(32767, out[i] * gain * 32767));
+      rmSend({cmd:'audio', sr, pcm:pcm.buffer});
+      rmMsg('Отправлено на ТВ — жмите «Задом наперёд»');
+    } catch (e) { rmMsg('Не получилось обработать запись, попробуйте ещё раз'); }
+    RM.sending = false; RM.key = ''; rmRender();
+  };
+  rec.start(); RM.rec = rec; RM.recording = true; rmRender();
+  RM.recT = setTimeout(() => rec.state === 'recording' && rec.stop(), 20000);
+}
+document.addEventListener('click', e => {
+  if (!document.body.classList.contains('remote')) return;
+  const b = e.target.closest('[data-c]'); if (!b || b.disabled) return;
+  const c = b.dataset.c;
+  if (RM.ac && RM.ac.state === 'suspended') RM.ac.resume();
+  if (c === 'ans') { RM.showAns = !RM.showAns; return rmRender(); }
+  if (c === 'rec') return rmRecord();
+  if (c === 'mic') return rmMic();
+  if (c === 'open') return rmSend({cmd:'open', rid:b.dataset.rid});
+  if (c === 'go') return rmSend({cmd:'go', to:b.dataset.to});
+  rmSend({cmd:c});
+  if (navigator.vibrate) navigator.vibrate(15);
+}, true);
+document.addEventListener('input', e => { if (e.target.id === 'rmName') rmSend({cmd:'name', v:e.target.value}); });
+
+/* ======================= INIT ======================= */
+const REMOTE_ID = new URLSearchParams(location.search).get('r');
+if (REMOTE_ID) remoteApp(REMOTE_ID);
+else (async () => {
+  $('#sName').textContent = S.name || 'дорогой друг';
+  await idbOpen();
+  (await idbAll()).sort((a, b) => a.order - b.order).forEach(m => {
+    if (!media[m.round]) return;
+    m.url = URL.createObjectURL(m.blob); media[m.round].push(m);
+  });
+  renderHome(); loop(); netTV();
+})();
+</script>
+</body>
+</html>
