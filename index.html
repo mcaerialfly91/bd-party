@@ -82,6 +82,8 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 #game.active{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;row-gap:.8rem;padding:2.6rem 3.6rem 2.4rem}
 #game.imgmode .answer{min-height:7.6rem}
 #game.vidmode .answer{height:4rem}
+#game.choicesOn .vinyl{width:min(10rem,30vh)}
+#game.choicesOn #viz,#game.choicesOn .astatus{display:none}
 #game.showcase .g-head{display:none}
 #game.showcase{padding-top:2.2rem;row-gap:.6rem;grid-template-rows:minmax(0,1fr) auto auto}
 #game.showcase .answer{min-height:7rem}
@@ -120,7 +122,7 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 .ch{display:flex;align-items:center;gap:1rem;border:1px solid var(--line);background:rgba(217,180,106,.05);padding:.45rem 1.2rem;text-align:left;min-width:0}
 .choices.long .ch span{font-size:1.45rem;-webkit-line-clamp:3}
 .ch b{font-family:var(--serif);color:var(--g2);font-size:1.9rem;font-weight:400}
-.ch span{font-family:var(--serif);font-size:1.8rem;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ch span{font-family:var(--serif);font-size:1.8rem;line-height:1.25;padding-bottom:.08em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #game.imgmode .choices{width:84rem;margin-top:.5rem}
 #game.imgmode .ch span{font-size:1.55rem}
 #game.imgmode .ch{padding:.35rem 1.1rem}
@@ -431,7 +433,7 @@ retro:`# вопрос | ответ | примечание | подсказка |
    фото — Википедия/Wikimedia Commons. Нужен интернет и запуск через start.command. */
 const DEFAULT_ONLINE = {
 music:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно) | подсказка
-Земфира — Хочешь? | xpJ_fYyAeYk |  | 2000 · женский рок из Башкирии, в названии — вопрос
+Земфира — Хочешь? | xpJ_fYyAeYk |  | 2000 · женский рок из Башкирии
 t.A.T.u. — Я сошла с ума | -F-JfWqMG6g |  | 2000 · две школьницы под дождём шокировали весь мир
 Eminem — Lose Yourself | xFYQQPAOz7Y |  | 2002 · «один шанс, одна попытка» — и «Оскар» за песню
 Дима Билан — Невозможное возможно | zcoGTd6I1PM |  | 2005 · будущий покоритель Европы верит в чудеса
@@ -556,16 +558,23 @@ who:`# ответ | фото | обрезка | подсказка | видео
 Мадонна | https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg |  | королева поп-музыки, «как девственница» | EDwb9jOVRtU
 Сильвестр Сталлоне | https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg/1920px-%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%81%D1%82%D1%80_%D0%A1%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg |  | боксёр из Филадельфии и ветеран с повязкой | btPJPFnesV4
 Чак Норрис | https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg/1920px-Chuck_Norris%2C_The_Delta_Force_1986_%28cropped%29.jpg |  | техасский рейнджер и герой интернет-шуток | NIYZVSElmj4`,
-reverse:`# название | ссылка или ID YouTube | с какой секунды (необязательно)
-Хиты 90-х и 2000-х наоборот | CHYhScXH2EE
-Угадай хит 2000-х наоборот — шоу с участниками | F5iBibdU0Xo
-Мировые хиты 2000-х наоборот | VlPU3vTFkwY
-Рок наоборот: Sum 41, Korn, Rammstein… | xwFtOEesyNQ
-Зарубежный рок наоборот: Bon Jovi и другие | iWh0YgHkO_g
-Русские хиты 90-х наоборот (Руки Вверх, Губин, Иванушки…) | ST0lT5ePTmE
-Хиты 90-х наоборот (Королёва, Сладкий сон…) | 4zNEfc9FFPo
-Песни 90-х наоборот (Седая ночь, Крошка моя…) | 8_YCcmkMVzM
-Хиты 90-х наоборот, выпуск 5 | jpWXnH9NuiM`,
+reverse:`# ответ | перевёрнутая песня на YouTube | с какой секунды | подсказка | оригинальный клип после ответа
+Руки Вверх! — 18 мне уже | r1IolmiR7PA | 85 | 1998 · школьная любовь и важная дата в паспорте | Hxab_Sr132o
+Король и Шут — Лесник | 6lIyt84zcMc | 69 | 1997 · сказочный хоррор-панк про лесную избушку | jT-OnptvBI0
+t.A.T.u. — Нас не догонят | L1Gl_ycaDcY | 98 | 2001 · две девчонки убегают от всех | zOhH8cp93lE
+Филипп Киркоров — Зайка моя | rCQ3JbIYrYA | 69 | 1994 · самый пышный артист страны и его ласковое словечко | dGPRnzQY11U
+Григорий Лепс — Рюмка водки на столе | xUhpFEeGVGQ | 90 | 2003 · главный застольный хит | X778LvF-FAk
+Верка Сердючка — Всё будет хорошо | nWXG967hx-U | 89 | 1997 · звезда с вагоном оптимизма | KRVhWPignvU
+Руки Вверх! — Крошка моя | dzk8-IOPwNY | 78 | 1998 · нежный хит всех школьных дискотек | tO91c8vbT7A
+Би-2 — Полковнику никто не пишет | FYNGwqfr0hA | 85 | 2000 · звучала в фильме, где герой поехал в Америку | 1u7WN2zBEDc
+Глюк'oZa — Невеста | hra_LYWGeT0 | 88 | 2003 · мультяшная девочка не хочет замуж | 9P_wHDW2VJY
+Любэ — Комбат | MFJVTP5nQn0 | 106 | 1996 · группа в гимнастёрках поёт о фронтовом уважении | d1pABMCtf3M
+Дискотека Авария — Disco Superstar | 3t6bYhgN50E | 86 | 2001 · танцевальная звезда диско | 6JLH0AJ-oKA
+Король и Шут — Кукла колдуна | 3xVmNIyjErU | 71 | 1998 · мрачная сказка про игрушку | Nj6aM9ljdQU
+Ленинград — Экспонат | arUYuaP36m8 | 146 | 2015 · про туфли на красной подошве | et281UHNoOU
+Сплин — Выхода нет | 2wQZEXgjs80 | 81 | 1998 · питерский рок о тупике | cI-flbjLC6M
+Дима Билан — Мулатка | D9UK57BqqFs | 82 | 2003 · будущий победитель Европы поёт о южной красавице | cGEG6wdlHAM
+Тимати и Григорий Лепс — Лондон | cxu2yUv_id0 | 91 | 2014 · рэпер и хриплый баритон мечтают сбежать | djIAgcCnFmE`,
 frame:`# ответ | картинка | обрезка | подсказка | видео (трейлер)
 Брат | https://i.ytimg.com/vi/ipOkqEoxuJg/maxres3.jpg | 0,0.1,0,0.1 | 1997 · парень в свитере приезжает в Петербург | Zq55yxODJiA
 Брат 2 | https://i.ytimg.com/vi/UvaqR3pjDHM/maxres2.jpg |  | 2000 · из Москвы в Чикаго за правдой | HBAADCHpS5s
@@ -625,7 +634,7 @@ const ROUNDS = [
    help:'Свои песни (mp3, m4a, wav…) — играют первыми. Ниже готовый список с YouTube.'},
   {id:'ost',     num:'II',   title:'Фильм по музыке',  sub:'кино и сериалы', unit:['мелодия','мелодии','мелодий'], type:'audio',
    help:'Свои саундтреки — играют первыми. Ниже готовый список с YouTube.'},
-  {id:'reverse', num:'III',  title:'Задом наперёд',    sub:'хиты наоборот', unit:['викторина','викторины','викторин'], type:'video',
+  {id:'reverse', num:'III',  title:'Задом наперёд',    sub:'хиты наоборот', unit:['песня','песни','песен'], type:'audio', frag:15,
    help:'Свои mp3: игра вырежет фрагмент (с секунды «Начинать с», длиной «Фрагмент задом») и сыграет его задом наперёд. На ответе — как в оригинале.'},
   {id:'who',     num:'IV',   title:'Угадай кто',       sub:'звёзды нулевых', unit:['лицо','лица','лиц'], type:'image', mode:'blur',
    help:'Свои фото — особенно детские фото гостей и именинника. Открываются постепенно.'},
@@ -644,7 +653,7 @@ const MODES = ['blur', 'zoom', 'tiles'];
 const MODE_NAMES = {blur:'размытие', zoom:'приближение', tiles:'плитки'};
 
 /* ======================= STATE ======================= */
-const LS = 'bd-party-v7';
+const LS = 'bd-party-v8';
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) {}
@@ -670,7 +679,7 @@ function parseOnline(rid) {
   return lines(S.online[rid]).map((l, i) => {
     // audio: ответ | YouTube | старт | подсказка      image: ответ | картинка | обрезка | подсказка | видео
     const [a, src = '', st = '', hint = '', video = ''] = l.split('|').map(x => x.trim());
-    if (r.type === 'audio' || r.type === 'video') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st, hint} : null; }
+    if (r.type === 'audio' || r.type === 'video') { const id = ytId(src); return id ? {id:`yt${i}_${id}`, yt:id, answer:a, start:st === '' ? null : +st, hint, video:parseVid(video)} : null; }
     const crop = st ? st.split(',').map(Number).filter(n => !isNaN(n)) : null;
     return /^https?:\/\//.test(src) ? {id:`web${i}`, url:src, answer:a, crop:crop && crop.length === 4 ? crop : null, hint, video:parseVid(video)} : null;
   }).filter(Boolean);
@@ -719,7 +728,7 @@ function itemsOf(rid) {
   if (r.type === 'text') return parseText(S.texts[rid]);
   if (r.type === 'meter') return [{id:'meter'}];
   if (r.type === 'video') return parseOnline(rid);
-  return media[rid].concat(parseOnline(rid));
+  return (media[rid] || []).concat(parseOnline(rid));
 }
 
 /* ======================= SOUND ======================= */
@@ -863,7 +872,7 @@ function renderGame() {
     confetti(220); sfx.fanfare(); sfx.applause(3.5); return;
   }
   const it = list[G.idx];
-  const nav = mid => `<button data-act="prev">‹<kbd>←</kbd></button>${mid}<button data-act="timer">Таймер<kbd>T</kbd></button><button class="main" data-act="reveal">Ответ<kbd>⏎</kbd></button><button data-act="next">›<kbd>→</kbd></button>`;
+  const nav = mid => `<button data-go="home">Меню</button><button data-act="prev">‹<kbd>←</kbd></button>${mid}<button data-act="timer">Таймер<kbd>T</kbd></button><button class="main" data-act="reveal">Ответ<kbd>⏎</kbd></button><button data-act="next">›<kbd>→</kbd></button>`;
 
   if (r.type === 'text' && r.big) {           // emoji rebus: emojis appear one by one
     if (!G.open) G.open = 1;
@@ -886,7 +895,7 @@ function renderGame() {
     ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 5 сек<kbd>A</kbd></button><button data-act="hint">Подсказка<kbd>H</kbd></button>`);
   } else if (r.type === 'video') {
     stage.innerHTML = '';
-    ctr.innerHTML = `<button data-act="prev">‹<kbd>←</kbd></button><button class="main" data-act="play">Играть / пауза<kbd>␣</kbd></button><button data-act="back10">« 10 сек</button><button data-act="fwd10">10 сек »</button><button data-act="next">›<kbd>→</kbd></button>`;
+    ctr.innerHTML = `<button data-go="home">Меню</button><button data-act="prev">‹<kbd>←</kbd></button><button class="main" data-act="play">Играть / пауза<kbd>␣</kbd></button><button data-act="back10">« 10 сек</button><button data-act="fwd10">10 сек »</button><button data-act="next">›<kbd>→</kbd></button>`;
     $('#answer').innerHTML = `<div class="caps astatus" id="astatus">${NET.unlocked ? 'песни звучат задом наперёд — угадывайте!' : 'нажмите OK на пульте ТВ, затем «Играть»'}</div>`;
     ytLoad().then(p => { if (p && cur()?.id === it.id && ytCur !== it.yt) { ytCur = it.yt; p.cueVideoById({videoId:it.yt, startSeconds:it.start || 0}); } });
     requestAnimationFrame(() => ytShow(true));
@@ -899,6 +908,7 @@ function setStatus(t) { const s = $('#astatus'); if (s) s.textContent = t; }
 
 function renderAnswer() {
   const it = cur(), el = $('#answer'); if (!it || !G) return;
+  $('#game').classList.toggle('choicesOn', !G.revealed && G.hint > 0);
   const a = it.answer ?? it.a ?? '';
   const note = it.n || '';
   const sz = a.length > 44 ? ' xs' : a.length > 24 ? ' s' : '';
@@ -977,7 +987,10 @@ function doReveal() {
   showEmojis(true);
   applyReveal(); renderAnswer(); sfx.reveal(); confetti(90);
   const t = rtype(), it = cur();
-  if (t === 'audio') {
+  if (t === 'audio' && it.video) {      // reversed song: after the answer play the original clip
+    clearTimeout(stopT); ytPendingFrag = null;
+    setTimeout(() => { if (G && G.revealed && cur()?.id === it.id) playRevealVideo(it.video); }, 900);
+  } else if (t === 'audio') {
     // once the answer is shown the song keeps playing until the host switches: cancel the fragment timer
     clearTimeout(stopT); if (ytPendingFrag != null) ytPendingFrag = 0;
     if (it.yt) ytShow(true);
@@ -1096,7 +1109,7 @@ function space() {
   if (!G || !cur()) return;
   if (G.rv) { if (mPaused()) mPlay(0); else mPause(); return; }
   if (!isMedia(rtype())) return;
-  if (!G.started) return playFrom(startOf(), rtype() === 'video' ? 0 : (+S.frag || 7));
+  if (!G.started) return playFrom(startOf(), rtype() === 'video' ? 0 : (R(G.rid).frag || +S.frag || 7));
   if (mPaused()) mPlay(0); else mPause();
 }
 function more() {
