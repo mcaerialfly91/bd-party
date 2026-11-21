@@ -55,7 +55,7 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 .h-pre{margin:0}
 .h-title{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,64px);margin:0;color:var(--ink);line-height:1}
 .h-name{font-family:var(--serif);font-weight:800;font-size:clamp(46px,7.4vw,140px);margin:-.1em 0 0;line-height:1.05;filter:drop-shadow(0 6px 30px rgba(217,180,106,.25))}
-.rounds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(1380px,90vw);margin-top:1vh}
+.rounds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(1500px,92vw);margin-top:1vh}
 .rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:2.1vh 1.6vw 2vh;cursor:pointer;transition:.3s;text-align:left;display:flex;align-items:center;gap:1.4vw}
 .rcard::after{content:"";position:absolute;inset:4px;border:1px solid transparent;transition:.3s;pointer-events:none}
 .rcard:hover{border-color:var(--line);background:rgba(217,180,106,.06);transform:translateY(-2px)}
@@ -553,7 +553,6 @@ const ROUNDS = [
    help:'Строка: начало | продолжение | фильм.'},
   {id:'retro',   num:'VIII', title:'Ностальгия',       sub:'80-е и 90-е', type:'text',
    help:'Строка: вопрос | ответ | комментарий. Добавьте пару вопросов про самого именинника.'},
-  {id:'applause',num:'IX',   title:'Аплодисметр',      sub:'кто громче поздравит', type:'meter'},
 ];
 const R = id => ROUNDS.find(r => r.id === id);
 const MODES = ['blur', 'zoom', 'tiles'];
@@ -841,7 +840,7 @@ function ytLoad() {
     window.onYouTubeIframeAPIReady = () => {
       YTP = new YT.Player('ytplayer', {width:'100%', height:'100%',
         playerVars:{controls:0, disablekb:1, rel:0, playsinline:1, iv_load_policy:3, fs:0, modestbranding:1, origin:location.origin},
-        events:{onReady:() => res(YTP), onStateChange:ytState, onError:ytErr}});
+        events:{onReady:() => { try { const f = parseOnline('music')[0] || parseOnline('ost')[0]; if (f) YTP.cueVideoById(f.yt); } catch (e) {} res(YTP); }, onStateChange:ytState, onError:ytErr}});
     };
     const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api';
     s.onerror = () => { ytReady = null; setStatus('YouTube не загрузился — проверьте интернет'); res(null); };
@@ -851,6 +850,7 @@ function ytLoad() {
 }
 function ytState(e) {
   ytPlaying = e.data === 1;
+  if (NET.unlocking) return;
   if (ytPlaying && ytPendingFrag != null) { clearTimeout(stopT); const s = ytPendingFrag; ytPendingFrag = null; if (s) stopT = setTimeout(mPause, s * 1000); }
   updAudioStatus();
 }
@@ -1180,6 +1180,7 @@ function loop() {
 document.addEventListener('click', e => {
   if (document.body.classList.contains('remote')) return;
   if (e.target.closest('#start')) return startGame();
+  if (!NET.unlocked) unlockSound();
   if (e.target.closest('#secret')) return hideSecret();
   const t = e.target.closest('[data-go],[data-act],[data-round],[data-tile],[data-del],[data-clear],[data-shuffle],[data-sort],[data-preview],[data-reset]');
   if (!t) return;
@@ -1238,6 +1239,7 @@ document.addEventListener('drop', e => { e.preventDefault(); const z = e.target.
 document.addEventListener('keydown', e => {
   if (document.body.classList.contains('remote') || e.target.matches?.('input,textarea,select') || e.metaKey || e.ctrlKey || e.altKey) return;
   const c = e.code;
+  if (!NET.unlocked) unlockSound();
   if (!$('#start').classList.contains('off')) { if (['Enter', 'NumpadEnter', 'Space'].includes(c) || e.key === 'Enter') { e.preventDefault(); startGame(); } return; }
   if ($('#secret').classList.contains('on')) { e.preventDefault(); return hideSecret(); }
   if (c === 'KeyF') return toggleFs();
@@ -1252,8 +1254,20 @@ addEventListener('resize', () => { if ($('#ytwrap').classList.contains('show')) 
 
 /* ======================= TV ⇄ PHONE LINK (PeerJS) ======================= */
 const NET = {peer:null, conns:new Set(), last:'', url:'', tries:0};
-function startGame() {
+// Browsers allow YouTube sound only after a real press on the TV: start the (cued) player silently inside that press.
+function unlockSound() {
+  ac();
+  if (NET.unlocked || !YTP || !YTP.playVideo) return false;
+  try { YTP.setVolume(0); YTP.unMute(); YTP.playVideo(); } catch (e) { return false; }
+  NET.unlocked = true; NET.unlocking = true;
+  setTimeout(() => { try { YTP.pauseVideo(); YTP.setVolume(100); } catch (e) {} NET.unlocking = false; ytCur = null; }, 1500);
+  return true;
+}
+function startGame(fromRemote) {
   ac(); ytLoad();
+  if (!fromRemote && !unlockSound() && !NET.unlocked) {
+    $('#qrCap').textContent = 'секунду, загружаю… нажмите OK ещё раз'; return;
+  }
   $('#start').classList.add('off');
   document.documentElement.requestFullscreen?.().catch(() => {});
   show('home');
@@ -1326,7 +1340,7 @@ function handleCmd(d) {
   if (c === 'audio') return rvFromRemote(d);
   if (c === 'open') return openRound(d.rid);
   if (c === 'go') return show(d.to);
-  if (c === 'start') return startGame();
+  if (c === 'start') return startGame(true);
   if (c === 'name') { S.name = String(d.v || '').slice(0, 40); save(); $('#sName').textContent = S.name || 'дорогой друг'; if ($('#home').classList.contains('active')) renderHome(); return; }
   const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, reveal, timer:toggleTimer, mode:cycleMode,
     restart:() => { if (rtype() === 'audio') { G.started = false; playFrom(0, 0); } },
@@ -1382,7 +1396,7 @@ function rmRender() {
     ${st && st.screen !== 'home' ? '<button class="ghost" data-c="go" data-to="home" style="width:auto">Меню</button>' : ''}</div>`;
   let body = '';
   if (!ok || !st) body = `<div class="rm-h">Пульт</div><p class="help">Ждём телевизор. Страница игры должна быть открыта на ТВ, а телефон — в интернете.</p>`;
-  else if (!st.started) body = `<div class="rm-h">Почти готово</div><p class="help">Нажмите <b>OK</b> на пульте телевизора, чтобы включить звук и начать. Или нажмите здесь (звук может не включиться, пока не нажмёте OK на ТВ):</p><button class="main big" data-c="start">Начать</button>`;
+  else if (!st.started) body = `<div class="rm-h">Почти готово</div><p class="help">Нажмите <b>OK</b> на пульте телевизора — это включит звук. Если нажать «Начать» здесь, звук включится после первого нажатия OK на ТВ.</p><button class="main big" data-c="start">Начать</button>`;
   else if (st.screen === 'game') body = rmGame(st);
   else if (st.screen === 'finale') body = `<div class="caps">финал</div><div class="rm-h">С днём рождения!</div><div class="rm-grid" style="margin-top:16px"><button class="main big wide" data-c="party">Ещё салют</button><button class="wide" data-c="go" data-to="home">Меню</button></div>`;
   else body = `<div class="caps">вечер угадываний</div><div class="rm-h">Выберите раунд</div>
@@ -1484,7 +1498,7 @@ else (async () => {
     if (!media[m.round]) return;
     m.url = URL.createObjectURL(m.blob); media[m.round].push(m);
   });
-  renderHome(); loop(); netTV();
+  renderHome(); loop(); netTV(); if (location.protocol !== 'file:') ytLoad();
 })();
 </script>
 </body>
