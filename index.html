@@ -887,6 +887,7 @@ async function playFrom(start, sec) {
     setStatus('загрузка…');
     const p = await ytLoad(); if (!p || !G || cur()?.id !== it.id) return;
     ytPendingFrag = sec || 0;
+    G.ytLoadAt = performance.now();
     if (ytCur !== it.yt) { ytCur = it.yt; p.loadVideoById({videoId:it.yt, startSeconds:start}); }
     else { p.seekTo(start, true); p.playVideo(); }
     return;
@@ -917,7 +918,10 @@ function updAudioStatus() {
   if (!G || rtype() !== 'audio' || !$('#astatus')) return;
   const paused = mPaused();
   $('#stage').classList.toggle('playing', !paused);
-  if (G.started && !G.ytError && !(isYt() && paused && /загрузка/.test($('#astatus').textContent)))
+  if (isYt() && G.started && !G.ytError && paused && ytPendingFrag != null && G.ytLoadAt && performance.now() - G.ytLoadAt > 2500) {
+    try { if (YTP.getPlayerState() === -1 && YTP.getCurrentTime() > 0.5) return setStatus('реклама YouTube — музыка начнётся сразу после неё'); } catch (e) {}
+  }
+  if (G.started && !G.ytError && !(isYt() && paused && /загрузка|реклама/.test($('#astatus').textContent)))
     setStatus((paused ? 'пауза · ' : 'звучит · ') + fmt(mTime()));
 }
 ['play', 'pause', 'timeupdate'].forEach(ev => player.addEventListener(ev, updAudioStatus));
