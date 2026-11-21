@@ -54,15 +54,15 @@ input:focus,textarea:focus{outline:none;border-color:var(--g2)}
 textarea{width:100%;line-height:1.55;font-size:14px}
 
 /* ---------- HOME ---------- */
-#home{align-items:center;justify-content:center;gap:1.4rem;text-align:center}
+#home{align-items:center;justify-content:center;gap:1.1rem;text-align:center;padding-top:3.4rem;padding-bottom:3.2rem}
 #home>*,#finale>*,.st-left>*{flex-shrink:0}
 .h-pre{margin:0}
 .h-title{font-family:var(--serif);font-style:italic;font-weight:400;font-size:4rem;margin:0;color:var(--ink);line-height:1.1}
-.h-name{font-family:var(--serif);font-weight:800;font-size:7.2rem;margin:-.1em 0 0;line-height:1.2;padding:0 .1em .05em;max-width:88rem;
+.h-name{font-family:var(--serif);font-weight:800;font-size:6.6rem;margin:-.1em 0 0;line-height:1.2;padding:0 .1em .05em;max-width:88rem;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;filter:drop-shadow(0 .6rem 3rem rgba(217,180,106,.25))}
 .rounds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.3rem;width:84rem;margin-top:.6rem}
-.rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:1.6rem 1.6rem 1.5rem;cursor:pointer;transition:.3s;text-align:left;
-  display:grid;grid-template-columns:5rem minmax(0,1fr);align-items:center;column-gap:.9rem;min-height:8.4rem}
+.rcard{position:relative;border:1px solid var(--line2);background:var(--glass);padding:1.3rem 1.6rem 1.2rem;cursor:pointer;transition:.3s;text-align:left;
+  display:grid;grid-template-columns:5rem minmax(0,1fr);align-items:center;column-gap:.9rem;min-height:8rem}
 .rcard::after{content:"";position:absolute;inset:.4rem;border:1px solid transparent;transition:.3s;pointer-events:none}
 .rcard{overflow:hidden}
 .rcard::before{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(105deg,transparent,rgba(251,239,196,.09),transparent);animation:cardsweep 9s ease-in-out infinite;pointer-events:none}
@@ -242,9 +242,9 @@ body.linked .h-actions button{opacity:.35}
 #qrmini[hidden]{display:none!important}
 #qrmini{display:flex;align-items:center;gap:1.2rem;margin-left:2rem}
 #qrmini .qrbox{padding:.6rem;outline-offset:.5rem}
-#qrmini .qrbox img,#qrmini .qrbox canvas{width:6.4rem!important;height:6.4rem!important}
+#qrmini .qrbox img,#qrmini .qrbox canvas{width:4.8rem!important;height:4.8rem!important}
 #qrmini .caps{text-align:right;font-size:1rem}
-#qrmini .caps b{color:var(--g1);font-size:1.6rem;letter-spacing:.15em}
+#qrmini .caps b{color:var(--g1);font-size:1.4rem;letter-spacing:.15em}
 body.linked #qrmini{display:none!important}
 .linked{color:var(--g1)!important}
 
@@ -299,7 +299,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 <!-- GAME -->
 <section id="game" class="screen">
   <header class="g-head">
-    <div><button class="ghost" data-go="home">‹ Меню</button></div>
+    <div></div>
     <div class="g-title"><div class="n" id="gNum"></div><div class="t" id="gTitle"></div></div>
     <div class="g-right"><div class="timer" id="timer"></div><div class="counter" id="gCounter"></div></div>
     <div class="g-prog" id="gProg"></div>
@@ -358,7 +358,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 /* ======================= DATA ======================= */
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
-🚢🧊💔🎻 | Титаник | 1997 | 1997 · драма-катастрофа, «я король мира!» | WHtZ4NmIN1k
+🚢🧊💔🎻 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
 👨‍👦🔫🎸🚋 | Брат | 1997 | 1997 · про силу и правду в Петербурге | FZFvFZOCnk0
 💊🕶️🐇💻 | Матрица | 1999 | 1999 · фантастика: мир — это программа | YihPA42fdQ8
 🚘⚫📱🛣️ | Бумер | 2003 | 2003 · дорожная драма про братву | mOs3NGtQmy4
@@ -388,45 +388,43 @@ quote:`# начало | продолжение | фильм | подсказка
 Не мы такие — … | …жизнь такая | Бумер (2003) | кто на самом деле виноват | ytTeBPO0U_A@0
 Аста ла виста… | …бэйби! | Терминатор 2: Судный день (1991) | прощание по-испански от железного героя | NIAiAk61dOQ@0
 Армия — не просто доброе слово… | …а очень быстрое дело | ДМБ (2000) | армейская мудрость из абсурдной комедии | KL7VIwyXNWM@0
-Мама всегда говорила: жизнь как коробка шоколадных конфет… | …никогда не знаешь, какая попадётся | Форрест Гамп (1994) | сладкая метафора о непредсказуемости | RoFognD_xR8@0
-Такая только у меня… | …и у Майкла Джексона! | Бригада (2002) | хвастовство уровня короля поп-музыки | bjcFKLgoESE@0
+Мама всегда говорила: жизнь как коробка шоколадных конфет… | …никогда не знаешь, какая начинка попадётся | Форрест Гамп (1994) | сладкая метафора о непредсказуемости | RoFognD_xR8@0
 Улыбаемся и машем… | …парни, улыбаемся и машем! | Мадагаскар (2005) | девиз четырёх пернатых спецназовцев | YxdWeu4Lerk@0
 Ну вы, блин… | …даёте! | Особенности национальной охоты (1995) | генеральское восхищение на охоте | nEmNHNwsjj8@0
 Я сделаю ему предложение… | …от которого он не сможет отказаться | Крёстный отец (1972) | мафиозная вежливость | EdQu8vAABFM@0
 Русские на войне… | …своих не бросают | Брат 2 (2000) | про то, кого никогда не оставляют | m6KCypydHuQ@0
-— Вы самый жалкий пират, о котором я слышал. — … | …Но вы обо мне слышали! | Пираты Карибского моря (2003) | зато знаменитый | trlZj0FYfZE@0
+— Вы, без сомнения, худший пират, о котором я слышал. — … | …Но вы обо мне слышали! | Пираты Карибского моря (2003) | зато знаменитый | trlZj0FYfZE@0
 Гренка не может стоить восемь долларов… | …а крутон может! | О чём говорят мужчины (2010) | всё дело в правильном названии | VjN-AsNaLtc@0
-Примешь синюю таблетку — и сказке конец… | …примешь красную — войдёшь в Страну чудес | Матрица (1999) | выбор цвета решает всё | BpwimtOwNh4@0
-Вы ещё подеритесь… | …горячие финские парни! | Особенности национальной охоты (1995) | про темпераментных северных соседей | dubhP18V6yI@0
+Примешь синюю таблетку — и сказке конец… | …примешь красную — войдёшь в страну чудес | Матрица (1999) | выбор цвета решает всё | BpwimtOwNh4@0
 Я… | …король мира! | Титаник (1997) | на носу корабля, руки в стороны | nk7eReDe16Y@0
-Вы мне, гады, ещё… | …за Севастополь ответите! | Брат 2 (2000) | про крымский город | apZi55-1Dfc@0
+Вы мне, гады, ещё… | …за Севастополь ответите! | Брат 2 (2000) | историческая обида в адрес американцев | apZi55-1Dfc@0
 Первое правило Бойцовского клуба… | …никому не рассказывать о Бойцовском клубе | Бойцовский клуб (1999) | тайна прежде всего | P56QZsy_jGs@0
 Огры — они как лук… | …у лука есть слои, и у огров есть слои! | Шрек (2001) | про многослойность | ZA9iYijd2sQ@0
-— Он сказал, что ты убил его! — Нет… | …Я — твой отец! | Звёздные войны (1980) | семейная тайна в далёкой галактике | yVuCyI6FcMs@0
+— Он сказал, что ты убил его! — Нет… | …Я — твой отец! | Звёздные войны: Империя наносит ответный удар (1980) | семейная тайна в далёкой галактике | yVuCyI6FcMs@0
 Сдачу оставь себе… | …грязное животное! | Один дома (1990) | фраза из старого гангстерского фильма по телевизору | vYTW4VyTx8k@0
 Хьюстон… | …у нас проблема | Аполлон-13 (1995) | космический звонок на Землю | tLBw95yAYio@0
 Дороги? Там, куда мы направляемся… | …дороги не нужны! | Назад в будущее (1985) | машина времени умеет летать | 7et-vNnZKvM@0`,
 retro:`# вопрос | ответ | примечание | подсказка | видео
 Какой «неубиваемый» телефон Nokia 2000 года был у всех? | Nokia 3310 | и игра «Змейка» | им можно было забивать гвозди | NdvB2jRhz6U
-Как назывался мессенджер с цветочком и звуком «о-оу!»? | ICQ («аська») | номер из цифр вместо имени | зелёный цветочек и «о-оу!» | xRlN_rmWHaw
+Как назывался мессенджер с цветочком и звуком «о-оу!»? | ICQ («аська») | номер из цифр вместо имени | его звали ласково, по-русски | xRlN_rmWHaw
 Кто выиграл Евровидение-2008 для России? | Дима Билан | песня «Believe» | рядом с ним на сцене катался фигурист | uE9oiDOsEmU
-Какое реалити-шоу ТНТ с 2004 года «строит любовь» до сих пор? | Дом-2 | ведущая — Ксения Собчак | строят любовь за забором с 2004 года | PPzFdUXjGak
-Как назывался проект ТНТ 2005 года с Харламовым, Волей и Галустяном? | Comedy Club |  | артисты называли себя «резидентами» | b9G969_T4GY
-Какое шоу на Первом делало звёзд из обычных ребят в общежитии? | Фабрика звёзд | 2002–2012 | общежитие и продюсеры | 8UDee5CCHLk
+Какое реалити-шоу с 2004 года «строило любовь» на ТНТ? | Дом-2 | ведущие — Собчак и Бородина | за забором, на поляне, под камерами | PPzFdUXjGak
+Как назывался проект ТНТ 2005 года с Харламовым, Волей и Галустяном? | Comedy Club | по пятницам на ТНТ | артисты называли себя «резидентами» | b9G969_T4GY
+Какое шоу на Первом делало звёзд из обычных ребят в общежитии? | Фабрика звёзд | 2002–2012 | продюсеры и уроки вокала | 8UDee5CCHLk
 До какой стадии дошла сборная России на Евро-2008? | Полуфинал | бронза турнира | обыграли Голландию 3:1 | 7SJ_anoXPUI
-Как назывался первый русский блокбастер 2004 года про Светлых и Тёмных? | Ночной дозор | режиссёр Тимур Бекмамбетов | Светлые и Тёмные, мел судьбы | cgQMmn-zK54
-Какая соцсеть Павла Дурова появилась в 2006 году? | ВКонтакте | сначала — для студентов | сначала только для студентов
-Как называлась соцсеть, где искали бывших одноклассников? | Одноклассники | 2006 год | название подскажет само | QTmDRJpOPb4
+Как назывался первый русский блокбастер 2004 года про Иных? | Ночной дозор | режиссёр Тимур Бекмамбетов | Антон Городецкий, Гесер и Завулон | cgQMmn-zK54
+Какая соцсеть Павла Дурова появилась в 2006 году? | ВКонтакте | основатель — Павел Дуров | сначала была только для студентов СПбГУ
+Какая соцсеть 2006 года помогала найти тех, с кем сидел за одной партой? | Одноклассники | 2006 год | там постоянно ставили «классы» | QTmDRJpOPb4
 Кто вёл «Кто хочет стать миллионером?» на Первом в 2001–2008? | Максим Галкин | потом — Дмитрий Дибров | лучший пародист страны | xXfupT6fwzg
-Какой интернет-мем 2006 года: медведь пугает влюблённых? | «Превед, медвед!» | картина Джона Ширли | «падонкаффский» язык
-Какой сериал ТНТ 2006 года про семью Букиных? | Счастливы вместе | адаптация «Женаты и с детьми» | глава семьи продаёт обувь | JwJlYZRaEzo
-Какой сериал ТНТ про жизнь в студенческой общаге вышел в 2008 году? | Универ | Кузя, Майкл, Гена | парень из Сибири в общаге | _WHZbCKiRXA
+Какой мем 2006 года — с медведем, который пугает влюблённых? | «Превед, медвед!» | картина Джона Лури | «падонкаффский» язык
+Какой сериал ТНТ 2006 года про семью Букиных? | Счастливы вместе | адаптация «Женаты… с детьми» | глава семьи продаёт обувь | JwJlYZRaEzo
+Какой сериал ТНТ про жизнь в студенческой общаге вышел в 2008 году? | Универ | Кузя, Майкл, Саня | парень из Сибири в общаге | _WHZbCKiRXA
 Какую валюту начали носить в кошельках в Европе в 2002 году? | Евро | наличные с 1 января 2002 | заменила марки, франки и лиры
-Чего боялись все компьютеры в ночь на 1 января 2000 года? | Ошибки 2000 года (Y2K) | проблема двух цифр в дате | всё из-за двух цифр в дате | zKFQPGLg2Dw
+Чего боялись все компьютеры в ночь на 1 января 2000 года? | Ошибки 2000 года (Y2K) | проблема двух цифр в дате | боялись, что после 99 наступит 00 | zKFQPGLg2Dw
 С какой песней Верка Сердючка взяла серебро Евровидения-2007? | Dancing Lasha Tumbai | 2 место | непонятные слова, которые пела вся Европа | ELVD_2_eCWE
-Какой плеер Apple 2001 года вмещал «1000 песен в кармане»? | iPod | колёсико для прокрутки | белые наушники и колёсико | rSpJor4h4FY
-Какой фильм Джеймса Кэмерона 2009 года с синими людьми стал самым кассовым? | Аватар | планета Пандора | планета Пандора | uXC_0wE6k7k
-О какой «раскладушке» Motorola мечтали все в 2005 году? | Motorola RAZR V3 | тонкая и металлическая | очень тонкая металлическая раскладушка | N4ezpMXjUjo`
+Какой плеер Apple 2001 года вмещал «1000 песен в кармане»? | iPod | колёсико для прокрутки | белые наушники | rSpJor4h4FY
+Какой фильм Джеймса Кэмерона 2009 года с синими людьми стал самым кассовым? | Аватар | планета Пандора | высокие синие инопланетяне | uXC_0wE6k7k
+О какой «раскладушке» Motorola мечтали все в 2005 году? | Motorola RAZR V3 | тонкая и металлическая | по-народному — «бритва» | N4ezpMXjUjo`
 };
 
 /* Онлайн-материал: музыка — официальные клипы на YouTube (проверены, встраивание разрешено),
@@ -441,7 +439,7 @@ Eminem — Lose Yourself | xFYQQPAOz7Y |  | 2002 · «один шанс, одн�
 ВИА Гра — Не оставляй меня, любимый | FFtbgbq-KnU |  | 2003 · три красавицы умоляют не уходить
 Britney Spears — Toxic | LOZuxwVk7TU |  | 2003 · стюардесса, которая опаснее яда
 Серебро — Song #1 | o_hZqbl-RIk |  | 2007 · дебют сразу на большой европейской сцене
-Руки Вверх — Он тебя целует | lluIQebmAMM |  | 2002 · ревность на школьной дискотеке
+Руки Вверх! — Он тебя целует | lluIQebmAMM |  | 2002 · ревность на школьной дискотеке
 Баста — Моя игра | XDZEv-JU-GA |  | 2006 · южный рэп, где жизнь — это партия
 Linkin Park — Numb | kXYiU_JCYtU |  | 2003 · парень «онемел» от чужих ожиданий
 Тимати — Не сходи с ума | 0I8UzeIJ_SY |  | 2007 · выпускник телепроекта в тёмных очках просит не терять голову
@@ -449,7 +447,7 @@ Linkin Park — Numb | kXYiU_JCYtU |  | 2003 · парень «онемел» о
 Ленинград — WWW | XveGQdHa18I |  | 1999 · питерская громкая песня про интернет и цветок в горшке
 Shakira — Hips Don't Lie | DUT5rEU6pqM |  | 2006 · латиноамериканские бёдра, которые не умеют врать
 Фабрика — Про любовь | -dpQn82jzTY |  | 2003 · три девушки, «сделанные» на телепроизводстве
-Глюк'oZa — Невеста | 9P_wHDW2VJY |  | 2003 · мультяшная девчонка совсем не хочет замуж
+Глюк’oZa — Невеста | 9P_wHDW2VJY |  | 2003 · мультяшная девчонка совсем не хочет замуж
 Каста — Вокруг шум | 8zHjanBzZt8 |  | 2002 · ростовский хип-хоп про суету
 50 Cent — In Da Club | 5qm8PH4xAss |  | 2003 · «с днём рождения» по-нью-йоркски — очень к месту!
 Жанна Фриске — Ла-ла-ла | 2ncsibrgaS0 |  | 2005 · бывшая «сверкающая» солистка поёт без слов в припеве
@@ -475,10 +473,10 @@ Crazy Frog — Axel F | k85mRPqvMbE |  | 2005 · рингтон, который 
 Стас Михайлов — Всё для тебя | Vu6jeEUEP50 |  | 2007 · главный романтик женских сердец отдаёт всё
 Ночные Снайперы — 31-я весна | zec60-e_yi8 |  | начало 2000-х · группа с «огнестрельным» названием
 Noize MC — Устрой дестрой | EFD5cdTkeIg |  | 2010 · рэп-рок-призыв устроить беспорядок
-Timbaland — Apologize | ZSM3w1v-A_Y |  | 2007 · извиняться уже слишком поздно
-Hi-Fi — Седьмой лепесток | d5qWwINZGhs |  | 2002 · цветик-семицветик в поп-версии
+Timbaland feat. OneRepublic — Apologize | ZSM3w1v-A_Y |  | 2007 · извиняться уже слишком поздно
+Hi-Fi — Седьмой лепесток | d5qWwINZGhs |  | цветик-семицветик в поп-версии
 Блестящие — За четыре моря | PR7BuUOrgW4 |  | 2001 · сияющие девушки улетают далеко-далеко
-Ани Лорак — Солнце | CdeE_tN1NuQ |  | ≈2011 · украинская дива поёт о дневном светиле
+Ани Лорак — Солнце | CdeE_tN1NuQ |  | 2011 · украинская дива поёт о дневном светиле
 Lady Gaga — Poker Face | bESGLojNYSo |  | 2008 · эпатажная дебютантка с непроницаемым лицом
 Сплин — Романс | 29lSd5ucOOI |  | 1999 · старинный жанр в исполнении питерских рокеров
 Иванушки International — Тополиный пух | UUryvYF8tUs |  | 1998 · летняя «жара» и рыжий солист
@@ -548,7 +546,7 @@ who:`# ответ | фото | обрезка | подсказка | видео
 Леонид Якубович | https://upload.wikimedia.org/wikipedia/commons/e/e0/Channel_One_Russia_in_Navy_%2827-06-2013%29_08_%28cropped%29.jpg |  | усы, барабан и «приз в студию!» | U251PjyCMHM
 Илья Лагутенко | https://upload.wikimedia.org/wikipedia/commons/2/23/Ilya_Lagutenko_%40_Park_Live_%28cropped%29.JPG |  | солист из Владивостока, «утекай» | nj5nuYYrZvg
 Дэниел Рэдклифф | https://upload.wikimedia.org/wikipedia/commons/7/70/Daniel_Radcliffe%2C_2011.jpg |  | мальчик со шрамом-молнией | VyHV0BRtdxo
-Валдис Пельш | https://upload.wikimedia.org/wikipedia/commons/a/a3/%D0%92%D0%B0%D0%BB%D0%B4%D0%B8%D1%81_%D0%9F%D0%B5%D0%BB%D1%8C%D1%88_%D0%B2_%D0%A6%D0%94%D0%9C_%D0%BD%D0%B0_%D0%9B%D1%83%D0%B1%D1%8F%D0%BD%D0%BA%D0%B5.jpg |  | угадывал мелодию с семи нот | m2-O-mJT6bA
+Валдис Пельш | https://upload.wikimedia.org/wikipedia/commons/a/a3/%D0%92%D0%B0%D0%BB%D0%B4%D0%B8%D1%81_%D0%9F%D0%B5%D0%BB%D1%8C%D1%88_%D0%B2_%D0%A6%D0%94%D0%9C_%D0%BD%D0%B0_%D0%9B%D1%83%D0%B1%D1%8F%D0%BD%D0%BA%D0%B5.jpg |  | вёл шоу, где мелодию угадывали по нотам | m2-O-mJT6bA
 Валерий Меладзе | https://upload.wikimedia.org/wikipedia/commons/e/e1/Valeriy_Meladze_photoshooting_at_Laima_Rendez_Vous_Jurmala_2017.jpg |  | брат продюсера, «самба белого мотылька» | AHZOiY42L-U
 Арнольд Шварценеггер | https://upload.wikimedia.org/wikipedia/commons/e/e3/Arnold_Schwarzenegger_-_Austrian_World_Summit_2026_BHO-2906.jpg |  | «я вернусь», а потом губернатор | vxyftCLN9Sw
 Джим Керри | https://upload.wikimedia.org/wikipedia/commons/e/ed/Jim_Carrey_2020_cropped.jpg |  | зелёная маска и резиновое лицо | CibSSkcej8s
@@ -567,7 +565,7 @@ t.A.T.u. — Нас не догонят | L1Gl_ycaDcY | 98 | 2001 · две де
 Верка Сердючка — Всё будет хорошо | nWXG967hx-U | 89 | 1997 · звезда с вагоном оптимизма | KRVhWPignvU
 Руки Вверх! — Крошка моя | dzk8-IOPwNY | 78 | 1998 · нежный хит всех школьных дискотек | tO91c8vbT7A
 Би-2 — Полковнику никто не пишет | FYNGwqfr0hA | 85 | 2000 · звучала в фильме, где герой поехал в Америку | 1u7WN2zBEDc
-Глюк'oZa — Невеста | hra_LYWGeT0 | 88 | 2003 · мультяшная девочка не хочет замуж | 9P_wHDW2VJY
+Глюк’oZa — Невеста | hra_LYWGeT0 | 88 | 2003 · мультяшная девочка не хочет замуж | 9P_wHDW2VJY
 Любэ — Комбат | MFJVTP5nQn0 | 106 | 1996 · группа в гимнастёрках поёт о фронтовом уважении | d1pABMCtf3M
 Дискотека Авария — Disco Superstar | 3t6bYhgN50E | 86 | 2001 · танцевальная звезда диско | 6JLH0AJ-oKA
 Король и Шут — Кукла колдуна | 3xVmNIyjErU | 71 | 1998 · мрачная сказка про игрушку | Nj6aM9ljdQU
@@ -586,7 +584,7 @@ frame:`# ответ | картинка | обрезка | подсказка | �
 Особенности национальной охоты | https://i.ytimg.com/vi/yIZmWbqqEc0/maxres2.jpg |  | 1995 · финн приехал на охоту, а все пьют | yIZmWbqqEc0
 Гарри Поттер и философский камень | https://i.ytimg.com/vi/VyHV0BRtdxo/maxres2.jpg | 0,0.124,0,0.124 | 2001 · школа волшебства | AFwrmkAHEk4
 Бригада | https://i.ytimg.com/vi/kUTSJTn54xg/maxres2.jpg | 0.031,0,0.031,0 | 2002 · сериал о 90-х и четырёх друзьях | Jv98XZIBJAI
-Ночной дозор | https://i.ytimg.com/vi/uWQ2_0HBucw/maxres2.jpg |  | 2004 · Иные, мел судьбы и Сумрак | cgQMmn-zK54
+Ночной дозор | https://i.ytimg.com/vi/uWQ2_0HBucw/maxres2.jpg |  | 2004 · Иные, Сумрак и вампиры | cgQMmn-zK54
 Властелин колец | https://i.ytimg.com/vi/JV-tKAntxCw/maxres1.jpg | 0,0.122,0,0.122 | 2001 · хоббиты несут кольцо | RNksw9VU2BQ
 Дневной дозор | https://i.ytimg.com/vi/PdNZL-BWzNQ/maxres1.jpg | 0,0.122,0,0.122 | 2006 · продолжение про Иных | BAteiVwEfjU
 9 рота | https://i.ytimg.com/vi/l4-pAqEUdyg/maxres3.jpg | 0,0.143,0,0.143 | 2005 · Афганистан, высота 3234 | nT52t12aOhI
@@ -653,7 +651,7 @@ const MODES = ['blur', 'zoom', 'tiles'];
 const MODE_NAMES = {blur:'размытие', zoom:'приближение', tiles:'плитки'};
 
 /* ======================= STATE ======================= */
-const LS = 'bd-party-v8';
+const LS = 'bd-party-v9';
 const S = (() => {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) {}
@@ -842,6 +840,11 @@ function resetItem() {
   Object.assign(G, {revealed:false, revealing:false, hint:0, open:0, started:false, rv:null, choices:null, tiles:new Set(Array.from({length:24}, (_, i) => i)),
     origin:`${25 + Math.random() * 50}% ${25 + Math.random() * 50}%`});
 }
+function nextRound() {
+  if (!G) return;
+  const nx = ROUNDS[ROUNDS.findIndex(x => x.id === G.rid) + 1];
+  nx ? openRound(nx.id) : show('finale');
+}
 function introRound(r) {
   const el = $('#intro'); clearTimeout(el._t);
   $('#inNum').textContent = r.num; $('#inTitle').textContent = r.title;
@@ -868,7 +871,8 @@ function renderGame() {
   if (r.type === 'meter') return renderMeter();
   if (G.idx >= n) {
     stage.innerHTML = `<div class="endcard"><div class="caps">раунд ${r.num}</div><div class="big gold">Раунд сыгран</div><div class="orn">✦</div></div>`;
-    ctr.innerHTML = `<button data-act="prev">‹ Назад</button><button class="main" data-go="home">К раундам</button>`;
+    const nx = ROUNDS[ROUNDS.findIndex(x => x.id === G.rid) + 1];
+    ctr.innerHTML = `<button data-act="prev">‹ Назад</button><button data-go="home">К раундам</button>${nx ? `<button class="main" data-act="nextround">Дальше: ${esc(nx.title)} ›</button>` : `<button class="main" data-go="finale">Финал ✦</button>`}`;
     confetti(220); sfx.fanfare(); sfx.applause(3.5); return;
   }
   const it = list[G.idx];
@@ -1348,7 +1352,7 @@ function renderFinale() {
     $('#finale').classList.add('withvid');
     ytCur = BIRTHDAY_SONG; p.loadVideoById({videoId:BIRTHDAY_SONG, startSeconds:0});
     requestAnimationFrame(() => ytShow(true, $('#finVid')));
-    setInterval(() => confetti(60), 6000);
+    clearInterval(NET.finTimer); NET.finTimer = setInterval(() => { if ($('#finale').classList.contains('active')) confetti(60); else clearInterval(NET.finTimer); }, 6000);
   }, 3500);
 }
 
@@ -1444,6 +1448,7 @@ document.addEventListener('click', e => {
     case 'timer': return toggleTimer();
     case 'mode': return cycleMode();
     case 'play': return space();
+    case 'nextround': return nextRound();
     case 'back10': return seekBy(-10);
     case 'fwd10': return seekBy(10);
     case 'more': return more();
@@ -1588,7 +1593,7 @@ function handleCmd(d) {
   const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, uncover, reveal,
     video:() => { const it = cur(); if (G && G.revealed && it && it.video) playRevealVideo(it.video); }, timer:toggleTimer, mode:cycleMode,
     restart:() => { if (isMedia(rtype())) { G.started = false; playFrom(0, 0); } },
-    back10:() => seekBy(-10), fwd10:() => seekBy(10), party:() => { sfx.fanfare(); confetti(320); }};
+    nextround:nextRound, back10:() => seekBy(-10), fwd10:() => seekBy(10), party:() => { sfx.fanfare(); confetti(320); }};
   map[c] && map[c]();
 }
 
@@ -1655,7 +1660,8 @@ function rmRender() {
 }
 function rmGame(st) {
   const head = `<div class="caps">— ${st.num} —</div><div class="rm-h">${esc(st.title)}</div><div class="rm-sub">${st.end ? 'раунд сыгран' : `${st.idx + 1} из ${st.n}`}</div>`;
-  if (st.end) return head + `<div class="rm-grid"><button data-c="prev">‹ Назад</button><button class="main" data-c="go" data-to="home">К раундам</button></div>`;
+  if (st.end) { const i = st.rounds.findIndex(r => r.id === st.rid), nx = st.rounds[i + 1];
+    return head + `<div class="rm-grid">${nx ? `<button class="main big wide" data-c="nextround">Дальше: ${esc(nx.title)} ›</button>` : `<button class="main big wide" data-c="go" data-to="finale">Финал ✦</button>`}<button data-c="prev">‹ Назад</button><button data-c="go" data-to="home">К раундам</button></div>`; }
   const nav = `<button data-c="prev">‹ Назад</button><button data-c="next">Дальше ›</button>`;
   const timer = `<button class="wide" data-c="timer">${st.timer != null ? `Таймер: ${st.timer}` : 'Таймер'}</button>`;
   if (st.type === 'video') return head + `<p class="help">Песни звучат задом наперёд, ответ видео покажет само. Ставьте на паузу, чтобы гости подумали.</p>
